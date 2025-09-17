@@ -1,0 +1,60 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import MainLayout from './components/layout/MainLayout';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import AgentsListPage from './pages/agents/AgentsListPage';
+import CreateAgentPage from './pages/agents/CreateAgentPage';
+import AgentDetailPage from './pages/agents/AgentDetailPage';
+import AuthPage from './pages/auth/AuthPage';
+import BlockchainPage from './pages/blockchain/BlockchainPage';
+import ProfilePage from './pages/profile/ProfilePage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import { useAuthStore } from './store';
+import './styles/index.css';
+
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const App: React.FC = () => {
+  return (
+    <ConfigProvider locale={zhCN}>
+      <Router>
+        <Routes>
+          {/* 认证页面 */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* 主要应用布局 */}
+          <Route path="/" element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="agents" element={<AgentsListPage />} />
+            <Route path="agents/create" element={<CreateAgentPage />} />
+            <Route path="agents/:id" element={<AgentDetailPage />} />
+            <Route path="auth" element={<AuthPage />} />
+            <Route path="blockchain" element={<BlockchainPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+          </Route>
+
+          {/* 404页面 */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Router>
+    </ConfigProvider>
+  );
+};
+
+export default App;
