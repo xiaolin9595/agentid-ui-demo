@@ -7,6 +7,7 @@ import {
   UserOutlined,
   SafetyCertificateOutlined,
   BlockOutlined,
+  IdcardOutlined,
   SettingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -35,6 +36,11 @@ const Sidebar: React.FC = () => {
       key: '/auth',
       icon: <SafetyCertificateOutlined />,
       label: '认证流程',
+    },
+    {
+      key: '/identity',
+      icon: <IdcardOutlined />,
+      label: '身份标识生成',
     },
     {
       key: '/blockchain',

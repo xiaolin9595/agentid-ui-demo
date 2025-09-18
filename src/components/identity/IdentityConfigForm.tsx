@@ -79,7 +79,7 @@ export const IdentityConfigForm: React.FC<IdentityConfigFormProps> = ({
               step={0.1}
               style={{ width: '100%' }}
               formatter={value => `${(Number(value!) * 100).toFixed(0)}%`}
-              parser={value => Number(String(value!).replace('%', '')) / 100}
+              parser={value => (Number(String(value!).replace('%', '')) / 100) as 0 | 1}
             />
           </Form.Item>
 
@@ -216,7 +216,7 @@ export const IdentityConfigForm: React.FC<IdentityConfigFormProps> = ({
                 step={0.1}
                 style={{ width: '100%' }}
                 formatter={value => `${(Number(value!) * 100).toFixed(0)}%`}
-                parser={value => Number(String(value!).replace('%', '')) / 100}
+                parser={value => (Number(String(value!).replace('%', '')) / 100) as 0 | 1}
                 placeholder="0.7"
               />
             </Form.Item>

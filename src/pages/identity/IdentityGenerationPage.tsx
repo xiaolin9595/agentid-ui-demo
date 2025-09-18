@@ -6,6 +6,7 @@ import { CredentialUpload } from '../../components/forms/CredentialUpload';
 import { GenerationProcessTracker } from '../../components/identity/GenerationProcessTracker';
 import { GenerationResult } from '../../components/identity/GenerationResult';
 import { IdentityConfigForm } from '../../components/identity/IdentityConfigForm';
+import { DemoWrapper } from '../../components/ui/DemoWrapper';
 import {
   isValidCredentialFile,
   formatFileSize,
@@ -90,13 +91,36 @@ export const IdentityGenerationPage: React.FC = () => {
   }, [removeIdentity]);
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
-      <Content style={{ padding: '24px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <Title level={2}>身份标识生成</Title>
-          <Text type="secondary">
-            上传身份凭证文件，系统将自动提取信息并生成唯一的身份标识
-          </Text>
+    <DemoWrapper
+      showWatermark={true}
+      showTooltip={true}
+      tooltipTitle="身份标识生成演示"
+      tooltipContent="此演示系统展示了完整的身份标识生成流程，包括文件上传、信息提取、标识生成等步骤。所有数据均为模拟数据。"
+    >
+      <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+        <Content style={{ padding: '24px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <Title level={2}>
+              <span style={{ position: 'relative' }}>
+                身份标识生成
+                <span style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-40px',
+                  background: '#ff4d4f',
+                  color: 'white',
+                  fontSize: '10px',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  fontWeight: 'bold'
+                }}>
+                  演示用
+                </span>
+              </span>
+            </Title>
+            <Text type="secondary">
+              上传身份凭证文件，系统将自动提取信息并生成唯一的身份标识
+            </Text>
 
           {error && (
             <Alert
@@ -234,6 +258,7 @@ export const IdentityGenerationPage: React.FC = () => {
         </div>
       </Content>
     </Layout>
+    </DemoWrapper>
   );
 };
 

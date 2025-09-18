@@ -9,6 +9,7 @@ import AgentDetailPage from './pages/agents/AgentDetailPage';
 import AuthPage from './pages/auth/AuthPage';
 import BlockchainPage from './pages/blockchain/BlockchainPage';
 import ProfilePage from './pages/profile/ProfilePage';
+import IdentityGenerationPage from './pages/identity/IdentityGenerationPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import { useAuthStore } from './store';
@@ -47,6 +48,7 @@ const App: React.FC = () => {
             <Route path="auth" element={<AuthPage />} />
             <Route path="blockchain" element={<BlockchainPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="identity" element={<IdentityGenerationPage />} />
           </Route>
 
           {/* 404页面 */}

@@ -163,8 +163,8 @@ export const GenerationProcessTracker: React.FC<GenerationProcessTrackerProps> =
             身份标识生成过程
           </Title>
           <Space>
-            <Tag color={getStatusColor(process.status) === 'processing' ? 'blue' :
-                         getStatusColor(process.status) === 'completed' ? 'green' : 'red'}>
+            <Tag color={process.status === 'processing' ? 'blue' :
+                         process.status === 'completed' ? 'green' : 'red'}>
               {getStatusText(process.status)}
             </Tag>
             {process.status === 'processing' && onCancel && (
