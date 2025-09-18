@@ -38,11 +38,6 @@ const Sidebar: React.FC = () => {
       label: '认证流程',
     },
     {
-      key: '/identity',
-      icon: <IdcardOutlined />,
-      label: '身份标识生成',
-    },
-    {
       key: '/blockchain',
       icon: <BlockOutlined />,
       label: '区块链',
