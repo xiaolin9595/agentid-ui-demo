@@ -3,3 +3,4 @@ export * from './auth';
 export * from './agent';
 export * from './blockchain';
 export * from './common';
+export * from './identity';
