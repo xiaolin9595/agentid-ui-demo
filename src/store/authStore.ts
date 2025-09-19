@@ -21,11 +21,30 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  // 初始状态
-  user: null,
-  isAuthenticated: false,
-  authSession: null,
+export const useAuthStore = create<AuthState>((set, get) => ({
+  // 初始状态 - 演示用默认用户
+  user: {
+    id: 'demo_user_001',
+    userId: 'demo_user_001',
+    username: 'demo_user',
+    email: 'demo@example.com',
+    publicKey: '0x1234567890abcdef1234567890abcdef12345678',
+    biometricStatus: 'bound',
+    status: 'active',
+    createdAt: new Date().toISOString(),
+    authCount: 1
+  },
+  isAuthenticated: true,
+  authSession: {
+    id: 'demo_session_001',
+    userId: 'demo_user_001',
+    agentId: 'demo_agent_001',
+    biometricVerified: true,
+    contractVerified: true,
+    zkProof: null,
+    status: 'success',
+    timestamp: new Date().toISOString()
+  },
   loading: false,
   error: null,
 

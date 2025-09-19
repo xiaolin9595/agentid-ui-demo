@@ -25,11 +25,28 @@ export function validateFile(file: File, config: FileUploadConfig): FileValidati
     };
   }
 
-  // Check file type
-  if (!config.allowedTypes.includes(file.type)) {
+  // Check file type with extension fallback
+  const fileType = file.type.toLowerCase();
+  const fileExtension = getFileExtension(file.name).toLowerCase();
+
+  // Map extensions to MIME types for files without proper MIME type
+  const extensionToMime = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'pdf': 'application/pdf',
+    'doc': 'application/msword',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  };
+
+  const effectiveFileType = fileType || extensionToMime[fileExtension as keyof typeof extensionToMime];
+
+  if (!effectiveFileType || !config.allowedTypes.includes(effectiveFileType)) {
     return {
       code: 'INVALID_TYPE',
-      message: '不支持的文件类型',
+      message: `不支持的文件类型: ${fileExtension.toUpperCase()}`,
       file
     };
   }
@@ -46,7 +63,8 @@ export function formatFileSize(bytes: number): string {
 }
 
 export function getFileExtension(filename: string): string {
-  return filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2);
+  const lastDotIndex = filename.lastIndexOf('.');
+  return lastDotIndex === -1 ? '' : filename.slice(lastDotIndex + 1).toLowerCase();
 }
 
 export function isImageFile(file: File): boolean {

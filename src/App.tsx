@@ -11,7 +11,10 @@ import BlockchainPage from './pages/blockchain/BlockchainPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
-import { useAuthStore } from './store';
+import ImageTest from './components/ImageTest';
+import SimpleTestPage from './pages/SimpleTestPage';
+import { CredentialUploadDemo } from './pages/demo/CredentialUploadDemo';
+import { useAuthStore } from './store/authStore';
 import './styles/index.css';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -47,7 +50,13 @@ const App: React.FC = () => {
             <Route path="auth" element={<AuthPage />} />
             <Route path="blockchain" element={<BlockchainPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="image-test" element={<ImageTest />} />
           </Route>
+
+          {/* 公开访问路由 */}
+          <Route path="/public-image-test" element={<ImageTest />} />
+          <Route path="/public-credential-upload" element={<CredentialUploadDemo />} />
+          <Route path="/simple-test" element={<SimpleTestPage />} />
 
           {/* 404页面 */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

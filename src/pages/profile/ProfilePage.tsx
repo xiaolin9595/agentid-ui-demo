@@ -201,17 +201,28 @@ const ProfilePage: React.FC = () => {
                     <IdentityConfigForm compact />
                   </Card>
 
-                  <Card title="文件上传" size="small">
+                  <Card title="身份凭证上传" size="small">
                     <CredentialUpload
                       onFileSelect={handleFileSelect}
                       config={{
                         maxFileSize: 10 * 1024 * 1024,
-                        allowedTypes: ['image/*', 'application/pdf'],
+                        allowedTypes: [
+                          'image/jpeg',
+                          'image/png',
+                          'image/gif',
+                          'image/webp',
+                          'application/pdf'
+                        ],
                         maxFiles: 1,
                         allowMultiple: false
                       }}
                       disabled={isLoading || currentProcess?.status === 'processing'}
                     />
+                    <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-600">
+                      • 支持PNG、JPG、GIF、WebP图片格式<br/>
+                      • 支持PDF文档格式<br/>
+                      • 文件大小限制：10MB
+                    </div>
                   </Card>
 
                   {selectedFile && (
