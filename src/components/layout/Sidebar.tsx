@@ -5,7 +5,6 @@ import {
   DashboardOutlined,
   RobotOutlined,
   UserOutlined,
-  SafetyCertificateOutlined,
   BlockOutlined,
   IdcardOutlined,
   SettingOutlined,
@@ -32,12 +31,7 @@ const Sidebar: React.FC = () => {
       icon: <RobotOutlined />,
       label: 'Agent管理',
     },
-    {
-      key: '/auth',
-      icon: <SafetyCertificateOutlined />,
-      label: '认证流程',
-    },
-    {
+      {
       key: '/blockchain',
       icon: <BlockOutlined />,
       label: '区块链',

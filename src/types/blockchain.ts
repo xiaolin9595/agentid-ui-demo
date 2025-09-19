@@ -122,7 +122,7 @@ export type ContractStatus = IdentityContract['status'];
 // Agent相关类型定义
 export type BlockchainAgentType = 'AI Assistant' | 'Chatbot' | 'Automation' | 'Data Processing' | 'Content Generation' | 'Analysis' | 'Security';
 
-export type AgentCapability = 'NLP' | 'Data Analysis' | 'Automation' | 'Machine Learning' | 'Computer Vision' | 'Natural Language Understanding' | 'Code Generation' | 'Image Processing' | 'Voice Recognition' | 'Translation';
+export type AgentCapability = '私人助理' | '购物助理' | '生活助理' | '健康助理' | '学习助理' | '工作助理' | '旅行助理' | '财务助理' | '娱乐助理' | '客服助理';
 
 export type AgentContractPermission = 'read-only' | 'read-write' | 'admin';
 

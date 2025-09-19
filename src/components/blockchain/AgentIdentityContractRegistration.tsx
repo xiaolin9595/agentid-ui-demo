@@ -46,7 +46,7 @@ const MOCK_AGENTS: MockAgent[] = [
     id: 'agent_001',
     name: 'Claude AI Assistant',
     type: 'AI Assistant',
-    capabilities: ['NLP', 'Natural Language Understanding', 'Code Generation'],
+    capabilities: ['私人助理', '工作助理', '学习助理'],
     description: '基于大语言模型的AI助手，支持自然语言交互和代码生成',
     version: '3.5',
     model: 'Claude-3.5-Sonnet',
@@ -58,7 +58,7 @@ const MOCK_AGENTS: MockAgent[] = [
     id: 'agent_002',
     name: 'Data Analyzer Pro',
     type: 'Data Processing',
-    capabilities: ['Data Analysis', 'Machine Learning', 'Automation'],
+    capabilities: ['财务助理', '健康助理', '生活助理'],
     description: '专业数据分析工具，支持机器学习模型训练和预测',
     version: '2.1',
     model: 'XGBoost-2.1',
@@ -70,7 +70,7 @@ const MOCK_AGENTS: MockAgent[] = [
     id: 'agent_003',
     name: 'Chatbot Service',
     type: 'Chatbot',
-    capabilities: ['NLP', 'Translation', 'Voice Recognition'],
+    capabilities: ['客服助理', '旅行助理', '娱乐助理'],
     description: '多语言聊天机器人服务，支持语音识别和翻译',
     version: '1.8',
     model: 'GPT-4',
@@ -82,7 +82,7 @@ const MOCK_AGENTS: MockAgent[] = [
     id: 'agent_004',
     name: 'Security Monitor',
     type: 'Security',
-    capabilities: ['Automation', 'Machine Learning', 'Computer Vision'],
+    capabilities: ['健康助理', '生活助理', '客服助理'],
     description: 'AI安全监控系统，支持异常检测和威胁识别',
     version: '3.0',
     model: 'SecurityNet-V3',
@@ -94,7 +94,7 @@ const MOCK_AGENTS: MockAgent[] = [
     id: 'agent_005',
     name: 'Content Generator',
     type: 'Content Generation',
-    capabilities: ['NLP', 'Code Generation', 'Image Processing'],
+    capabilities: ['私人助理', '工作助理', '学习助理'],
     description: '智能内容生成工具，支持文本、代码和图像生成',
     version: '2.5',
     model: 'ContentGen-2.5',
@@ -115,16 +115,16 @@ const AGENT_TYPES: BlockchainAgentType[] = [
 ];
 
 const CAPABILITY_OPTIONS: AgentCapability[] = [
-  'NLP',
-  'Data Analysis',
-  'Automation',
-  'Machine Learning',
-  'Computer Vision',
-  'Natural Language Understanding',
-  'Code Generation',
-  'Image Processing',
-  'Voice Recognition',
-  'Translation'
+  '私人助理',
+  '购物助理',
+  '生活助理',
+  '健康助理',
+  '学习助理',
+  '工作助理',
+  '旅行助理',
+  '财务助理',
+  '娱乐助理',
+  '客服助理'
 ];
 
 const PREDEFINED_TAGS = [
@@ -155,6 +155,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
   const [registrationResult, setRegistrationResult] = useState<AgentContractRegistrationResult | null>(null);
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<MockAgent | null>(null);
+  const [completedAgentInfo, setCompletedAgentInfo] = useState<BlockchainAgent | null>(null);
 
   const handleAgentChange = (agentId: string) => {
     const agent = MOCK_AGENTS.find(a => a.id === agentId);
@@ -182,7 +183,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
 
       if (result.success) {
         message.success('Agent身份合约注册成功！');
-        setCurrentStep(2);
+        setCurrentStep(3);
 
         // 查找选中的Agent
         const selectedAgentData = MOCK_AGENTS.find(agent => agent.id === values.agentId);
@@ -229,6 +230,10 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
           }
         };
 
+
+        // 存储完成的Agent信息用于成功页面显示
+        setCompletedAgentInfo(agentInfo);        
+
         onSuccess?.(contract);
       } else {
         message.error(result.error || 'Agent合约注册失败');
@@ -254,6 +259,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
     setCurrentStep(0);
     setCustomTags([]);
     setSelectedAgent(null);
+    setCompletedAgentInfo(null);
   };
 
   const getStepStatus = (step: number) => {
@@ -475,13 +481,13 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
 
             <Col span={24}>
               <Form.Item
-                label="Agent能力"
+                label="扮演角色"
                 name="capabilities"
-                rules={[{ required: true, message: '请至少选择一个能力' }]}
+                rules={[{ required: true, message: '请至少选择一个角色' }]}
               >
                 <Select
                   mode="multiple"
-                  placeholder="选择Agent具备的能力"
+                  placeholder="选择Agent扮演的角色"
                   style={{ width: '100%' }}
                 >
                   {CAPABILITY_OPTIONS.map(capability => (
@@ -659,9 +665,20 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
                 <Space direction="vertical" className="w-full">
                   <div>
                     <Text type="secondary">Agent名称:</Text>
-                    <Text strong> {selectedAgent?.name}</Text>
+                    <Text strong> {completedAgentInfo?.name}</Text>
                   </div>
                   <div>
+                    <Text type="secondary">Agent类型:</Text>
+                    <Tag color="blue">{completedAgentInfo?.type}</Tag>
+                  </div>
+                  <div>
+                    <Text type="secondary">版本:</Text>
+                    <Text> {completedAgentInfo?.version}</Text>
+                  </div>
+                  <div>
+                    <Text type="secondary">模型:</Text>
+                    <Text> {completedAgentInfo?.model}</Text>
+                  </div>                  <div>
                     <Text type="secondary">权限级别:</Text>
                     <Tag color={
                       form.getFieldValue('permissions') === 'admin' ? 'red' :

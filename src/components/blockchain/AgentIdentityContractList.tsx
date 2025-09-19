@@ -204,7 +204,7 @@ export const AgentIdentityContractList: React.FC<AgentIdentityContractListProps>
       )
     },
     {
-      title: 'Agent能力',
+      title: '扮演角色',
       key: 'capabilities',
       width: 200,
       render: (_: any, record: AgentIdentityContract) => (

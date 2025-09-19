@@ -271,6 +271,7 @@ const BlockchainPage: React.FC = () => {
                 onViewContract={setSelectedAgentContract}
                 onDeleteContract={handleDeleteAgentContract}
                 onUpdateContractStatus={updateAgentContractStatus}
+                onEditContract={setSelectedAgentContract}
               />
             </TabPane>
 

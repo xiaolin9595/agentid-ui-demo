@@ -6,9 +6,9 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import AgentsListPage from './pages/agents/AgentsListPage';
 import CreateAgentPage from './pages/agents/CreateAgentPage';
 import AgentDetailPage from './pages/agents/AgentDetailPage';
-import AuthPage from './pages/auth/AuthPage';
 import BlockchainPage from './pages/blockchain/BlockchainPage';
 import ProfilePage from './pages/profile/ProfilePage';
+import TestPage from './pages/TestPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ImageTest from './components/ImageTest';
@@ -47,8 +47,8 @@ const App: React.FC = () => {
             <Route path="agents" element={<AgentsListPage />} />
             <Route path="agents/create" element={<CreateAgentPage />} />
             <Route path="agents/:id" element={<AgentDetailPage />} />
-            <Route path="auth" element={<AuthPage />} />
             <Route path="blockchain" element={<BlockchainPage />} />
+            <Route path="test" element={<TestPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="image-test" element={<ImageTest />} />
           </Route>
