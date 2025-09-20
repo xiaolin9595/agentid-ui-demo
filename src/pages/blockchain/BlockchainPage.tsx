@@ -75,7 +75,8 @@ const BlockchainPage: React.FC = () => {
   const handleRegisterAgentContract = async (formData: any) => {
     try {
       await registerAgentContract(formData);
-      setActiveTab('agent-contracts');
+      // 注册成功后刷新数据，但不跳转页面
+      fetchAgentContracts();
     } catch (error) {
       console.error('Agent contract registration failed:', error);
     }
@@ -191,6 +192,14 @@ const BlockchainPage: React.FC = () => {
                         type="primary"
                         size="large"
                         block
+                        onClick={() => setActiveTab('agent-register')}
+                      >
+                        <RobotOutlined />
+                        注册Agent合约
+                      </Button>
+                      <Button
+                        size="large"
+                        block
                         onClick={() => setActiveTab('register')}
                       >
                         <UserOutlined />
@@ -199,10 +208,10 @@ const BlockchainPage: React.FC = () => {
                       <Button
                         size="large"
                         block
-                        onClick={() => setActiveTab('contracts')}
+                        onClick={() => setActiveTab('agent-contracts')}
                       >
                         <FileTextOutlined />
-                        查看合约列表
+                        查看Agent管理
                       </Button>
                     </Space>
                   </Card>
