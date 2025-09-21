@@ -269,13 +269,13 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
                 label={
                   <span>
                     <UserOutlined className="mr-1" />
-                    绑定用户
+                    绑定用户ID
                   </span>
                 }
                 name={['userBinding', 'boundUserId']}
-                rules={[{ required: true, message: '请选择绑定的用户' }]}
+                rules={[{ required: true, message: '请选择绑定的用户ID' }]}
               >
-                <Select placeholder="选择要绑定的用户">
+                <Select placeholder="选择要绑定的用户ID">
                   {MOCK_USERS.map((user) => (
                     <Option key={user.id} value={user.id}>
                       <Space>
@@ -568,9 +568,9 @@ LOG_LEVEL=info`}
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12}>
             <Space direction="vertical" size="small" className="w-full">
-              <Text strong>绑定用户:</Text>
+              <Text strong>绑定用户ID:</Text>
               <Text type="secondary">
-                {selectedUser ? `${selectedUser.name} (${selectedUser.department})` : '未选择用户'}
+                {selectedUser ? `${selectedUser.name} (${selectedUser.department})` : '未选择用户ID'}
               </Text>
             </Space>
           </Col>
