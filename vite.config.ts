@@ -20,4 +20,5 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
+  base: './', // 支持相对路径
 })

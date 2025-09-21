@@ -75,6 +75,7 @@ const BlockchainPage: React.FC = () => {
   const handleRegisterAgentContract = async (formData: any) => {
     try {
       await registerAgentContract(formData);
+      // 注册成功后刷新数据，但不跳转页面
       fetchAgentContracts();
     } catch (error) {
       console.error('Agent contract registration failed:', error);
@@ -94,6 +95,7 @@ const BlockchainPage: React.FC = () => {
     fetchAgentContracts();
   };
 
+  // 计算统计数据
   const allContracts = [...contracts, ...agentContracts];
   const totalContracts = allContracts.length;
   const activeContracts = allContracts.filter(c => c.status === 'active').length;
@@ -136,6 +138,7 @@ const BlockchainPage: React.FC = () => {
           />
         )}
 
+        {/* 统计卡片 */}
         <Row gutter={[16, 16]} className="mb-6">
           <Col xs={24} sm={12} lg={8}>
             <Card>
@@ -169,6 +172,7 @@ const BlockchainPage: React.FC = () => {
           </Col>
         </Row>
 
+        {/* 主要功能区域 */}
         <Card>
           <Tabs activeKey={activeTab} onChange={setActiveTab}>
             <TabPane

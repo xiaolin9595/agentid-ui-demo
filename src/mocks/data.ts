@@ -44,10 +44,12 @@ export const mockAgents: Agent[] = [
       maxConcurrency: 5,
       timeout: 30000,
       permissions: ['read', 'write', 'execute'],
-      resources: {
-        memory: '512MB',
-        cpu: '2 cores',
-        storage: '1GB'
+      userBinding: {
+        userId: 'user_123',
+        bindingType: 'userId',
+        bindingStrength: 'basic',
+        verificationFrequency: 'once',
+        fallbackAllowed: true
       }
     },
     permissions: ['read', 'write', 'execute']
@@ -70,10 +72,20 @@ export const mockAgents: Agent[] = [
       maxConcurrency: 3,
       timeout: 60000,
       permissions: ['read', 'execute'],
-      resources: {
-        memory: '256MB',
-        cpu: '1 core',
-        storage: '512MB'
+      userBinding: {
+        userId: 'user_123',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'enhanced',
+        verificationFrequency: 'daily',
+        fallbackAllowed: false,
+        userFaceFeatures: {
+          featureVector: Array.from({ length: 128 }, () => Math.random()),
+          templateId: 'face_mock_001',
+          confidence: 0.96,
+          livenessCheck: true,
+          antiSpoofing: true,
+          enrollmentDate: new Date('2024-01-16T09:30:00Z')
+        }
       }
     },
     permissions: ['read', 'execute']
@@ -96,10 +108,20 @@ export const mockAgents: Agent[] = [
       maxConcurrency: 2,
       timeout: 120000,
       permissions: ['read', 'write'],
-      resources: {
-        memory: '128MB',
-        cpu: '1 core',
-        storage: '2GB'
+      userBinding: {
+        userId: 'user_456',
+        bindingType: 'multiFactor',
+        bindingStrength: 'strict',
+        verificationFrequency: 'perRequest',
+        fallbackAllowed: false,
+        userFaceFeatures: {
+          featureVector: Array.from({ length: 128 }, () => Math.random()),
+          templateId: 'face_mock_002',
+          confidence: 0.98,
+          livenessCheck: true,
+          antiSpoofing: true,
+          enrollmentDate: new Date('2024-01-18T13:20:00Z')
+        }
       }
     },
     permissions: ['read', 'write']

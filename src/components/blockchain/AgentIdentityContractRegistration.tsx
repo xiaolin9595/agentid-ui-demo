@@ -156,6 +156,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<MockAgent | null>(null);
   const [completedAgentInfo, setCompletedAgentInfo] = useState<BlockchainAgent | null>(null);
+  const [completedContract, setCompletedContract] = useState<AgentIdentityContract | null>(null);
 
   const handleAgentChange = (agentId: string) => {
     const agent = MOCK_AGENTS.find(a => a.id === agentId);
@@ -231,8 +232,9 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
         };
 
 
-        // 存储完成的Agent信息用于成功页面显示
-        setCompletedAgentInfo(agentInfo);        
+        // 存储完成的Agent信息和合约对象用于成功页面显示
+        setCompletedAgentInfo(agentInfo);
+        setCompletedContract(contract);
 
         onSuccess?.(contract);
       } else {
@@ -260,6 +262,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
     setCustomTags([]);
     setSelectedAgent(null);
     setCompletedAgentInfo(null);
+    setCompletedContract(null);
   };
 
   const getStepStatus = (step: number) => {
@@ -711,7 +714,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
             <Button onClick={resetForm}>
               注册新合约
             </Button>
-            <Button type="primary">
+            <Button type="primary" onClick={() => message.success('合约详情已保存，您可以在Agent管理页面查看')}>
               查看合约详情
             </Button>
           </div>

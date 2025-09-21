@@ -20,13 +20,26 @@ export interface AgentConfig {
   maxConcurrency: number;
   timeout: number;
   permissions: string[];
-  resources: ResourceConfig;
+  userBinding: UserBinding;
 }
 
-export interface ResourceConfig {
-  memory: string;
-  cpu: string;
-  storage: string;
+export interface UserBinding {
+  userId: string;
+  userFaceFeatures?: FaceBiometricFeatures;
+  bindingType: 'userId' | 'faceBiometrics' | 'multiFactor';
+  bindingStrength: 'basic' | 'enhanced' | 'strict';
+  verificationFrequency: 'once' | 'daily' | 'perRequest';
+  fallbackAllowed: boolean;
+}
+
+export interface FaceBiometricFeatures {
+  featureVector: number[];
+  templateId: string;
+  confidence: number;
+  livenessCheck: boolean;
+  antiSpoofing: boolean;
+  enrollmentDate: Date;
+  lastVerified?: Date;
 }
 
 export type AgentPermission = 'read' | 'write' | 'execute' | 'admin';
@@ -64,4 +77,20 @@ export interface StatusEvent {
   timestamp: string;
   type: 'info' | 'warning' | 'error';
   message: string;
+}
+
+export interface AgentPaginationParams {
+  page: number;
+  pageSize: number;
+}
+
+export interface AgentFilterParams {
+  status?: string;
+  language?: string;
+  search?: string;
+}
+
+export interface AgentSortParams {
+  field: string;
+  order: 'asc' | 'desc';
 }
