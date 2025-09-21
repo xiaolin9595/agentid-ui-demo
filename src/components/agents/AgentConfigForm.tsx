@@ -232,7 +232,7 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
 
   const languageSuggestions = language ? COMMON_DEPENDENCIES[language.id as keyof typeof COMMON_DEPENDENCIES] || [] : [];
 
-  const selectedUser = DEMO_USERS.find(user => user.id === config.userBinding.userId);
+  const selectedUser = DEMO_USERS.find(user => user.id === config.userBinding.boundUserId);
 
   return (
     <div className="space-y-6">

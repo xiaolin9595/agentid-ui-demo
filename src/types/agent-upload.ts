@@ -19,6 +19,7 @@ export interface AgentLanguage {
 export interface AgentConfig {
   permissions: AgentPermission[];
   userBinding: UserBinding;
+  dependencies: string[];
 }
 
 export interface UserBinding {
@@ -263,7 +264,8 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
     bindingStrength: 'basic',
     verificationFrequency: 'once',
     fallbackAllowed: true
-  }
+  },
+  dependencies: []
 };
 
 // 模拟用户数据用于下拉选择
