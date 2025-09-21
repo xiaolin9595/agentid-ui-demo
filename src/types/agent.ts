@@ -17,16 +17,14 @@ export interface Agent {
 }
 
 export interface AgentConfig {
-  maxConcurrency: number;
-  timeout: number;
   permissions: string[];
   userBinding: UserBinding;
 }
 
 export interface UserBinding {
-  userId: string;
+  boundUserId: string;
   userFaceFeatures?: FaceBiometricFeatures;
-  bindingType: 'userId' | 'faceBiometrics' | 'multiFactor';
+  bindingType: 'faceBiometrics' | 'multiFactor';
   bindingStrength: 'basic' | 'enhanced' | 'strict';
   verificationFrequency: 'once' | 'daily' | 'perRequest';
   fallbackAllowed: boolean;

@@ -17,18 +17,14 @@ export interface AgentLanguage {
 }
 
 export interface AgentConfig {
-  maxConcurrency: number;
-  timeout: number;
   permissions: AgentPermission[];
-  environment: Record<string, string>;
-  dependencies: string[];
   userBinding: UserBinding;
 }
 
 export interface UserBinding {
-  userId: string;
+  boundUserId: string;
   userFaceFeatures?: FaceBiometricFeatures;
-  bindingType: 'userId' | 'faceBiometrics' | 'multiFactor';
+  bindingType: 'faceBiometrics' | 'multiFactor';
   bindingStrength: 'basic' | 'enhanced' | 'strict';
   verificationFrequency: 'once' | 'daily' | 'perRequest';
   fallbackAllowed: boolean;
@@ -260,24 +256,28 @@ export const DEFAULT_AGENT_PERMISSIONS: AgentPermission[] = [
 
 // 默认Agent配置
 export const DEFAULT_AGENT_CONFIG: AgentConfig = {
-  maxConcurrency: 5,
-  timeout: 30000,
   permissions: ['read' as any, 'execute' as any],
-  environment: {},
-  dependencies: [],
   userBinding: {
-    userId: '',
-    bindingType: 'userId',
+    boundUserId: '',
+    bindingType: 'faceBiometrics',
     bindingStrength: 'basic',
     verificationFrequency: 'once',
     fallbackAllowed: true
   }
 };
 
+// 模拟用户数据用于下拉选择
+export const MOCK_USERS = [
+  { id: 'user_001', name: '张三', email: 'zhangsan@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=zhangsan' },
+  { id: 'user_002', name: '李四', email: 'lisi@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=lisi' },
+  { id: 'user_003', name: '王五', email: 'wangwu@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=wangwu' },
+  { id: 'user_004', name: '赵六', email: 'zhaoliu@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=zhaoliu' },
+  { id: 'user_005', name: '钱七', email: 'qianqi@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=qianqi' }
+];
+
 // 预定义的用户绑定选项
 export const USER_BINDING_OPTIONS = {
   bindingTypes: [
-    { label: '用户ID绑定', value: 'userId', description: '仅通过用户ID进行身份验证' },
     { label: '人脸生物特征', value: 'faceBiometrics', description: '通过人脸识别进行身份验证' },
     { label: '多重验证', value: 'multiFactor', description: '结合用户ID和人脸识别的多重验证' }
   ],

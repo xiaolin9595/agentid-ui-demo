@@ -125,8 +125,6 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         codeSize: codePackage.files.reduce((total, file) => total + file.size, 0),
         language: codePackage.language.id,
         config: {
-          maxConcurrency: basicInfo.config.maxConcurrency,
-          timeout: basicInfo.config.timeout,
           permissions: basicInfo.config.permissions.map(p => p as any),
           userBinding: basicInfo.config.userBinding
         },
@@ -180,12 +178,10 @@ export const useAgentStore = create<AgentState>((set, get) => ({
           codeSize: 1024000,
           language: 'python',
           config: {
-            maxConcurrency: 5,
-            timeout: 30000,
             permissions: ['read', 'write'],
             userBinding: {
-              userId: 'user_001',
-              bindingType: 'userId',
+              boundUserId: 'user_001',
+              bindingType: 'faceBiometrics',
               bindingStrength: 'basic',
               verificationFrequency: 'once',
               fallbackAllowed: true
@@ -208,11 +204,9 @@ export const useAgentStore = create<AgentState>((set, get) => ({
           codeSize: 2048000,
           language: 'javascript',
           config: {
-            maxConcurrency: 3,
-            timeout: 60000,
             permissions: ['read', 'execute'],
             userBinding: {
-              userId: 'user_002',
+              boundUserId: 'user_002',
               bindingType: 'faceBiometrics',
               bindingStrength: 'enhanced',
               verificationFrequency: 'daily',
@@ -245,11 +239,9 @@ export const useAgentStore = create<AgentState>((set, get) => ({
           codeSize: 3072000,
           language: 'python',
           config: {
-            maxConcurrency: 10,
-            timeout: 120000,
             permissions: ['read', 'write', 'execute'],
             userBinding: {
-              userId: 'user_003',
+              boundUserId: 'user_003',
               bindingType: 'multiFactor',
               bindingStrength: 'strict',
               verificationFrequency: 'perRequest',

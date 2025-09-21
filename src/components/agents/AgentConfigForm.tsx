@@ -38,6 +38,7 @@ import {
   DEFAULT_AGENT_CONFIG,
   DEFAULT_AGENT_PERMISSIONS,
   USER_BINDING_OPTIONS,
+  MOCK_USERS,
   UserBinding,
   FaceBiometricFeatures
 } from '../../types/agent-upload';
@@ -198,7 +199,7 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
         userBinding: {
           ...config.userBinding,
           userFaceFeatures: mockFaceFeatures,
-          bindingType: config.userBinding.bindingType === 'userId' ? 'multiFactor' : config.userBinding.bindingType
+          bindingType: 'multiFactor'
         }
       };
 
@@ -222,7 +223,7 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
       userBinding: {
         ...config.userBinding,
         userFaceFeatures: undefined,
-        bindingType: 'userId'
+        bindingType: 'faceBiometrics'
       }
     };
     onChange(newConfig);
@@ -271,18 +272,18 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
                     绑定用户
                   </span>
                 }
-                name={['userBinding', 'userId']}
+                name={['userBinding', 'boundUserId']}
                 rules={[{ required: true, message: '请选择绑定的用户' }]}
               >
                 <Select placeholder="选择要绑定的用户">
-                  {DEMO_USERS.map((user) => (
+                  {MOCK_USERS.map((user) => (
                     <Option key={user.id} value={user.id}>
                       <Space>
-                        <Avatar size="small" icon={<UserOutlined />} />
+                        <Avatar size="small" src={user.avatar} icon={<UserOutlined />} />
                         <div>
                           <div style={{ fontWeight: 'bold' }}>{user.name}</div>
                           <div style={{ fontSize: '12px', color: '#666' }}>
-                            {user.email} · {user.department}
+                            {user.email}
                           </div>
                         </div>
                       </Space>
@@ -470,58 +471,6 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
           </div>
         </Card>
 
-        {/* 运行配置 */}
-        <Card title="运行配置" className="mb-4">
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label={
-                  <span>
-                    <ClockCircleOutlined className="mr-1" />
-                    最大并发数
-                  </span>
-                }
-                name="maxConcurrency"
-                rules={[
-                  { required: true, message: '请输入最大并发数' },
-                  { type: 'number', min: 1, max: 100, message: '并发数必须在1-100之间' }
-                ]}
-              >
-                <InputNumber
-                  min={1}
-                  max={100}
-                  style={{ width: '100%' }}
-                  placeholder="建议值: 5"
-                />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label={
-                  <span>
-                    <ClockCircleOutlined className="mr-1" />
-                    超时时间 (毫秒)
-                  </span>
-                }
-                name="timeout"
-                rules={[
-                  { required: true, message: '请输入超时时间' },
-                  { type: 'number', min: 1000, max: 300000, message: '超时时间必须在1-300秒之间' }
-                ]}
-              >
-                <InputNumber
-                  min={1000}
-                  max={300000}
-                  step={1000}
-                  style={{ width: '100%' }}
-                  placeholder="建议值: 30000"
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
-
         {/* 权限配置 */}
         <Card title="权限配置" className="mb-4">
           <Space direction="vertical" className="w-full">
@@ -633,15 +582,7 @@ LOG_LEVEL=info`}
               </Text>
             </Space>
           </Col>
-          <Col xs={24} sm={12}>
-            <Space direction="vertical" size="small" className="w-full">
-              <Text strong>运行配置:</Text>
-              <Text type="secondary">
-                并发数: {config.maxConcurrency} | 超时: {config.timeout}ms
-              </Text>
-            </Space>
-          </Col>
-          <Col xs={24}>
+                    <Col xs={24}>
             <Space direction="vertical" size="small" className="w-full">
               <Text strong>权限:</Text>
               <div className="flex flex-wrap gap-2">
@@ -653,13 +594,7 @@ LOG_LEVEL=info`}
               </div>
             </Space>
           </Col>
-          <Col xs={24}>
-            <Space direction="vertical" size="small" className="w-full">
-              <Text strong>依赖数量:</Text>
-              <Text type="secondary">{config.dependencies.length} 个依赖包</Text>
-            </Space>
-          </Col>
-        </Row>
+                  </Row>
       </Card>
 
       {/* Demo Notice */}

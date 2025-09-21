@@ -41,12 +41,10 @@ export const mockAgents: Agent[] = [
     codeSize: 256,
     language: 'typescript',
     config: {
-      maxConcurrency: 5,
-      timeout: 30000,
       permissions: ['read', 'write', 'execute'],
       userBinding: {
-        userId: 'user_123',
-        bindingType: 'userId',
+        boundUserId: 'user_001',
+        bindingType: 'faceBiometrics',
         bindingStrength: 'basic',
         verificationFrequency: 'once',
         fallbackAllowed: true
@@ -69,11 +67,9 @@ export const mockAgents: Agent[] = [
     codeSize: 384,
     language: 'python',
     config: {
-      maxConcurrency: 3,
-      timeout: 60000,
       permissions: ['read', 'execute'],
       userBinding: {
-        userId: 'user_123',
+        boundUserId: 'user_002',
         bindingType: 'faceBiometrics',
         bindingStrength: 'enhanced',
         verificationFrequency: 'daily',
@@ -105,11 +101,9 @@ export const mockAgents: Agent[] = [
     codeSize: 128,
     language: 'javascript',
     config: {
-      maxConcurrency: 2,
-      timeout: 120000,
       permissions: ['read', 'write'],
       userBinding: {
-        userId: 'user_456',
+        boundUserId: 'user_456',
         bindingType: 'multiFactor',
         bindingStrength: 'strict',
         verificationFrequency: 'perRequest',
