@@ -279,9 +279,9 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
                   {MOCK_USERS.map((user) => (
                     <Option key={user.id} value={user.id}>
                       <Space>
-                        <Avatar size="small" src={user.avatar} icon={<UserOutlined />} />
+                        <Avatar size="small" icon={<UserOutlined />} />
                         <div>
-                          <div style={{ fontWeight: 'bold' }}>{user.name}</div>
+                          <div style={{ fontWeight: 'bold' }}>{user.id}</div>
                           <div style={{ fontSize: '12px', color: '#666' }}>
                             {user.email}
                           </div>
@@ -570,7 +570,7 @@ LOG_LEVEL=info`}
             <Space direction="vertical" size="small" className="w-full">
               <Text strong>绑定用户ID:</Text>
               <Text type="secondary">
-                {selectedUser ? `${selectedUser.name} (${selectedUser.department})` : '未选择用户ID'}
+                {selectedUser ? `${selectedUser.id} (${selectedUser.name} - ${selectedUser.department})` : '未选择用户ID'}
               </Text>
             </Space>
           </Col>

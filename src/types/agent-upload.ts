@@ -268,13 +268,13 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   dependencies: []
 };
 
-// 模拟用户数据用于下拉选择
+// 模拟用户数据用于下拉选择 - 同一个用户的多个ID
 export const MOCK_USERS = [
-  { id: 'user_001', name: '张三', email: 'zhangsan@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=zhangsan' },
-  { id: 'user_002', name: '李四', email: 'lisi@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=lisi' },
-  { id: 'user_003', name: '王五', email: 'wangwu@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=wangwu' },
-  { id: 'user_004', name: '赵六', email: 'zhaoliu@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=zhaoliu' },
-  { id: 'user_005', name: '钱七', email: 'qianqi@example.com', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=qianqi' }
+  { id: 'user_zhangsan_001', name: '张三', email: 'zhangsan@example.com', department: '技术部' },
+  { id: 'user_zhangsan_002', name: '张三', email: 'zhangsan_work@example.com', department: '技术部' },
+  { id: 'user_zhangsan_003', name: '张三', email: 'zhangsan_dev@example.com', department: '开发组' },
+  { id: 'user_zhangsan_admin', name: '张三', email: 'zhangsan_admin@example.com', department: '管理组' },
+  { id: 'user_zhangsan_test', name: '张三', email: 'zhangsan_test@example.com', department: '测试组' }
 ];
 
 // 预定义的用户绑定选项
