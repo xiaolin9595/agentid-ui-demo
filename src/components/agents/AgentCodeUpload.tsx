@@ -36,7 +36,6 @@ import {
   CodeStructure
 } from '../../types/agent-upload';
 import {
-  validateFile,
   uploadFile,
   generateFileId
 } from '../../utils/file-upload';
@@ -49,41 +48,6 @@ const { Panel } = Collapse;
 
 const DEMO_WATERMARK = '演示系统 - 代码上传功能';
 
-// 模拟代码包验证和结构分析
-const mockCodeValidation = async (file: File, language: AgentLanguage): Promise<{
-  isValid: boolean;
-  errors: string[];
-  structure: CodeStructure;
-}> => {
-  // 模拟验证延迟
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  // 模拟文件结构分析
-  const structure: CodeStructure = {
-    directories: ['src', 'tests', 'config', 'docs'],
-    files: [
-      'src/index.js',
-      'src/agent.js',
-      'package.json',
-      'README.md',
-      'tests/agent.test.js'
-    ],
-    dependencies: ['axios', 'express', 'lodash'],
-    hasEntryFile: true,
-    hasConfigFile: true,
-    hasTestFiles: true
-  };
-
-  // 模拟验证结果 (80%成功率)
-  const isValid = Math.random() > 0.2;
-  const errors = isValid ? [] : [
-    '缺少入口文件',
-    'package.json格式不正确',
-    '依赖版本冲突'
-  ];
-
-  return { isValid, errors, structure };
-};
 
 // 递归渲染文件树
 const renderFileTree = (files: string[], directories: string[]) => {
@@ -131,48 +95,16 @@ export const AgentCodeUpload: React.FC<AgentCodeUploadProps> = ({
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState<AgentLanguage | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [validationResult, setValidationResult] = useState<{
-    isValid: boolean;
-    errors: string[];
-    structure: CodeStructure;
-  } | null>(null);
 
-  const handleFileValidation = useCallback((file: File): string | null => {
-    // 检查文件扩展名
-    const fileExtension = file.name.toLowerCase().split('.').pop();
-    if (!CODE_FILE_CONFIG.allowedExtensions.includes(`.${fileExtension}`)) {
-      return `不支持的文件类型: .${fileExtension}，支持的类型: ${CODE_FILE_CONFIG.allowedExtensions.join(', ')}`;
-    }
-
-    // 检查文件大小
-    if (file.size > CODE_FILE_CONFIG.maxFileSize) {
-      return `文件大小不能超过 ${CODE_FILE_CONFIG.maxFileSize / 1024 / 1024}MB`;
-    }
-
-    // 检查是否选择了编程语言
-    if (!selectedLanguage) {
-      return '请先选择编程语言';
-    }
-
-    return null;
-  }, [selectedLanguage]);
-
+  
   const handleFilesAdded = useCallback(async (newFiles: File[]) => {
     if (newFiles.length === 0 || !selectedLanguage) return;
 
     const file = newFiles[0]; // 只处理第一个文件
-    const validationError = handleFileValidation(file);
 
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    // 清理之前的文件和结果
+    // 清理之前的文件
     setFiles([]);
-    setValidationResult(null);
     setError(null);
     setIsUploading(true);
 
@@ -187,39 +119,37 @@ export const AgentCodeUpload: React.FC<AgentCodeUploadProps> = ({
 
       setFiles([uploadedFile]);
 
-      // 开始代码包验证
-      setIsValidating(true);
-      const validation = await mockCodeValidation(file, selectedLanguage);
-      setValidationResult(validation);
-
-      if (validation.isValid) {
-        const codePackage: AgentCodePackage = {
-          id: generateFileId(),
-          name: file.name.replace(/\.[^/.]+$/, ''), // 移除扩展名
-          version: '1.0.0',
-          language: selectedLanguage,
-          files: [uploadedFile],
-          entryFile: `src/index.${selectedLanguage.id === 'typescript' ? 'ts' : 'js'}`,
-          structure: validation.structure,
-          validated: true
-        };
-        onCodePackageSelect(codePackage);
-      } else {
-        setError('代码包验证失败');
-      }
+      // 直接创建代码包，不进行验证
+      const codePackage: AgentCodePackage = {
+        id: generateFileId(),
+        name: file.name.replace(/\.[^/.]+$/, ''), // 移除扩展名
+        version: '1.0.0',
+        language: selectedLanguage,
+        files: [uploadedFile],
+        entryFile: `src/index.${selectedLanguage.id === 'typescript' ? 'ts' : 'js'}`,
+        structure: {
+          directories: ['src'],
+          files: [`src/index.${selectedLanguage.id === 'typescript' ? 'ts' : 'js'}`],
+          dependencies: [],
+          hasEntryFile: true,
+          hasConfigFile: false,
+          hasTestFiles: false
+        },
+        validated: false
+      };
+      onCodePackageSelect(codePackage);
 
     } catch (err) {
       setError('上传过程中发生错误');
     } finally {
       setIsUploading(false);
-      setIsValidating(false);
     }
-  }, [handleFileValidation, selectedLanguage, onCodePackageSelect]);
+  }, [selectedLanguage, onCodePackageSelect]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (disabled || isUploading || isValidating || !selectedLanguage) return;
+    if (disabled || isUploading || !selectedLanguage) return;
     handleFilesAdded(acceptedFiles);
-  }, [disabled, isUploading, isValidating, selectedLanguage, handleFilesAdded]);
+  }, [disabled, isUploading, selectedLanguage, handleFilesAdded]);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,
@@ -232,13 +162,12 @@ export const AgentCodeUpload: React.FC<AgentCodeUploadProps> = ({
       'application/x-7z-compressed': ['.7z']
     },
     multiple: false,
-    disabled: disabled || isUploading || isValidating || !selectedLanguage,
+    disabled: disabled || isUploading || !selectedLanguage,
     maxFiles: 1
   });
 
   const handleRemoveCodePackage = useCallback(() => {
     setFiles([]);
-    setValidationResult(null);
     setError(null);
     setSelectedLanguage(null);
     onCodePackageRemove();
@@ -359,15 +288,9 @@ export const AgentCodeUpload: React.FC<AgentCodeUploadProps> = ({
                 </Text>
               </div>
               <div className="text-right">
-                {selectedCodePackage.validated ? (
-                  <Tag color="success" icon={<CheckCircleOutlined />}>
-                    已验证
+                <Tag color="default" icon={<CheckCircleOutlined />}>
+                    已上传
                   </Tag>
-                ) : (
-                  <Tag color="warning" icon={<ExclamationCircleOutlined />}>
-                    待验证
-                  </Tag>
-                )}
               </div>
             </div>
 
@@ -433,31 +356,7 @@ export const AgentCodeUpload: React.FC<AgentCodeUploadProps> = ({
         />
       )}
 
-      {/* Validation Results */}
-      {validationResult && (
-        <Alert
-          message={
-            validationResult.isValid ? '代码包验证成功' : '代码包验证失败'
-          }
-          type={validationResult.isValid ? 'success' : 'error'}
-          className="mb-4"
-          description={
-            validationResult.isValid ? (
-              <span>
-                项目结构完整，找到 {validationResult.structure.files.length} 个文件，
-                {validationResult.structure.directories.length} 个目录
-              </span>
-            ) : (
-              <ul className="list-disc list-inside">
-                {validationResult.errors.map((error, index) => (
-                  <li key={index}>{error}</li>
-                ))}
-              </ul>
-            )
-          }
-        />
-      )}
-
+      
       {/* Upload Zone */}
       {!selectedCodePackage && selectedLanguage && (
         <div
@@ -466,12 +365,12 @@ export const AgentCodeUpload: React.FC<AgentCodeUploadProps> = ({
         >
           <input {...getInputProps()} />
 
-          {(isUploading || isValidating) ? (
+          {isUploading ? (
             <div className="py-8">
               <Spin size="large" />
               <div className="mt-4">
                 <Text>
-                  {isUploading ? '正在上传...' : '正在验证代码包...'}
+                  正在上传...
                 </Text>
                 <Progress
                   percent={files[0]?.progress || 0}
@@ -542,7 +441,7 @@ export const AgentCodeUpload: React.FC<AgentCodeUploadProps> = ({
               演示系统说明
             </Text>
             <Text type="secondary" className="text-sm">
-              此系统仅用于演示目的，上传的代码包仅用于结构分析和格式验证，
+              此系统仅用于演示目的，上传的代码包仅用于功能演示，
               不会进行真实的代码编译或部署。所有数据均为模拟数据。
             </Text>
           </div>
