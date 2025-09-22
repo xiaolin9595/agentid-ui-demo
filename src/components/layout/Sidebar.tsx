@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
   RobotOutlined,
+  SearchOutlined,
   UserOutlined,
   BlockOutlined,
   IdcardOutlined,
@@ -31,7 +32,12 @@ const Sidebar: React.FC = () => {
       icon: <RobotOutlined />,
       label: 'Agent管理',
     },
-      {
+    {
+      key: '/agent-discovery',
+      icon: <SearchOutlined />,
+      label: 'Agent发现',
+    },
+    {
       key: '/blockchain',
       icon: <BlockOutlined />,
       label: '区块链',

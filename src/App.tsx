@@ -6,6 +6,7 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import AgentsListPage from './pages/agents/AgentsListPage';
 import CreateAgentPage from './pages/agents/CreateAgentPage';
 import AgentDetailPage from './pages/agents/AgentDetailPage';
+import AgentDiscoveryPage from './pages/agent-discovery/AgentDiscoveryPage';
 import BlockchainPage from './pages/blockchain/BlockchainPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import TestPage from './pages/TestPage';
@@ -47,6 +48,7 @@ const App: React.FC = () => {
             <Route path="agents" element={<AgentsListPage />} />
             <Route path="agents/create" element={<CreateAgentPage />} />
             <Route path="agents/:id" element={<AgentDetailPage />} />
+            <Route path="agent-discovery" element={<AgentDiscoveryPage />} />
             <Route path="blockchain" element={<BlockchainPage />} />
             <Route path="test" element={<TestPage />} />
             <Route path="profile" element={<ProfilePage />} />

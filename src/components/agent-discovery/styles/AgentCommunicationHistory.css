@@ -1,0 +1,732 @@
+/* AgentCommunicationHistory Styles */
+.communication-history {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.communication-history .controls-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+}
+
+.communication-history .controls-card .ant-card-body {
+  padding: 16px;
+}
+
+.communication-history .statistics-row {
+  margin-bottom: 16px;
+}
+
+.communication-history .statistics-row .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.communication-history .statistics-row .ant-card-body {
+  padding: 16px;
+}
+
+.communication-history .history-list-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.communication-history .history-list-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.communication-history .history-list-card .ant-card-body {
+  padding: 0;
+}
+
+.communication-history .ant-list-item {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+  transition: all 0.3s ease;
+}
+
+.communication-history .ant-list-item:hover {
+  background-color: #f0f9ff;
+}
+
+.communication-history .ant-list-item:last-child {
+  border-bottom: none;
+}
+
+.communication-history .ant-list-item-meta {
+  align-items: flex-start;
+}
+
+.communication-history .ant-list-item-meta-title {
+  margin-bottom: 8px;
+}
+
+.communication-history .ant-list-item-meta-description {
+  color: #595959;
+}
+
+.communication-history .timestamp {
+  font-size: 12px;
+  color: #8c8c8c;
+  display: block;
+  margin-top: 4px;
+}
+
+.communication-history .ant-tag {
+  margin-right: 4px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 2px 8px;
+}
+
+.communication-history .ant-list-item-action {
+  margin-left: 16px;
+}
+
+.communication-history .ant-list-item-action > li {
+  padding: 0 4px;
+}
+
+.communication-history .ant-list-item-action button {
+  border: none;
+  background: transparent;
+  color: #1890ff;
+  border-radius: 4px;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+.communication-history .ant-list-item-action button:hover {
+  background-color: #e6f7ff;
+  color: #40a9ff;
+}
+
+.communication-history .ant-alert {
+  margin-top: 8px;
+  border-radius: 6px;
+}
+
+.communication-history .ant-alert-info {
+  background-color: #e6f7ff;
+  border-color: #91d5ff;
+}
+
+.communication-history .ant-alert-error {
+  background-color: #fff2f0;
+  border-color: #ffccc7;
+}
+
+/* 模态框样式 */
+.communication-history .ant-modal-content {
+  border-radius: 12px;
+}
+
+.communication-history .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 20px 24px;
+}
+
+.communication-history .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.communication-history .ant-modal-body {
+  padding: 24px;
+}
+
+.communication-history .ant-descriptions-bordered .ant-descriptions-view {
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+}
+
+.communication-history .ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #fafafa;
+  border-right: 1px solid #f0f0f0;
+}
+
+.communication-history .ant-descriptions-bordered .ant-descriptions-item {
+  border-right: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 搜索和过滤控件 */
+.communication-history .ant-input-search {
+  border-radius: 6px;
+}
+
+.communication-history .ant-select {
+  border-radius: 6px;
+}
+
+.communication-history .ant-select-selector {
+  border-radius: 6px;
+}
+
+.communication-history .ant-picker {
+  border-radius: 6px;
+}
+
+.communication-history .ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.communication-history .ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.communication-history .ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* 空状态样式 */
+.communication-history .ant-empty {
+  padding: 48px 0;
+}
+
+.communication-history .ant-empty-image {
+  height: 100px;
+}
+
+/* 进度条样式 */
+.communication-history .ant-progress-line {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.communication-history .ant-progress-bg {
+  border-radius: 3px;
+}
+
+.communication-history .ant-progress-inner {
+  border-radius: 3px;
+}
+
+/* 统计卡片样式 */
+.communication-history .ant-statistic {
+  margin-bottom: 0;
+}
+
+.communication-history .ant-statistic-content {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.communication-history .ant-statistic-title {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+/* 自定义滚动条 */
+.communication-history .ant-list {
+  max-height: inherit;
+}
+
+.communication-history .ant-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.communication-history .ant-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.communication-history .ant-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.communication-history .ant-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .communication-history .controls-card .ant-card-body {
+    padding: 12px;
+  }
+
+  .communication-history .controls-card .ant-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .communication-history .controls-card .ant-col {
+    width: 100%;
+    padding: 0;
+  }
+
+  .communication-history .statistics-row .ant-card {
+    margin-bottom: 12px;
+  }
+
+  .communication-history .history-list-card .ant-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .communication-history .history-list-card .ant-list-item-meta {
+    width: 100%;
+  }
+
+  .communication-history .history-list-card .ant-list-item-action {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .communication-history .ant-modal {
+    margin: 16px;
+    width: calc(100% - 32px) !important;
+    max-width: none;
+  }
+
+  .communication-history .ant-modal-body {
+    padding: 16px;
+  }
+
+  .communication-history .ant-modal-header {
+    padding: 16px;
+  }
+
+  .communication-history .ant-descriptions-item-label {
+    width: 100px;
+  }
+}
+
+@media (max-width: 576px) {
+  .communication-history .controls-card .ant-space {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .communication-history .controls-card .ant-space .ant-btn {
+    width: 100%;
+  }
+
+  .communication-history .statistics-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .communication-history .history-list-card .ant-card-head {
+    padding: 12px 16px;
+  }
+
+  .communication-history .history-list-card .ant-card-head-title {
+    font-size: 16px;
+  }
+
+  .communication-history .ant-list-item-meta-title {
+    font-size: 14px;
+  }
+
+  .communication-history .ant-list-item-meta-description {
+    font-size: 12px;
+  }
+
+  .communication-history .timestamp {
+    font-size: 11px;
+  }
+
+  .communication-history .ant-tag {
+    font-size: 11px;
+    padding: 1px 6px;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .communication-history .controls-card,
+  .communication-history .history-list-card,
+  .communication-history .statistics-row .ant-card {
+    background-color: #1f1f1f;
+    border-color: #303030;
+  }
+
+  .communication-history .history-list-card .ant-card-head {
+    background-color: #1f1f1f;
+    border-color: #303030;
+  }
+
+  .communication-history .history-list-card .ant-list-item {
+    border-color: #303030;
+  }
+
+  .communication-history .history-list-card .ant-list-item:hover {
+    background-color: #092b45;
+  }
+
+  .communication-history .ant-list-item-meta-description {
+    color: #bfbfbf;
+  }
+
+  .communication-history .timestamp {
+    color: #bfbfbf;
+  }
+
+  .communication-history .ant-input,
+  .communication-history .ant-select-selector,
+  .communication-history .ant-picker {
+    background-color: #262626;
+    border-color: #303030;
+    color: #ffffff;
+  }
+
+  .communication-history .ant-input::placeholder {
+    color: #8c8c8c;
+  }
+
+  .communication-history .ant-statistic-title {
+    color: #bfbfbf;
+  }
+
+  .communication-history .ant-statistic-content {
+    color: #ffffff;
+  }
+
+  .communication-history .ant-card-body {
+    background-color: transparent;
+    color: #ffffff;
+  }
+
+  .communication-history .ant-typography {
+    color: #ffffff;
+  }
+
+  .communication-history .ant-typography-secondary {
+    color: #bfbfbf !important;
+  }
+
+  .communication-history .ant-modal-content {
+    background-color: #1f1f1f;
+    color: #ffffff;
+  }
+
+  .communication-history .ant-modal-header {
+    background-color: #1f1f1f;
+    border-color: #303030;
+  }
+
+  .communication-history .ant-modal-title {
+    color: #ffffff;
+  }
+
+  .communication-history .ant-modal-body {
+    background-color: #1f1f1f;
+    color: #ffffff;
+  }
+
+  .communication-history .ant-descriptions-bordered .ant-descriptions-view {
+    border-color: #303030;
+  }
+
+  .communication-history .ant-descriptions-bordered .ant-descriptions-item-label {
+    background-color: #262626;
+    border-color: #303030;
+    color: #ffffff;
+  }
+
+  .communication-history .ant-descriptions-bordered .ant-descriptions-item {
+    border-color: #303030;
+    color: #ffffff;
+  }
+
+  .communication-history .ant-alert-info {
+    background-color: #0a2e4a;
+    border-color: #092b45;
+  }
+
+  .communication-history .ant-alert-error {
+    background-color: #2e0a0a;
+    border-color: #2b0909;
+  }
+
+  .communication-history .ant-empty-description {
+    color: #bfbfbf;
+  }
+
+  .communication-history .ant-list-item-action button {
+    color: #1890ff;
+  }
+
+  .communication-history .ant-list-item-action button:hover {
+    background-color: #092b45;
+    color: #40a9ff;
+  }
+
+  /* 深色模式滚动条 */
+  .communication-history .ant-list::-webkit-scrollbar-track {
+    background: #303030;
+  }
+
+  .communication-history .ant-list::-webkit-scrollbar-thumb {
+    background: #666;
+  }
+
+  .communication-history .ant-list::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
+}
+
+/* 动画效果 */
+.communication-history .ant-list-item {
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.communication-history .ant-list-item:hover {
+  transform: translateX(4px);
+}
+
+.communication-history .ant-list-item-action button {
+  transition: all 0.2s ease;
+}
+
+.communication-history .ant-list-item-action button:hover {
+  transform: scale(1.05);
+}
+
+/* 标签动画 */
+.communication-history .ant-tag {
+  transition: all 0.2s ease;
+}
+
+.communication-history .ant-tag:hover {
+  transform: scale(1.05);
+}
+
+/* 加载状态 */
+.communication-history .ant-spin-nested-loading {
+  min-height: 200px;
+}
+
+/* 过滤器状态 */
+.communication-history .filter-active {
+  border-color: #1890ff;
+  background-color: #e6f7ff;
+}
+
+/* 搜索结果高亮 */
+.communication-history .search-highlight {
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+/* 时间戳格式 */
+.communication-history .time-relative {
+  color: #8c8c8c;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+/* 响应式标签布局 */
+.communication-history .tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+/* 卡片悬停效果 */
+.communication-history .statistics-row .ant-card {
+  transition: all 0.3s ease;
+}
+
+.communication-history .statistics-row .ant-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 操作按钮组 */
+.communication-history .action-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 批量操作样式 */
+.communication-history .batch-actions {
+  background-color: #f0f9ff;
+  border: 1px solid #d6e4ff;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.communication-history .batch-actions .ant-space {
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* 导出按钮样式 */
+.communication-history .export-button {
+  background-color: #52c41a;
+  border-color: #52c41a;
+}
+
+.communication-history .export-button:hover {
+  background-color: #73d13d;
+  border-color: #73d13d;
+}
+
+/* 清空过滤器按钮 */
+.communication-history .clear-filters-button {
+  border-color: #d9d9d9;
+  color: #595959;
+}
+
+.communication-history .clear-filters-button:hover {
+  border-color: #40a9ff;
+  color: #40a9ff;
+}
+
+/* 状态指示器 */
+.communication-history .status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.communication-history .status-indicator.sent {
+  background-color: #1890ff;
+}
+
+.communication-history .status-indicator.delivered {
+  background-color: #52c41a;
+}
+
+.communication-history .status-indicator.failed {
+  background-color: #ff4d4f;
+}
+
+.communication-history .status-indicator.pending {
+  background-color: #faad14;
+}
+
+/* 优先级标签 */
+.communication-history .priority-high {
+  background-color: #fff2f0;
+  border-color: #ffccc7;
+  color: #ff4d4f;
+}
+
+.communication-history .priority-medium {
+  background-color: #fff7e6;
+  border-color: #ffd591;
+  color: #fa8c16;
+}
+
+.communication-history .priority-low {
+  background-color: #f0f9ff;
+  border-color: #91d5ff;
+  color: #1890ff;
+}
+
+/* 内容截断 */
+.communication-history .content-truncate {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 展开按钮 */
+.communication-history .expand-button {
+  color: #1890ff;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.communication-history .expand-button:hover {
+  text-decoration: underline;
+}
+
+/* 模态框描述样式 */
+.communication-history .modal-description {
+  background-color: #fafafa;
+  border-radius: 6px;
+  padding: 12px;
+  margin: 8px 0;
+}
+
+/* 响应式网格布局 */
+@media (min-width: 577px) and (max-width: 768px) {
+  .communication-history .statistics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+  .communication-history .statistics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 993px) {
+  .communication-history .statistics-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 自定义动画 */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.communication-history .ant-list-item {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* 加载骨架屏 */
+.communication-history .skeleton-item {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.communication-history .skeleton-item:last-child {
+  border-bottom: none;
+}
+
+/* 打印样式 */
+@media print {
+  .communication-history .controls-card,
+  .communication-history .ant-list-item-action {
+    display: none;
+  }
+
+  .communication-history .history-list-card {
+    box-shadow: none;
+    border: 1px solid #d9d9d9;
+  }
+
+  .communication-history .ant-list-item {
+    break-inside: avoid;
+  }
+}

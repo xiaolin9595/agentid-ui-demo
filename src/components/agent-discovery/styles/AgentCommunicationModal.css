@@ -1,0 +1,488 @@
+/* AgentCommunicationModal Styles */
+.agent-communication-modal {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.agent-communication-modal .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.agent-communication-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 20px 24px;
+}
+
+.agent-communication-modal .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.agent-communication-modal .ant-modal-body {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.agent-communication-modal .ant-modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+/* 连接步骤样式 */
+.agent-communication-modal .connection-steps {
+  margin-bottom: 32px;
+}
+
+.agent-communication-modal .ant-steps-item-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.agent-communication-modal .ant-steps-item-description {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.agent-communication-modal .ant-steps-item-icon {
+  border-radius: 50%;
+  font-size: 16px;
+}
+
+/* 模态框内容样式 */
+.agent-communication-modal .modal-content {
+  min-height: 300px;
+}
+
+.agent-communication-modal .protocol-selection,
+.agent-communication-modal .security-config,
+.agent-communication-modal .auth-config,
+.agent-communication-modal .connection-process {
+  padding: 16px 0;
+}
+
+.agent-communication-modal .protocol-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.agent-communication-modal .protocol-card {
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.agent-communication-modal .protocol-card:hover {
+  border-color: #1890ff;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+}
+
+.agent-communication-modal .ant-radio-wrapper-checked .protocol-card {
+  border-color: #1890ff;
+  background-color: #e6f7ff;
+}
+
+.agent-communication-modal .protocol-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #1890ff;
+}
+
+.agent-communication-modal .protocol-performance {
+  margin-top: 8px;
+}
+
+.agent-communication-modal .protocol-performance .ant-tag {
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+/* 安全配置样式 */
+.agent-communication-modal .security-config .ant-alert {
+  margin-top: 16px;
+  border-radius: 6px;
+}
+
+.agent-communication-modal .security-config .ant-switch {
+  margin-right: 8px;
+}
+
+/* 认证配置样式 */
+.agent-communication-modal .auth-config .ant-alert {
+  margin-top: 16px;
+  border-radius: 6px;
+}
+
+.agent-communication-modal .auth-config .ant-form-item {
+  margin-bottom: 16px;
+}
+
+/* 连接过程样式 */
+.agent-communication-modal .connection-summary {
+  margin-bottom: 24px;
+}
+
+.agent-communication-modal .connection-progress {
+  margin: 24px 0;
+}
+
+.agent-communication-modal .connection-progress .ant-progress {
+  margin-bottom: 8px;
+}
+
+.agent-communication-modal .connection-progress .ant-progress-line {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.agent-communication-modal .connection-progress .ant-progress-bg {
+  border-radius: 4px;
+}
+
+.agent-communication-modal .connection-progress .ant-progress-inner {
+  border-radius: 4px;
+}
+
+/* 模态框底部样式 */
+.agent-communication-modal .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.agent-communication-modal .modal-footer .ant-space {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.agent-communication-modal .modal-footer .ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.agent-communication-modal .modal-footer .ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.agent-communication-modal .modal-footer .ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .agent-communication-modal .ant-modal {
+    margin: 16px;
+    width: calc(100% - 32px) !important;
+    max-width: none;
+  }
+
+  .agent-communication-modal .ant-modal-body {
+    padding: 16px;
+  }
+
+  .agent-communication-modal .ant-modal-header,
+  .agent-communication-modal .ant-modal-footer {
+    padding: 16px;
+  }
+
+  .agent-communication-modal .connection-steps {
+    margin-bottom: 24px;
+  }
+
+  .agent-communication-modal .protocol-card {
+    padding: 12px;
+  }
+
+  .agent-communication-modal .protocol-icon {
+    font-size: 20px;
+  }
+
+  .agent-communication-modal .protocol-performance .ant-tag {
+    font-size: 11px;
+    padding: 1px 6px;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .agent-communication-modal .ant-modal-content {
+    background-color: #1f1f1f;
+    color: #ffffff;
+  }
+
+  .agent-communication-modal .ant-modal-header {
+    border-bottom-color: #303030;
+    background-color: #1f1f1f;
+  }
+
+  .agent-communication-modal .ant-modal-title {
+    color: #ffffff;
+  }
+
+  .agent-communication-modal .ant-modal-body {
+    background-color: #1f1f1f;
+    color: #ffffff;
+  }
+
+  .agent-communication-modal .ant-modal-footer {
+    border-top-color: #303030;
+    background-color: #1f1f1f;
+  }
+
+  .agent-communication-modal .protocol-card {
+    border-color: #303030;
+    background-color: #262626;
+  }
+
+  .agent-communication-modal .protocol-card:hover {
+    border-color: #1890ff;
+    background-color: #092b45;
+  }
+
+  .agent-communication-modal .ant-radio-wrapper-checked .protocol-card {
+    border-color: #1890ff;
+    background-color: #0a2e4a;
+  }
+
+  .agent-communication-modal .ant-steps-item-title {
+    color: #ffffff;
+  }
+
+  .agent-communication-modal .ant-steps-item-description {
+    color: #bfbfbf;
+  }
+
+  .agent-communication-modal .ant-form-item-label > label {
+    color: #ffffff;
+  }
+
+  .agent-communication-modal .ant-input,
+  .agent-communication-modal .ant-select-selector {
+    background-color: #262626;
+    border-color: #303030;
+    color: #ffffff;
+  }
+
+  .agent-communication-modal .ant-card {
+    background-color: #262626;
+    border-color: #303030;
+  }
+
+  .agent-communication-modal .ant-card-body {
+    background-color: #262626;
+    color: #ffffff;
+  }
+
+  .agent-communication-modal .ant-typography {
+    color: #ffffff;
+  }
+
+  .agent-communication-modal .ant-typography-secondary {
+    color: #bfbfbf !important;
+  }
+}
+
+/* 动画效果 */
+.agent-communication-modal .protocol-card {
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.agent-communication-modal .protocol-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.agent-communication-modal .connection-progress .ant-progress-bg {
+  transition: all 0.3s ease;
+}
+
+/* 进度条动画 */
+.agent-communication-modal .ant-progress-line .ant-progress-bg {
+  animation: progressAnimation 0.3s ease-in-out;
+}
+
+@keyframes progressAnimation {
+  from {
+    width: 0 !important;
+  }
+  to {
+    width: var(--progress-width) !important;
+  }
+}
+
+/* 按钮动画 */
+.agent-communication-modal .ant-btn {
+  transition: all 0.3s ease;
+}
+
+.agent-communication-modal .ant-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.agent-communication-modal .ant-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 表单元素样式 */
+.agent-communication-modal .ant-form-item {
+  margin-bottom: 20px;
+}
+
+.agent-communication-modal .ant-form-item-label > label {
+  font-weight: 600;
+  color: #262626;
+}
+
+.agent-communication-modal .ant-input:focus,
+.agent-communication-modal .ant-select-focused .ant-select-selector {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.agent-communication-modal .ant-input-password {
+  border-radius: 6px;
+}
+
+.agent-communication-modal .ant-select {
+  width: 100%;
+}
+
+/* 开关样式 */
+.agent-communication-modal .ant-switch {
+  border-radius: 12px;
+}
+
+.agent-communication-modal .ant-switch-checked {
+  background-color: #1890ff;
+}
+
+/* 卡片样式 */
+.agent-communication-modal .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.agent-communication-modal .ant-card-small {
+    border-radius: 6px;
+}
+
+.agent-communication-modal .ant-card-small > .ant-card-body {
+    padding: 12px;
+}
+
+/* 标签样式 */
+.agent-communication-modal .ant-tag {
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 2px 8px;
+}
+
+/* 网格布局 */
+.agent-communication-modal .ant-row {
+  margin: 0 -8px;
+}
+
+.agent-communication-modal .ant-col {
+  padding: 0 8px;
+}
+
+/* 分割线样式 */
+.agent-communication-modal .ant-divider {
+  margin: 24px 0;
+  border-color: #f0f0f0;
+}
+
+/* 错误状态样式 */
+.agent-communication-modal .ant-alert-error {
+  border-radius: 6px;
+  background-color: #fff2f0;
+  border-color: #ffccc7;
+}
+
+.agent-communication-modal .ant-alert-error .ant-alert-icon {
+  color: #ff4d4f;
+}
+
+/* 成功状态样式 */
+.agent-communication-modal .ant-alert-success {
+  border-radius: 6px;
+  background-color: #f6ffed;
+  border-color: #b7eb8f;
+}
+
+.agent-communication-modal .ant-alert-success .ant-alert-icon {
+  color: #52c41a;
+}
+
+/* 信息状态样式 */
+.agent-communication-modal .ant-alert-info {
+  border-radius: 6px;
+  background-color: #e6f7ff;
+  border-color: #91d5ff;
+}
+
+.agent-communication-modal .ant-alert-info .ant-alert-icon {
+  color: #1890ff;
+}
+
+/* 加载状态样式 */
+.agent-communication-modal .ant-btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.agent-communication-modal .ant-btn-loading .anticon {
+  animation: loadingIcon 1s linear infinite;
+}
+
+@keyframes loadingIcon {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 自定义滚动条 */
+.agent-communication-modal .ant-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.agent-communication-modal .ant-modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.agent-communication-modal .ant-modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.agent-communication-modal .ant-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* 深色模式滚动条 */
+@media (prefers-color-scheme: dark) {
+  .agent-communication-modal .ant-modal-body::-webkit-scrollbar-track {
+    background: #303030;
+  }
+
+  .agent-communication-modal .ant-modal-body::-webkit-scrollbar-thumb {
+    background: #666;
+  }
+
+  .agent-communication-modal .ant-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
+}
