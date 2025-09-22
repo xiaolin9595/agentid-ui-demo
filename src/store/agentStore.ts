@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Agent, AgentMetrics, AgentPaginationParams, AgentFilterParams, AgentSortParams } from '../types/agent';
 import { AgentCreateInfo, AgentApiSpec, AgentCodePackage } from '../types/agent-upload';
+import { sharedAgentData } from '../mocks/sharedAgentData';
 
 interface AgentState {
   // Agent数据
@@ -136,15 +137,18 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         }) as any)
       };
 
-      // 添加到状态
+      // 添加到共享数据源
+      const addedAgent = sharedAgentData.addAgent(newAgent);
+
+      // 更新状态
       set((state) => ({
-        agents: [newAgent, ...state.agents],
-        selectedAgent: newAgent,
+        agents: [addedAgent, ...state.agents],
+        selectedAgent: addedAgent,
         isCreating: false,
         error: null
       }));
 
-      return newAgent;
+      return addedAgent;
     } catch (error) {
       set({
         isCreating: false,
@@ -161,107 +165,9 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       // 模拟获取延迟
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // 模拟数据
-      const mockAgents: Agent[] = [
-        {
-          id: 'agent_1',
-          agentId: 'agent_001',
-          name: '数据爬取Agent',
-          description: '用于爬取和处理网络数据的智能代理',
-          codeHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-          profileHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-          status: 'active',
-          boundUser: 'user_001',
-          boundAt: '2024-01-15T10:30:00Z',
-          createdAt: '2024-01-15T10:30:00Z',
-          updatedAt: '2024-01-20T15:45:00Z',
-          codeSize: 1024000,
-          language: 'python',
-          config: {
-            permissions: ['read', 'write'],
-            userBinding: {
-              boundUserId: 'user_001',
-              bindingType: 'faceBiometrics',
-              bindingStrength: 'basic',
-              verificationFrequency: 'once',
-              fallbackAllowed: true
-            }
-          },
-          permissions: ['read', 'write']
-        },
-        {
-          id: 'agent_2',
-          agentId: 'agent_002',
-          name: '图像处理Agent',
-          description: '用于图像识别和处理的智能代理',
-          codeHash: '0x2345678901abcdef2345678901abcdef2345678901abcdef2345678901abcdef',
-          profileHash: '0xbcdef12345678901bcdef12345678901bcdef12345678901bcdef12345678901',
-          status: 'inactive',
-          boundUser: 'user_001',
-          boundAt: '2024-01-16T14:20:00Z',
-          createdAt: '2024-01-16T14:20:00Z',
-          updatedAt: '2024-01-19T09:15:00Z',
-          codeSize: 2048000,
-          language: 'javascript',
-          config: {
-            permissions: ['read', 'execute'],
-            userBinding: {
-              boundUserId: 'user_002',
-              bindingType: 'faceBiometrics',
-              bindingStrength: 'enhanced',
-              verificationFrequency: 'daily',
-              fallbackAllowed: false,
-              userFaceFeatures: {
-                featureVector: Array.from({ length: 128 }, () => Math.random()),
-                templateId: 'face_template_002',
-                confidence: 0.97,
-                livenessCheck: true,
-                antiSpoofing: true,
-                enrollmentDate: new Date('2024-01-16T14:20:00Z'),
-                lastVerified: new Date('2024-01-19T09:15:00Z')
-              }
-            }
-          },
-          permissions: ['read', 'execute']
-        },
-        {
-          id: 'agent_3',
-          agentId: 'agent_003',
-          name: '自然语言处理Agent',
-          description: '用于文本分析和自然语言处理的智能代理',
-          codeHash: '0x3456789012abcdef3456789012abcdef3456789012abcdef3456789012abcdef',
-          profileHash: '0xcdef123456789012cdef123456789012cdef123456789012cdef123456789012',
-          status: 'stopped',
-          boundUser: 'user_001',
-          boundAt: '2024-01-17T16:45:00Z',
-          createdAt: '2024-01-17T16:45:00Z',
-          updatedAt: '2024-01-18T11:30:00Z',
-          codeSize: 3072000,
-          language: 'python',
-          config: {
-            permissions: ['read', 'write', 'execute'],
-            userBinding: {
-              boundUserId: 'user_003',
-              bindingType: 'multiFactor',
-              bindingStrength: 'strict',
-              verificationFrequency: 'perRequest',
-              fallbackAllowed: false,
-              userFaceFeatures: {
-                featureVector: Array.from({ length: 128 }, () => Math.random()),
-                templateId: 'face_template_003',
-                confidence: 0.99,
-                livenessCheck: true,
-                antiSpoofing: true,
-                enrollmentDate: new Date('2024-01-17T16:45:00Z'),
-                lastVerified: new Date('2024-01-18T11:30:00Z')
-              }
-            }
-          },
-          permissions: ['read', 'write', 'execute']
-        }
-      ];
-
-      set({ agents: mockAgents, loading: false, error: null });
+      // 使用共享数据源
+      const agents = sharedAgentData.getAgents();
+      set({ agents, loading: false, error: null });
     } catch (error) {
       set({
         loading: false,
@@ -276,6 +182,9 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     try {
       // 模拟删除延迟
       await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 从共享数据源删除
+      sharedAgentData.deleteAgent(id);
 
       set((state) => ({
         agents: state.agents.filter(agent => agent.id !== id),
@@ -298,6 +207,9 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     try {
       // 模拟更新延迟
       await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 更新共享数据源
+      sharedAgentData.updateAgent(id, { status, updatedAt: new Date().toISOString() });
 
       set((state) => ({
         agents: state.agents.map(agent =>

@@ -7,6 +7,7 @@ import {
   BlockchainAgent,
   MockAgent
 } from '../types/blockchain';
+import { sharedAgentData } from '../mocks/sharedAgentData';
 
 interface BlockchainState {
   // 状态
@@ -101,22 +102,22 @@ export const useBlockchainStore = create<BlockchainState>((set, get) => ({
       // 模拟API调用
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // 查找对应的Mock Agent
-      const mockAgent = MOCK_AGENTS.find(agent => agent.id === formData.agentId);
+      // 查找对应的共享数据源中的Agent
+      const sharedAgent = sharedAgentData.findAgent(formData.agentId);
 
       const agentInfo: BlockchainAgent = {
         id: formData.agentId,
-        name: mockAgent?.name || 'Unknown Agent',
-        type: formData.agentType,
-        capabilities: formData.capabilities,
+        name: sharedAgent?.name || 'Unknown Agent',
+        type: formData.agentType as 'AI Assistant' | 'Chatbot' | 'Automation' | 'Data Processing' | 'Content Generation' | 'Analysis' | 'Security',
+        capabilities: formData.capabilities as ('私人助理' | '购物助理' | '生活助理' | '健康助理' | '学习助理' | '工作助理' | '旅行助理' | '财务助理' | '娱乐助理' | '客服助理')[],
         description: formData.description,
         version: formData.version,
         model: formData.model,
         apiEndpoint: formData.apiEndpoint,
-        status: 'active',
+        status: (sharedAgent?.status || 'active') as 'active' | 'inactive' | 'development' | 'deprecated',
         createdAt: new Date(),
         updatedAt: new Date(),
-        owner: mockAgent?.owner || 'Unknown'
+        owner: sharedAgent?.boundUser || 'Unknown'
       };
 
       const newAgentContract: AgentIdentityContract = {
@@ -369,123 +370,50 @@ function generateMockContracts(): IdentityContract[] {
   }));
 }
 
-// Mock Agent数据
-const MOCK_AGENTS: MockAgent[] = [
-  {
-    id: 'agent_001',
-    name: 'Claude AI Assistant',
-    type: 'AI Assistant',
-    capabilities: ['私人助理', '工作助理', '学习助理'],
-    description: '基于大语言模型的AI助手，支持自然语言交互和代码生成',
-    version: '3.5',
-    model: 'Claude-3.5-Sonnet',
-    apiEndpoint: 'https://api.claude.ai/v1',
-    status: 'active',
-    owner: 'Anthropic'
-  },
-  {
-    id: 'agent_002',
-    name: 'Data Analyzer Pro',
-    type: 'Data Processing',
-    capabilities: ['财务助理', '健康助理', '生活助理'],
-    description: '专业数据分析工具，支持机器学习模型训练和预测',
-    version: '2.1',
-    model: 'XGBoost-2.1',
-    apiEndpoint: 'https://api.analyzer.pro/v2',
-    status: 'active',
-    owner: 'DataTech Corp'
-  },
-  {
-    id: 'agent_003',
-    name: 'Chatbot Service',
-    type: 'Chatbot',
-    capabilities: ['客服助理', '旅行助理', '娱乐助理'],
-    description: '多语言聊天机器人服务，支持语音识别和翻译',
-    version: '1.8',
-    model: 'GPT-4',
-    apiEndpoint: 'https://chatbot.service.ai/v1',
-    status: 'active',
-    owner: 'ChatBot Inc'
-  },
-  {
-    id: 'agent_004',
-    name: 'Security Monitor',
-    type: 'Security',
-    capabilities: ['健康助理', '生活助理', '客服助理'],
-    description: 'AI安全监控系统，支持异常检测和威胁识别',
-    version: '3.0',
-    model: 'SecurityNet-V3',
-    apiEndpoint: 'https://security.monitor.ai/v3',
-    status: 'development',
-    owner: 'SecureAI'
-  },
-  {
-    id: 'agent_005',
-    name: 'Content Generator',
-    type: 'Content Generation',
-    capabilities: ['私人助理', '工作助理', '学习助理'],
-    description: '智能内容生成工具，支持文本、代码和图像生成',
-    version: '2.5',
-    model: 'ContentGen-2.5',
-    apiEndpoint: 'https://content.gen.ai/v2',
-    status: 'active',
-    owner: 'CreativeAI'
-  }
-];
+// Mock Agent数据现在使用 sharedAgentData 替代
 
 function generateMockAgentContracts(): AgentIdentityContract[] {
-  const statuses: Array<'active' | 'pending' | 'suspended' | 'terminated'> = ['active', 'pending', 'suspended', 'terminated'];
-  const permissions: Array<'read-only' | 'read-write' | 'admin'> = ['read-only', 'read-write', 'admin'];
-  const securityLevels: Array<'low' | 'medium' | 'high'> = ['low', 'medium', 'high'];
+  // 使用共享数据源
+  const sharedAgents = sharedAgentData.getAgents();
 
-  return Array.from({ length: 6 }, (_, index) => {
-    const mockAgent = MOCK_AGENTS[index % MOCK_AGENTS.length];
+  return sharedAgents.map((agent, index) => {
     const agentInfo: BlockchainAgent = {
-      id: mockAgent.id,
-      name: mockAgent.name,
-      type: mockAgent.type,
-      capabilities: mockAgent.capabilities,
-      description: mockAgent.description,
-      version: mockAgent.version,
-      model: mockAgent.model,
-      apiEndpoint: mockAgent.apiEndpoint,
-      status: mockAgent.status,
-      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
-      owner: mockAgent.owner
+      id: agent.id,
+      name: agent.name,
+      type: 'AI Assistant',
+      capabilities: ['私人助理', '工作助理', '学习助理'],
+      description: agent.description,
+      version: '1.0.0',
+      model: 'GPT-4',
+      apiEndpoint: 'https://api.example.com/v1',
+      status: (agent.status === 'active' ? 'active' : agent.status === 'inactive' ? 'inactive' : 'development') as 'active' | 'inactive' | 'development' | 'deprecated',
+      createdAt: new Date(agent.createdAt),
+      updatedAt: new Date(agent.updatedAt),
+      owner: agent.boundUser || 'Unknown'
     };
 
     return {
-      id: `agent_contract_${Date.now()}_${index}`,
-      contractAddress: generateContractAddress(),
-      contractName: `${mockAgent.name}合约`,
-      ownerAddress: generateWalletAddress(),
-      agentId: mockAgent.id,
+      id: `agent_contract_${agent.id}`,
+      contractAddress: `0x${Math.random().toString(16).substr(2, 40)}`,
+      contractName: `${agent.name} Identity Contract`,
+      ownerAddress: `0x${Math.random().toString(16).substr(2, 40)}`,
+      agentId: agent.id,
       agentInfo,
-      permissions: permissions[Math.floor(Math.random() * permissions.length)],
-      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
-      status: statuses[Math.floor(Math.random() * statuses.length)],
+      permissions: 'read-write',
+      createdAt: new Date(agent.createdAt),
+      updatedAt: new Date(agent.updatedAt),
+      status: 'active',
       metadata: {
-        tags: [
-          'AI服务',
-          '机器学习',
-          '自然语言处理',
-          '数据分析',
-          '自动化',
-          '安全认证',
-          '企业级',
-          '高可用'
-        ].sort(() => Math.random() - 0.5).slice(0, Math.floor(Math.random() * 4) + 1),
-        description: `这是${mockAgent.name}的区块链身份合约，用于验证和管理Agent的身份信息。`,
-        securityLevel: securityLevels[Math.floor(Math.random() * securityLevels.length)],
-        compliance: ['GDPR', 'SOC2', 'ISO27001']
+        tags: ['AI', 'Agent', 'Identity'],
+        description: `Identity contract for ${agent.name}`,
+        securityLevel: 'medium',
+        compliance: ['KYC', 'AML']
       },
       blockchain: {
-        network: 'Ethereum Testnet',
-        blockNumber: Math.floor(Math.random() * 1000000),
-        transactionHash: generateTransactionHash(),
-        gasUsed: Math.floor(Math.random() * 100000) + 50000
+        network: 'Ethereum',
+        blockNumber: 12345678 + index,
+        transactionHash: `0x${Math.random().toString(16).substr(2, 64)}`,
+        gasUsed: 100000 + index * 50000
       }
     };
   });
