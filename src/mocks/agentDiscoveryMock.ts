@@ -7,6 +7,7 @@ import {
   AgentDiscoveryStats,
   AgentCommunicationStatus
 } from '../types';
+import type { AgentRole } from '../types/agent-discovery';
 
 /**
  * Agent发现功能的模拟数据
@@ -504,9 +505,18 @@ export const mockSearchHistory = [
 export function generateRandomAgentDiscoveryItem(baseAgent: Agent, blockchainAgent?: BlockchainAgent): AgentDiscoveryItem {
   const isBlockchain = !!blockchainAgent;
 
+  // 角色选项数组
+  const agentRoles: AgentRole[] = [
+    'shopping_assistant', 'sales_assistant', 'life_assistant', 'health_doctor',
+    'data_analyst', 'customer_service', 'content_creator', 'research_assistant',
+    'financial_advisor', 'education_tutor', 'technical_support', 'business_consultant',
+    'personal_assistant', 'legal_advisor', 'marketing_specialist'
+  ];
+
   return {
     ...baseAgent,
     description: baseAgent.description,
+    role: agentRoles[Math.floor(Math.random() * agentRoles.length)],
     blockchainInfo: isBlockchain ? {
       contractAddress: `0x${Math.random().toString(16).substr(2, 40)}`,
       network: ['Ethereum', 'Polygon', 'BSC', 'Arbitrum'][Math.floor(Math.random() * 4)],

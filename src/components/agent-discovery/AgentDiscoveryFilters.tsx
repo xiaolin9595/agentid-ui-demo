@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Card, Checkbox, Select, Slider, Space, Button, Divider, Tag, Collapse } from 'antd';
+import { Card, Checkbox, Select, Slider, Space, Button, Divider, Tag, Collapse, Avatar } from 'antd';
 import { FilterOutlined, ClearOutlined, CheckOutlined } from '@ant-design/icons';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 import { useAgentDiscoveryStore } from '@/store/agentDiscoveryStore';
+import { AGENT_ROLE_INFO, type AgentRole } from '@/types/agent-discovery';
 
 const { Panel } = Collapse;
 
@@ -24,7 +25,7 @@ export const AgentDiscoveryFilters: React.FC<AgentDiscoveryFiltersProps> = ({
     applyFilters,
   } = useAgentDiscoveryStore();
 
-  const [expandedPanels, setExpandedPanels] = useState<string[]>(['status', 'type', 'rating']);
+  const [expandedPanels, setExpandedPanels] = useState<string[]>(['status', 'type', 'rating', 'roles']);
   const [hasChanged, setHasChanged] = useState(false);
 
   // 状态选项
@@ -63,6 +64,20 @@ export const AgentDiscoveryFilters: React.FC<AgentDiscoveryFiltersProps> = ({
     { label: 'Arbitrum', value: 'Arbitrum' },
     { label: 'Optimism', value: 'Optimism' },
   ];
+
+  // 角色选项
+  const roleOptions = Object.entries(AGENT_ROLE_INFO).map(([role, info]) => ({
+    label: (
+      <div className="flex items-center">
+        <Avatar size={20} className="mr-2">
+          {info.icon}
+        </Avatar>
+        <span>{info.label}</span>
+      </div>
+    ),
+    value: role as AgentRole,
+    color: info.color
+  }));
 
   // 处理过滤器变化
   const handleFilterChange = (key: keyof typeof activeFilters, value: any) => {
@@ -212,6 +227,26 @@ export const AgentDiscoveryFilters: React.FC<AgentDiscoveryFiltersProps> = ({
           </Space>
         </Panel>
 
+        {/* 角色过滤器 */}
+        <Panel header="角色" key="roles">
+          <Select
+            mode="multiple"
+            placeholder="选择Agent角色"
+            value={activeFilters.roles || []}
+            onChange={(value) => handleFilterChange('roles', value)}
+            className="w-full"
+            optionLabelProp="children"
+            options={roleOptions.map(option => ({
+              label: option.label,
+              value: option.value,
+              // 传递样式信息到选项中
+              style: {
+                '--option-color': option.color
+              } as React.CSSProperties
+            }))}
+          />
+        </Panel>
+
         {/* 评分过滤器 */}
         <Panel header="评分范围" key="rating">
           <div className="p-4">
@@ -352,6 +387,7 @@ export const AgentDiscoveryFilters: React.FC<AgentDiscoveryFiltersProps> = ({
         activeFilters.types?.length ||
         activeFilters.languages?.length ||
         activeFilters.capabilities?.length ||
+        activeFilters.roles?.length ||
         activeFilters.networks?.length ||
         activeFilters.tags?.length ||
         activeFilters.owners?.length ||
@@ -383,6 +419,14 @@ export const AgentDiscoveryFilters: React.FC<AgentDiscoveryFiltersProps> = ({
                   能力: {cap}
                 </Tag>
               ))}
+              {activeFilters.roles?.map((role) => {
+                const roleInfo = AGENT_ROLE_INFO[role as AgentRole];
+                return (
+                  <Tag key={role} color={roleInfo.color}>
+                    {roleInfo.icon} {roleInfo.label}
+                  </Tag>
+                );
+              })}
               {activeFilters.networks?.map((net) => (
                 <Tag key={net} color="cyan">
                   网络: {net}

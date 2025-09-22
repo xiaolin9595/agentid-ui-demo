@@ -1,12 +1,129 @@
 import { Agent, AgentPermission, AgentPaginationParams } from './agent';
 import { BlockchainAgent, AgentCapability, AgentContractPermission } from './blockchain';
 
+// Agent角色类型
+export type AgentRole =
+  | 'shopping_assistant'    // 购物员
+  | 'sales_assistant'       // 销售员
+  | 'life_assistant'        // 生活助理
+  | 'health_doctor'         // 健康医生
+  | 'data_analyst'          // 数据分析师
+  | 'customer_service'      // 客服专员
+  | 'content_creator'       // 内容创作者
+  | 'research_assistant'    // 研究助理
+  | 'financial_advisor'      // 财务顾问
+  | 'education_tutor'       // 教育导师
+  | 'technical_support'     // 技术支持
+  | 'business_consultant'    // 商业顾问
+  | 'personal_assistant'    // 个人助理
+  | 'legal_advisor'         // 法律顾问
+  | 'marketing_specialist';  // 营销专员
+
+// 角色显示信息
+export const AGENT_ROLE_INFO: Record<AgentRole, {
+  label: string;
+  description: string;
+  icon: string;
+  color: string;
+}> = {
+  shopping_assistant: {
+    label: '购物员',
+    description: '帮助用户进行商品选择、比价和购买决策',
+    icon: '🛒',
+    color: '#52c41a'
+  },
+  sales_assistant: {
+    label: '销售员',
+    description: '协助销售流程，提供产品推荐和客户服务',
+    icon: '💼',
+    color: '#1890ff'
+  },
+  life_assistant: {
+    label: '生活助理',
+    description: '管理日程安排，提供生活建议和服务',
+    icon: '🏠',
+    color: '#722ed1'
+  },
+  health_doctor: {
+    label: '健康医生',
+    description: '提供健康咨询、医疗建议和健康监测',
+    icon: '🏥',
+    color: '#f5222d'
+  },
+  data_analyst: {
+    label: '数据分析师',
+    description: '分析数据，提供洞察和商业智能',
+    icon: '📊',
+    color: '#fa8c16'
+  },
+  customer_service: {
+    label: '客服专员',
+    description: '提供客户支持和问题解决方案',
+    icon: '🎧',
+    color: '#13c2c2'
+  },
+  content_creator: {
+    label: '内容创作者',
+    description: '生成创意内容，文案和多媒体素材',
+    icon: '✍️',
+    color: '#eb2f96'
+  },
+  research_assistant: {
+    label: '研究助理',
+    description: '协助学术研究，文献分析和知识整理',
+    icon: '🔬',
+    color: '#52c41a'
+  },
+  financial_advisor: {
+    label: '财务顾问',
+    description: '提供投资建议和财务规划服务',
+    icon: '💰',
+    color: '#faad14'
+  },
+  education_tutor: {
+    label: '教育导师',
+    description: '提供个性化教学和学习辅导',
+    icon: '📚',
+    color: '#1890ff'
+  },
+  technical_support: {
+    label: '技术支持',
+    description: '解决技术问题，提供IT支持服务',
+    icon: '🔧',
+    color: '#722ed1'
+  },
+  business_consultant: {
+    label: '商业顾问',
+    description: '提供商业策略和管理咨询服务',
+    icon: '📈',
+    color: '#f5222d'
+  },
+  personal_assistant: {
+    label: '个人助理',
+    description: '提供个人事务管理和日常协助',
+    icon: '🤖',
+    color: '#13c2c2'
+  },
+  legal_advisor: {
+    label: '法律顾问',
+    description: '提供法律咨询和合规建议',
+    icon: '⚖️',
+    color: '#fa8c16'
+  },
+  marketing_specialist: {
+    label: '营销专员',
+    description: '制定营销策略，推广品牌和产品',
+    icon: '📢',
+    color: '#eb2f96'
+  }
+};
+
 // 搜索参数类型
 export interface AgentDiscoverySearchParams extends AgentPaginationParams {
   search?: string;
   capabilities?: AgentCapability[];
   userId?: string;
-  role?: string;
+  role?: AgentRole | AgentRole[];
   status?: Agent['status'] | BlockchainAgent['status'];
   blockchainStatus?: string;
   type?: BlockchainAgent['type'];
@@ -35,6 +152,7 @@ export interface AgentDiscoveryFilterParams {
   types?: BlockchainAgent['type'][];
   languages?: string[];
   capabilities?: AgentCapability[];
+  roles?: AgentRole[];
   ratingRange?: {
     min: number;
     max: number;
@@ -64,6 +182,7 @@ export interface AgentDiscoveryItem extends Omit<Agent, 'description'> {
   rating?: number;
   reviewCount?: number;
   tags?: string[];
+  role?: AgentRole;
   isVerified?: boolean;
   isFeatured?: boolean;
   popularity?: number;

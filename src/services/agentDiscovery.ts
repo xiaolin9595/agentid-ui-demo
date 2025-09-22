@@ -496,6 +496,12 @@ export class AgentDiscoveryService {
       );
     }
 
+    if (filters.roles && filters.roles.length > 0) {
+      filtered = filtered.filter(agent =>
+        filters.roles!.includes(agent.role as any)
+      );
+    }
+
     if (filters.ratingRange) {
       filtered = filtered.filter(agent =>
         agent.rating! >= filters.ratingRange!.min &&
