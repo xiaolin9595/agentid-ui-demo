@@ -1,15 +1,482 @@
-import React from 'react';
-import { Card, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import {
+  Card,
+  Row,
+  Col,
+  Button,
+  Space,
+  Spin,
+  Alert,
+  Result,
+  Typography,
+  Tabs,
+  Breadcrumb,
+  Table,
+  Tag,
+  Avatar,
+  Tooltip,
+  Badge
+} from 'antd';
+import { useNavigate } from 'react-router-dom';
+import {
+  SearchOutlined,
+  FilterOutlined,
+  PlusOutlined,
+  RobotOutlined,
+  HomeOutlined,
+  ReloadOutlined,
+  EyeOutlined,
+  StarOutlined
+} from '@ant-design/icons';
+import { sharedAgentData } from '../../mocks/sharedAgentData';
+import { useAgentStore } from '../../store/agentStore';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
+const { TabPane } = Tabs;
+
+interface AgentDisplay {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  language: string;
+  createdAt: string;
+  boundUser: string;
+  codeSize: number;
+  capabilities: string[];
+  rating?: number;
+  connections?: number;
+}
 
 const AgentDiscoveryPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { setSelectedAgent } = useAgentStore();
+
+  const [agents, setAgents] = useState<AgentDisplay[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+
+  // 页面加载时获取数据
+  useEffect(() => {
+    loadAgents();
+  }, []);
+
+  const loadAgents = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 模拟加载延迟
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 从共享数据源获取 Agent
+      const sharedAgents = sharedAgentData.getAgents();
+
+      // 转换为显示格式
+      const displayAgents: AgentDisplay[] = sharedAgents.map(agent => ({
+        id: agent.id,
+        name: agent.name,
+        description: agent.description,
+        status: agent.status,
+        language: agent.language,
+        createdAt: agent.createdAt,
+        boundUser: agent.boundUser,
+        codeSize: agent.codeSize,
+        capabilities: agent.permissions || [],
+        rating: Math.random() * 2 + 3, // 3-5分随机评分
+        connections: Math.floor(Math.random() * 100) + 10 // 10-110随机连接数
+      }));
+
+      setAgents(displayAgents);
+    } catch (err) {
+      setError('加载 Agent 数据失败');
+      console.error('Error loading agents:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewAgent = (agent: AgentDisplay) => {
+    // 找到完整的 Agent 数据
+    const fullAgent = sharedAgentData.getAgents().find(a => a.id === agent.id);
+    if (fullAgent) {
+      setSelectedAgent(fullAgent);
+      navigate(`/agents/${agent.id}`);
+    }
+  };
+
+  const handleCreateAgent = () => {
+    navigate('/agents/create');
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'green';
+      case 'inactive': return 'red';
+      case 'stopped': return 'orange';
+      case 'error': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'active': return '运行中';
+      case 'inactive': return '未激活';
+      case 'stopped': return '已停止';
+      case 'error': return '错误';
+      default: return '未知';
+    }
+  };
+
+  const getLanguageColor = (language: string) => {
+    const colors: Record<string, string> = {
+      'javascript': 'yellow',
+      'typescript': 'blue',
+      'python': 'green',
+      'java': 'red',
+      'go': 'cyan',
+      'rust': 'purple'
+    };
+    return colors[language.toLowerCase()] || 'default';
+  };
+
+  // 表格列定义
+  const columns = [
+    {
+      title: 'Agent',
+      key: 'agent',
+      width: 300,
+      render: (record: AgentDisplay) => (
+        <Space>
+          <Avatar
+            size="large"
+            icon={<RobotOutlined />}
+            style={{ backgroundColor: '#1890ff' }}
+          />
+          <div>
+            <div style={{ fontWeight: 'bold', marginBottom: 4 }}>
+              {record.name}
+            </div>
+            <div style={{ color: '#666', fontSize: '12px' }}>
+              {record.description}
+            </div>
+            <Space size={4} style={{ marginTop: 4 }}>
+              <Tag color={getLanguageColor(record.language)}>
+                {record.language}
+              </Tag>
+              {record.rating && (
+                <Tag color="orange">
+                  <StarOutlined /> {record.rating.toFixed(1)}
+                </Tag>
+              )}
+            </Space>
+          </div>
+        </Space>
+      ),
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: 100,
+      render: (status: string) => (
+        <Badge
+          status={getStatusColor(status) as any}
+          text={getStatusText(status)}
+        />
+      ),
+    },
+    {
+      title: '创建者',
+      dataIndex: 'boundUser',
+      key: 'boundUser',
+      width: 120,
+    },
+    {
+      title: '连接数',
+      dataIndex: 'connections',
+      key: 'connections',
+      width: 80,
+      render: (connections: number) => connections || 0,
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 120,
+      render: (date: string) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      width: 100,
+      render: (record: AgentDisplay) => (
+        <Space size="small">
+          <Tooltip title="查看详情">
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => handleViewAgent(record)}
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
+
+  const activeAgents = agents.filter(agent => agent.status === 'active').length;
+  const totalConnections = agents.reduce((sum, agent) => sum + (agent.connections || 0), 0);
+  const averageRating = agents.length > 0
+    ? agents.reduce((sum, agent) => sum + (agent.rating || 0), 0) / agents.length
+    : 0;
+
   return (
-    <div style={{ padding: '24px' }}>
-      <Card>
-        <Title level={2}>Agent 发现</Title>
-        <p>此页面正在维护中，即将推出...</p>
-      </Card>
+    <div className="min-h-screen bg-gray-50">
+      {/* 页面标题和面包屑 */}
+      <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <Breadcrumb
+              items={[
+                { href: '/dashboard', title: <HomeOutlined /> },
+                { href: '/agents', title: <RobotOutlined /> },
+                { title: 'Agent发现' }
+              ]}
+            />
+            <Title level={2} className="mt-2 mb-0">
+              Agent发现
+            </Title>
+            <Text type="secondary">
+              发现、连接和协作与智能Agent
+            </Text>
+          </div>
+
+          <Space>
+            <Button
+              icon={<PlusOutlined />}
+              type="primary"
+              onClick={handleCreateAgent}
+            >
+              创建Agent
+            </Button>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={loadAgents}
+              loading={loading}
+            >
+              刷新
+            </Button>
+          </Space>
+        </div>
+
+        {/* 快速统计 */}
+        <Row gutter={16} className="mt-4">
+          <Col span={6}>
+            <Card size="small">
+              <Text type="secondary">总Agent数</Text>
+              <div className="text-2xl font-bold text-blue-600">
+                {agents.length}
+              </div>
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small">
+              <Text type="secondary">活跃Agent</Text>
+              <div className="text-2xl font-bold text-green-600">
+                {activeAgents}
+              </div>
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small">
+              <Text type="secondary">平均评分</Text>
+              <div className="text-2xl font-bold text-yellow-600">
+                {averageRating.toFixed(1)}
+              </div>
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small">
+              <Text type="secondary">总连接数</Text>
+              <div className="text-2xl font-bold text-purple-600">
+                {totalConnections}
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+
+      {/* 主内容区域 */}
+      <div className="p-6">
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <Space>
+              <Text strong>
+                {agents.length > 0
+                  ? `找到 ${agents.length} 个Agent`
+                  : '暂无搜索结果'
+                }
+              </Text>
+            </Space>
+
+            <Space>
+              <Button.Group>
+                <Button
+                  icon={<RobotOutlined />}
+                  type={viewMode === 'grid' ? 'primary' : 'default'}
+                  size="small"
+                  onClick={() => setViewMode('grid')}
+                >
+                  网格
+                </Button>
+                <Button
+                  icon={<RobotOutlined />}
+                  type={viewMode === 'table' ? 'primary' : 'default'}
+                  size="small"
+                  onClick={() => setViewMode('table')}
+                >
+                  表格
+                </Button>
+              </Button.Group>
+            </Space>
+          </div>
+
+          {/* 加载状态 */}
+          {loading && (
+            <div className="text-center py-8">
+              <Spin size="large" tip="正在加载Agent..." />
+            </div>
+          )}
+
+          {/* 错误提示 */}
+          {error && (
+            <Alert
+              message="加载失败"
+              description={error}
+              type="error"
+              showIcon
+              action={
+                <Button size="small" onClick={loadAgents}>
+                  重试
+                </Button>
+              }
+              className="mb-4"
+            />
+          )}
+
+          {/* 搜索结果 */}
+          {!loading && !error && (
+            <>
+              {agents.length === 0 ? (
+                <Result
+                  status="info"
+                  title="未找到匹配的Agent"
+                  subTitle="请尝试刷新页面或创建新的Agent"
+                  extra={[
+                    <Button
+                      key="refresh"
+                      onClick={loadAgents}
+                    >
+                      刷新
+                    </Button>,
+                    <Button
+                      key="create"
+                      type="primary"
+                      onClick={handleCreateAgent}
+                    >
+                      创建新Agent
+                    </Button>
+                  ]}
+                />
+              ) : (
+                <>
+                  {viewMode === 'table' ? (
+                    <Table
+                      dataSource={agents}
+                      columns={columns}
+                      rowKey="id"
+                      pagination={{
+                        total: agents.length,
+                        pageSize: 10,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        showTotal: (total, range) =>
+                          `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+                      }}
+                    />
+                  ) : (
+                    <Row gutter={[16, 16]}>
+                      {agents.map((agent) => (
+                        <Col xs={24} sm={12} lg={8} xl={6} key={agent.id}>
+                          <Card
+                            hoverable
+                            actions={[
+                              <Button
+                                type="link"
+                                icon={<EyeOutlined />}
+                                onClick={() => handleViewAgent(agent)}
+                              >
+                                查看详情
+                              </Button>
+                            ]}
+                          >
+                            <Card.Meta
+                              avatar={
+                                <Avatar
+                                  size="large"
+                                  icon={<RobotOutlined />}
+                                  style={{ backgroundColor: '#1890ff' }}
+                                />
+                              }
+                              title={
+                                <Space>
+                                  {agent.name}
+                                  <Badge
+                                    status={getStatusColor(agent.status) as any}
+                                    text={getStatusText(agent.status)}
+                                  />
+                                </Space>
+                              }
+                              description={
+                                <div>
+                                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                                    {agent.description}
+                                  </Text>
+                                  <div style={{ marginTop: 8 }}>
+                                    <Space wrap>
+                                      <Tag color={getLanguageColor(agent.language)}>
+                                        {agent.language}
+                                      </Tag>
+                                      {agent.rating && (
+                                        <Tag color="orange">
+                                          <StarOutlined /> {agent.rating.toFixed(1)}
+                                        </Tag>
+                                      )}
+                                      <Tag>
+                                        连接: {agent.connections || 0}
+                                      </Tag>
+                                    </Space>
+                                  </div>
+                                  <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
+                                    <div>创建者: {agent.boundUser}</div>
+                                    <div>创建时间: {new Date(agent.createdAt).toLocaleDateString()}</div>
+                                  </div>
+                                </div>
+                              }
+                            />
+                          </Card>
+                        </Col>
+                      ))}
+                    </Row>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </Card>
+      </div>
     </div>
   );
 };
