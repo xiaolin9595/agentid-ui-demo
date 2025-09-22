@@ -14,7 +14,7 @@ import {
   RobotOutlined,
   HomeOutlined
 } from '@ant-design/icons';
-import { useUnifiedAgentDiscoveryStore } from '../../store/unifiedAgentDiscoveryStore';
+import { useAgentDiscoveryStore } from '../../store/agentDiscoveryStore';
 import { AgentDiscoverySearch } from '../../components/agent-discovery/AgentDiscoverySearch';
 import { AgentDiscoveryFilters } from '../../components/agent-discovery/AgentDiscoveryFilters';
 import { AgentDiscoverySort } from '../../components/agent-discovery/AgentDiscoverySort';
