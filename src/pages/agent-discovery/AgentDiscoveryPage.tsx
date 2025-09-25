@@ -15,7 +15,11 @@ import {
   Tag,
   Avatar,
   Tooltip,
-  Badge
+  Badge,
+  Input,
+  Select,
+  Checkbox,
+  Divider
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -26,13 +30,18 @@ import {
   HomeOutlined,
   ReloadOutlined,
   EyeOutlined,
-  StarOutlined
+  StarOutlined,
+  UserOutlined,
+  TagsOutlined,
+  AimOutlined
 } from '@ant-design/icons';
 import { sharedAgentData } from '../../mocks/sharedAgentData';
 import { useAgentStore } from '../../store/agentStore';
 
 const { Title, Text } = Typography;
-const { TabPane } = Tabs;
+const { Search } = Input;
+const { Option } = Select;
+const { Group: CheckboxGroup } = Checkbox;
 
 interface AgentDisplay {
   id: string;
@@ -46,6 +55,10 @@ interface AgentDisplay {
   capabilities: string[];
   rating?: number;
   connections?: number;
+  role?: string;
+  taskRequirements?: string[];
+  specialties?: string[];
+  tags?: string[];
 }
 
 const AgentDiscoveryPage: React.FC = () => {
@@ -53,9 +66,17 @@ const AgentDiscoveryPage: React.FC = () => {
   const { setSelectedAgent } = useAgentStore();
 
   const [agents, setAgents] = useState<AgentDisplay[]>([]);
+  const [filteredAgents, setFilteredAgents] = useState<AgentDisplay[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+
+  // 筛选状态
+  const [searchText, setSearchText] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [selectedTaskRequirements, setSelectedTaskRequirements] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
 
   // 页面加载时获取数据
   useEffect(() => {
@@ -84,11 +105,16 @@ const AgentDiscoveryPage: React.FC = () => {
         boundUser: agent.boundUser,
         codeSize: agent.codeSize,
         capabilities: agent.permissions || [],
-        rating: Math.random() * 2 + 3, // 3-5分随机评分
-        connections: Math.floor(Math.random() * 100) + 10 // 10-110随机连接数
+        role: agent.role,
+        taskRequirements: agent.taskRequirements || [],
+        specialties: agent.specialties || [],
+        tags: agent.tags || [],
+        rating: agent.rating || Math.random() * 2 + 3, // 3-5分随机评分
+        connections: agent.connections || Math.floor(Math.random() * 100) + 10 // 10-110随机连接数
       }));
 
       setAgents(displayAgents);
+      setFilteredAgents(displayAgents);
     } catch (err) {
       setError('加载 Agent 数据失败');
       console.error('Error loading agents:', err);
@@ -105,6 +131,80 @@ const AgentDiscoveryPage: React.FC = () => {
       navigate(`/agents/${agent.id}`);
     }
   };
+
+  // 获取所有可用的用户ID
+  const getUserIds = () => {
+    const userIds = Array.from(new Set(agents.map(agent => agent.boundUser)));
+    return userIds.filter(id => id);
+  };
+
+  // 获取所有可用的角色
+  const getRoles = () => {
+    const roles = Array.from(new Set(agents.map(agent => agent.role).filter(Boolean)));
+    return roles as string[];
+  };
+
+  // 获取所有可用的任务需求
+  const getTaskRequirements = () => {
+    const requirements = new Set<string>();
+    agents.forEach(agent => {
+      if (agent.taskRequirements) {
+        agent.taskRequirements.forEach(req => requirements.add(req));
+      }
+    });
+    return Array.from(requirements);
+  };
+
+  // 应用筛选逻辑
+  const applyFilters = () => {
+    let filtered = [...agents];
+
+    // 文本搜索
+    if (searchText) {
+      const searchLower = searchText.toLowerCase();
+      filtered = filtered.filter(agent =>
+        agent.name.toLowerCase().includes(searchLower) ||
+        agent.description.toLowerCase().includes(searchLower) ||
+        agent.role?.toLowerCase().includes(searchLower) ||
+        agent.specialties?.some(spec => spec.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // 用户ID筛选
+    if (selectedUserId) {
+      filtered = filtered.filter(agent => agent.boundUser === selectedUserId);
+    }
+
+    // 角色筛选
+    if (selectedRoles.length > 0) {
+      filtered = filtered.filter(agent => agent.role && selectedRoles.includes(agent.role));
+    }
+
+    // 任务需求筛选
+    if (selectedTaskRequirements.length > 0) {
+      filtered = filtered.filter(agent =>
+        agent.taskRequirements && selectedTaskRequirements.some(req =>
+          agent.taskRequirements?.includes(req)
+        )
+      );
+    }
+
+    setFilteredAgents(filtered);
+  };
+
+  // 清除所有筛选
+  const clearFilters = () => {
+    setSearchText('');
+    setSelectedUserId('');
+    setSelectedRoles([]);
+    setSelectedTaskRequirements([]);
+    setFilteredAgents(agents);
+  };
+
+  // 当筛选条件变化时重新应用筛选
+  useEffect(() => {
+    applyFilters();
+  }, [searchText, selectedUserId, selectedRoles, selectedTaskRequirements, agents]);
 
   const handleCreateAgent = () => {
     navigate('/agents/create');
@@ -195,6 +295,13 @@ const AgentDiscoveryPage: React.FC = () => {
       width: 120,
     },
     {
+      title: '角色',
+      dataIndex: 'role',
+      key: 'role',
+      width: 100,
+      render: (role: string) => role || '-',
+    },
+    {
       title: '连接数',
       dataIndex: 'connections',
       key: 'connections',
@@ -226,10 +333,10 @@ const AgentDiscoveryPage: React.FC = () => {
     },
   ];
 
-  const activeAgents = agents.filter(agent => agent.status === 'active').length;
-  const totalConnections = agents.reduce((sum, agent) => sum + (agent.connections || 0), 0);
-  const averageRating = agents.length > 0
-    ? agents.reduce((sum, agent) => sum + (agent.rating || 0), 0) / agents.length
+  const activeAgents = filteredAgents.filter(agent => agent.status === 'active').length;
+  const totalConnections = filteredAgents.reduce((sum, agent) => sum + (agent.connections || 0), 0);
+  const averageRating = filteredAgents.length > 0
+    ? filteredAgents.reduce((sum, agent) => sum + (agent.rating || 0), 0) / filteredAgents.length
     : 0;
 
   return (
@@ -311,36 +418,157 @@ const AgentDiscoveryPage: React.FC = () => {
       {/* 主内容区域 */}
       <div className="p-6">
         <Card>
-          <div className="flex items-center justify-between mb-4">
-            <Space>
-              <Text strong>
-                {agents.length > 0
-                  ? `找到 ${agents.length} 个Agent`
-                  : '暂无搜索结果'
-                }
-              </Text>
-            </Space>
+          {/* 搜索和筛选区域 */}
+          <div className="mb-6">
+            <Row gutter={[16, 16]}>
+              <Col span={8}>
+                <Search
+                  placeholder="搜索Agent名称、描述、角色..."
+                  allowClear
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onSearch={applyFilters}
+                  enterButton={<SearchOutlined />}
+                  size="large"
+                />
+              </Col>
+              <Col span={4}>
+                <Select
+                  placeholder="选择用户ID"
+                  allowClear
+                  value={selectedUserId || undefined}
+                  onChange={setSelectedUserId}
+                  size="large"
+                  style={{ width: '100%' }}
+                >
+                  {getUserIds().map(userId => (
+                    <Option key={userId} value={userId}>
+                      <Space>
+                        <UserOutlined />
+                        {userId}
+                      </Space>
+                    </Option>
+                  ))}
+                </Select>
+              </Col>
+              <Col span={4}>
+                <Button
+                  icon={<FilterOutlined />}
+                  type={showFilters ? 'primary' : 'default'}
+                  size="large"
+                  style={{ width: '100%' }}
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  高级筛选
+                </Button>
+              </Col>
+              <Col span={4}>
+                <Button
+                  onClick={clearFilters}
+                  disabled={!searchText && !selectedUserId && selectedRoles.length === 0 && selectedTaskRequirements.length === 0}
+                  size="large"
+                  style={{ width: '100%' }}
+                >
+                  清除筛选
+                </Button>
+              </Col>
+              <Col span={4}>
+                <Space>
+                  <Button.Group>
+                    <Button
+                      icon={<RobotOutlined />}
+                      type={viewMode === 'grid' ? 'primary' : 'default'}
+                      size="small"
+                      onClick={() => setViewMode('grid')}
+                    >
+                      网格
+                    </Button>
+                    <Button
+                      icon={<RobotOutlined />}
+                      type={viewMode === 'table' ? 'primary' : 'default'}
+                      size="small"
+                      onClick={() => setViewMode('table')}
+                    >
+                      表格
+                    </Button>
+                  </Button.Group>
+                </Space>
+              </Col>
+            </Row>
 
-            <Space>
-              <Button.Group>
-                <Button
-                  icon={<RobotOutlined />}
-                  type={viewMode === 'grid' ? 'primary' : 'default'}
-                  size="small"
-                  onClick={() => setViewMode('grid')}
-                >
-                  网格
-                </Button>
-                <Button
-                  icon={<RobotOutlined />}
-                  type={viewMode === 'table' ? 'primary' : 'default'}
-                  size="small"
-                  onClick={() => setViewMode('table')}
-                >
-                  表格
-                </Button>
-              </Button.Group>
-            </Space>
+            {/* 高级筛选面板 */}
+            {showFilters && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <Row gutter={[16, 16]}>
+                  <Col span={12}>
+                    <div className="mb-2">
+                      <Text strong><TagsOutlined /> Agent角色</Text>
+                    </div>
+                    <CheckboxGroup
+                      options={getRoles().map(role => ({ label: role, value: role }))}
+                      value={selectedRoles}
+                      onChange={setSelectedRoles}
+                    />
+                  </Col>
+                  <Col span={12}>
+                    <div className="mb-2">
+                      <Text strong><AimOutlined /> 任务需求</Text>
+                    </div>
+                    <CheckboxGroup
+                      options={getTaskRequirements().map(req => ({ label: req, value: req }))}
+                      value={selectedTaskRequirements}
+                      onChange={setSelectedTaskRequirements}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            )}
+
+            {/* 当前筛选条件显示 */}
+            {(searchText || selectedUserId || selectedRoles.length > 0 || selectedTaskRequirements.length > 0) && (
+              <div className="mt-4">
+                <Space wrap>
+                  <Text type="secondary">当前筛选:</Text>
+                  {searchText && (
+                    <Tag closable onClose={() => setSearchText('')}>
+                      搜索: {searchText}
+                    </Tag>
+                  )}
+                  {selectedUserId && (
+                    <Tag closable onClose={() => setSelectedUserId('')}>
+                      用户ID: {selectedUserId}
+                    </Tag>
+                  )}
+                  {selectedRoles.map(role => (
+                    <Tag key={role} closable onClose={() => setSelectedRoles(selectedRoles.filter(r => r !== role))}>
+                      角色: {role}
+                    </Tag>
+                  ))}
+                  {selectedTaskRequirements.map(req => (
+                    <Tag key={req} closable onClose={() => setSelectedTaskRequirements(selectedTaskRequirements.filter(r => r !== req))}>
+                      需求: {req}
+                    </Tag>
+                  ))}
+                </Space>
+              </div>
+            )}
+
+            {/* 搜索结果统计 */}
+            <div className="flex items-center justify-between mt-4">
+              <Space>
+                <Text strong>
+                  {filteredAgents.length > 0
+                    ? `找到 ${filteredAgents.length} 个Agent (共 ${agents.length} 个)`
+                    : '暂无搜索结果'
+                  }
+                </Text>
+                {filteredAgents.length !== agents.length && (
+                  <Text type="secondary">
+                    筛选条件已应用
+                  </Text>
+                )}
+              </Space>
+            </div>
           </div>
 
           {/* 加载状态 */}
@@ -394,11 +622,11 @@ const AgentDiscoveryPage: React.FC = () => {
                 <>
                   {viewMode === 'table' ? (
                     <Table
-                      dataSource={agents}
+                      dataSource={filteredAgents}
                       columns={columns}
                       rowKey="id"
                       pagination={{
-                        total: agents.length,
+                        total: filteredAgents.length,
                         pageSize: 10,
                         showSizeChanger: true,
                         showQuickJumper: true,
@@ -408,7 +636,7 @@ const AgentDiscoveryPage: React.FC = () => {
                     />
                   ) : (
                     <Row gutter={[16, 16]}>
-                      {agents.map((agent) => (
+                      {filteredAgents.map((agent) => (
                         <Col xs={24} sm={12} lg={8} xl={6} key={agent.id}>
                           <Card
                             hoverable
@@ -449,6 +677,11 @@ const AgentDiscoveryPage: React.FC = () => {
                                       <Tag color={getLanguageColor(agent.language)}>
                                         {agent.language}
                                       </Tag>
+                                      {agent.role && (
+                                        <Tag color="blue">
+                                          <TagsOutlined /> {agent.role}
+                                        </Tag>
+                                      )}
                                       {agent.rating && (
                                         <Tag color="orange">
                                           <StarOutlined /> {agent.rating.toFixed(1)}
@@ -459,6 +692,23 @@ const AgentDiscoveryPage: React.FC = () => {
                                       </Tag>
                                     </Space>
                                   </div>
+                                  {agent.taskRequirements && agent.taskRequirements.length > 0 && (
+                                    <div style={{ marginTop: 4, fontSize: '11px', color: '#999' }}>
+                                      <Text type="secondary">任务需求:</Text>
+                                      <div style={{ marginTop: 2 }}>
+                                        {agent.taskRequirements.slice(0, 2).map(req => (
+                                          <Tag key={req} size="small" style={{ marginBottom: 2 }}>
+                                            {req}
+                                          </Tag>
+                                        ))}
+                                        {agent.taskRequirements.length > 2 && (
+                                          <Tag size="small" style={{ marginBottom: 2 }}>
+                                            +{agent.taskRequirements.length - 2}
+                                          </Tag>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
                                   <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
                                     <div>创建者: {agent.boundUser}</div>
                                     <div>创建时间: {new Date(agent.createdAt).toLocaleDateString()}</div>

@@ -14,6 +14,13 @@ export interface Agent {
   language: string;
   config: AgentConfig;
   permissions: AgentPermission[];
+  // 新增字段
+  role?: string;
+  taskRequirements?: string[];
+  specialties?: string[];
+  rating?: number;
+  connections?: number;
+  tags?: string[];
 }
 
 export interface AgentConfig {
