@@ -150,7 +150,7 @@ export let sharedAgents: Agent[] = [
         boundUserId: 'lin-175879861',
         bindingType: 'faceBiometrics',
         bindingStrength: 'basic',
-        verificationFrequency: 'weekly',
+        verificationFrequency: 'daily',
         fallbackAllowed: true
       }
     },
@@ -246,7 +246,7 @@ export let sharedAgents: Agent[] = [
         boundUserId: 'lin-175879861',
         bindingType: 'faceBiometrics',
         bindingStrength: 'enhanced',
-        verificationFrequency: 'weekly',
+        verificationFrequency: 'daily',
         fallbackAllowed: true
       }
     },
@@ -278,7 +278,7 @@ export let sharedAgents: Agent[] = [
         boundUserId: 'user_005',
         bindingType: 'faceBiometrics',
         bindingStrength: 'basic',
-        verificationFrequency: 'weekly',
+        verificationFrequency: 'daily',
         fallbackAllowed: true
       }
     },
@@ -310,7 +310,7 @@ export let sharedAgents: Agent[] = [
         boundUserId: 'user_001',
         bindingType: 'faceBiometrics',
         bindingStrength: 'enhanced',
-        verificationFrequency: 'weekly',
+        verificationFrequency: 'daily',
         fallbackAllowed: true
       }
     },
@@ -321,6 +321,487 @@ export let sharedAgents: Agent[] = [
     rating: 4.5,
     connections: 189,
     tags: ['营销', '品牌', '推广']
+  },
+  // 新增更多Agent数据
+  {
+    id: 'agent_shared_011',
+    agentId: 'agent_011',
+    name: 'Travel Assistant',
+    description: '智能旅行助手，提供行程规划和旅行建议',
+    codeHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    profileHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+    status: 'active',
+    boundUser: 'agent-18239478',
+    boundAt: '2024-01-25T14:00:00Z',
+    createdAt: '2024-01-25T14:00:00Z',
+    updatedAt: '2024-01-30T09:30:00Z',
+    codeSize: 1152000,
+    language: 'python',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'agent-18239478',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'basic',
+        verificationFrequency: 'once',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '旅行顾问',
+    taskRequirements: ['行程规划', '酒店预订', '景点推荐', '交通安排'],
+    specialties: ['目的地研究', '预算规划', '当地文化'],
+    rating: 4.4,
+    connections: 167,
+    tags: ['旅行', '规划', '顾问']
+  },
+  {
+    id: 'agent_shared_012',
+    agentId: 'agent_012',
+    name: 'Fitness Coach',
+    description: 'AI健身教练，提供个性化健身计划和营养建议',
+    codeHash: '0x2345678901abcdef2345678901abcdef2345678901abcdef2345678901abcdef',
+    profileHash: '0xbcdefa1234567890bcdefa1234567890bcdefa1234567890bcdefa1234567890',
+    status: 'active',
+    boundUser: '1-175826628',
+    boundAt: '2024-01-26T16:00:00Z',
+    createdAt: '2024-01-26T16:00:00Z',
+    updatedAt: '2024-01-31T11:00:00Z',
+    codeSize: 896000,
+    language: 'javascript',
+    config: {
+      permissions: ['read', 'write', 'execute'],
+      userBinding: {
+        boundUserId: '1-175826628',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'enhanced',
+        verificationFrequency: 'daily',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write', 'execute'],
+    role: '健身教练',
+    taskRequirements: ['健身计划', '营养指导', '运动跟踪', '目标设定'],
+    specialties: ['力量训练', '有氧运动', '瑜伽指导'],
+    rating: 4.7,
+    connections: 234,
+    tags: ['健身', '健康', '教练']
+  },
+  {
+    id: 'agent_shared_013',
+    agentId: 'agent_013',
+    name: 'Language Tutor',
+    description: '多语言导师，提供语言学习和翻译服务',
+    codeHash: '0x3456789012abcdef3456789012abcdef3456789012abcdef3456789012abcdef',
+    profileHash: '0xcdefab1234567890cdefab1234567890cdefab1234567890cdefab1234567890',
+    status: 'active',
+    boundUser: 'lin-175879861',
+    boundAt: '2024-01-27T10:30:00Z',
+    createdAt: '2024-01-27T10:30:00Z',
+    updatedAt: '2024-02-01T15:30:00Z',
+    codeSize: 1280000,
+    language: 'typescript',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'lin-175879861',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'basic',
+        verificationFrequency: 'daily',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '语言导师',
+    taskRequirements: ['语言学习', '翻译服务', '口语练习', '文化介绍'],
+    specialties: ['英语', '日语', '韩语', '法语'],
+    rating: 4.6,
+    connections: 198,
+    tags: ['语言', '翻译', '教育']
+  },
+  {
+    id: 'agent_shared_014',
+    agentId: 'agent_014',
+    name: 'Recipe Assistant',
+    description: '美食助手，提供菜谱推荐和烹饪指导',
+    codeHash: '0x4567890123abcdef4567890123abcdef4567890123abcdef4567890123abcdef',
+    profileHash: '0xdefabc1234567890defabc1234567890defabc1234567890defabc1234567890',
+    status: 'active',
+    boundUser: 'user_002',
+    boundAt: '2024-01-28T12:00:00Z',
+    createdAt: '2024-01-28T12:00:00Z',
+    updatedAt: '2024-02-02T17:00:00Z',
+    codeSize: 768000,
+    language: 'python',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'user_002',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'basic',
+        verificationFrequency: 'once',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '美食顾问',
+    taskRequirements: ['菜谱推荐', '营养搭配', '烹饪技巧', '食材选择'],
+    specialties: ['中式料理', '西式料理', '烘焙', '素食'],
+    rating: 4.3,
+    connections: 145,
+    tags: ['美食', '烹饪', '营养']
+  },
+  {
+    id: 'agent_shared_015',
+    agentId: 'agent_015',
+    name: 'Career Counselor',
+    description: '职业规划师，提供职业发展建议和求职指导',
+    codeHash: '0x5678901234abcdef5678901234abcdef5678901234abcdef5678901234abcdef',
+    profileHash: '0xefabcd1234567890efabcd1234567890efabcd1234567890efabcd1234567890',
+    status: 'active',
+    boundUser: 'user_003',
+    boundAt: '2024-01-29T09:00:00Z',
+    createdAt: '2024-01-29T09:00:00Z',
+    updatedAt: '2024-02-03T14:00:00Z',
+    codeSize: 1024000,
+    language: 'java',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'user_003',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'enhanced',
+        verificationFrequency: 'daily',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '职业顾问',
+    taskRequirements: ['职业规划', '简历优化', '面试指导', '技能提升'],
+    specialties: ['行业分析', '职业咨询', '求职策略'],
+    rating: 4.8,
+    connections: 278,
+    tags: ['职业', '规划', '求职']
+  },
+  {
+    id: 'agent_shared_016',
+    agentId: 'agent_016',
+    name: 'Mental Health Assistant',
+    description: '心理健康助手，提供情绪支持和心理健康建议',
+    codeHash: '0x6789012345abcdef6789012345abcdef6789012345abcdef6789012345abcdef',
+    profileHash: '0xfabcde1234567890fabcde1234567890fabcde1234567890fabcde1234567890',
+    status: 'active',
+    boundUser: '1-175826628',
+    boundAt: '2024-01-30T13:30:00Z',
+    createdAt: '2024-01-30T13:30:00Z',
+    updatedAt: '2024-02-04T18:30:00Z',
+    codeSize: 1408000,
+    language: 'python',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: '1-175826628',
+        bindingType: 'multiFactor',
+        bindingStrength: 'strict',
+        verificationFrequency: 'daily',
+        fallbackAllowed: false
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '心理顾问',
+    taskRequirements: ['情绪支持', '压力管理', '心理咨询', '健康建议'],
+    specialties: ['认知行为疗法', '正念冥想', '情绪调节'],
+    rating: 4.9,
+    connections: 312,
+    tags: ['心理健康', '情绪', '咨询']
+  },
+  {
+    id: 'agent_shared_017',
+    agentId: 'agent_017',
+    name: 'Tech Support',
+    description: '技术支持助手，提供IT问题解决和技术咨询',
+    codeHash: '0x7890123456abcdef7890123456abcdef7890123456abcdef7890123456abcdef',
+    profileHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+    status: 'active',
+    boundUser: 'user_004',
+    boundAt: '2024-01-31T11:00:00Z',
+    createdAt: '2024-01-31T11:00:00Z',
+    updatedAt: '2024-02-05T16:00:00Z',
+    codeSize: 896000,
+    language: 'javascript',
+    config: {
+      permissions: ['read', 'write', 'execute'],
+      userBinding: {
+        boundUserId: 'user_004',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'basic',
+        verificationFrequency: 'once',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write', 'execute'],
+    role: '技术支持',
+    taskRequirements: ['故障排除', '技术咨询', '系统维护', '用户培训'],
+    specialties: ['硬件问题', '软件问题', '网络配置'],
+    rating: 4.2,
+    connections: 156,
+    tags: ['技术', '支持', 'IT']
+  },
+  {
+    id: 'agent_shared_018',
+    agentId: 'agent_018',
+    name: 'Music Composer',
+    description: '音乐创作助手，提供作曲和音乐制作服务',
+    codeHash: '0x8901234567abcdef8901234567abcdef8901234567abcdef8901234567abcdef',
+    profileHash: '0xbcdefa1234567890bcdefa1234567890bcdefa1234567890bcdefa1234567890',
+    status: 'active',
+    boundUser: 'agent-18239478',
+    boundAt: '2024-02-01T15:00:00Z',
+    createdAt: '2024-02-01T15:00:00Z',
+    updatedAt: '2024-02-06T20:00:00Z',
+    codeSize: 1536000,
+    language: 'typescript',
+    config: {
+      permissions: ['read', 'write', 'execute'],
+      userBinding: {
+        boundUserId: 'agent-18239478',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'enhanced',
+        verificationFrequency: 'daily',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write', 'execute'],
+    role: '音乐创作',
+    taskRequirements: ['作曲编曲', '音频处理', '音乐制作', '声音设计'],
+    specialties: ['电子音乐', '古典音乐', '流行音乐', '电影配乐'],
+    rating: 4.6,
+    connections: 134,
+    tags: ['音乐', '创作', '制作']
+  },
+  {
+    id: 'agent_shared_019',
+    agentId: 'agent_019',
+    name: 'Gardening Assistant',
+    description: '园艺助手，提供植物养护和园艺设计建议',
+    codeHash: '0x9012345678abcdef9012345678abcdef9012345678abcdef9012345678abcdef',
+    profileHash: '0xcdefab1234567890cdefab1234567890cdefab1234567890cdefab1234567890',
+    status: 'active',
+    boundUser: 'lin-175879861',
+    boundAt: '2024-02-02T08:30:00Z',
+    createdAt: '2024-02-02T08:30:00Z',
+    updatedAt: '2024-02-07T13:30:00Z',
+    codeSize: 640000,
+    language: 'python',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'lin-175879861',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'basic',
+        verificationFrequency: 'once',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '园艺顾问',
+    taskRequirements: ['植物养护', '园艺设计', '病虫害防治', '季节种植'],
+    specialties: ['室内植物', '花园设计', '有机种植'],
+    rating: 4.1,
+    connections: 89,
+    tags: ['园艺', '植物', '养护']
+  },
+  {
+    id: 'agent_shared_020',
+    agentId: 'agent_020',
+    name: 'Pet Care Assistant',
+    description: '宠物护理助手，提供宠物饲养和健康建议',
+    codeHash: '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    profileHash: '0xdefabc1234567890defabc1234567890defabc1234567890defabc1234567890',
+    status: 'active',
+    boundUser: 'user_005',
+    boundAt: '2024-02-03T10:00:00Z',
+    createdAt: '2024-02-03T10:00:00Z',
+    updatedAt: '2024-02-08T15:00:00Z',
+    codeSize: 768000,
+    language: 'javascript',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'user_005',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'basic',
+        verificationFrequency: 'daily',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '宠物护理',
+    taskRequirements: ['宠物饲养', '健康检查', '行为训练', '营养搭配'],
+    specialties: ['狗狗护理', '猫咪护理', '小动物饲养'],
+    rating: 4.4,
+    connections: 178,
+    tags: ['宠物', '护理', '健康']
+  },
+  {
+    id: 'agent_shared_021',
+    agentId: 'agent_021',
+    name: 'Fashion Stylist',
+    description: '时尚造型师，提供穿搭建议和时尚指导',
+    codeHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    profileHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+    status: 'active',
+    boundUser: 'user_001',
+    boundAt: '2024-02-04T14:30:00Z',
+    createdAt: '2024-02-04T14:30:00Z',
+    updatedAt: '2024-02-09T19:30:00Z',
+    codeSize: 896000,
+    language: 'typescript',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'user_001',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'enhanced',
+        verificationFrequency: 'daily',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '时尚顾问',
+    taskRequirements: ['穿搭建议', '时尚指导', '购物推荐', '形象设计'],
+    specialties: ['日常穿搭', '商务正装', '休闲风格', '配饰搭配'],
+    rating: 4.5,
+    connections: 203,
+    tags: ['时尚', '穿搭', '造型']
+  },
+  {
+    id: 'agent_shared_022',
+    agentId: 'agent_022',
+    name: 'Home Design Assistant',
+    description: '家居设计助手，提供室内设计和装修建议',
+    codeHash: '0x2345678901abcdef2345678901abcdef2345678901abcdef2345678901abcdef',
+    profileHash: '0xbcdefa1234567890bcdefa1234567890bcdefa1234567890bcdefa1234567890',
+    status: 'active',
+    boundUser: 'user_002',
+    boundAt: '2024-02-05T09:30:00Z',
+    createdAt: '2024-02-05T09:30:00Z',
+    updatedAt: '2024-02-10T14:30:00Z',
+    codeSize: 1152000,
+    language: 'python',
+    config: {
+      permissions: ['read', 'write', 'execute'],
+      userBinding: {
+        boundUserId: 'user_002',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'enhanced',
+        verificationFrequency: 'daily',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write', 'execute'],
+    role: '室内设计师',
+    taskRequirements: ['空间规划', '家具选择', '色彩搭配', '材料建议'],
+    specialties: ['现代风格', '北欧风格', '工业风格', '古典风格'],
+    rating: 4.7,
+    connections: 189,
+    tags: ['家居', '设计', '装修']
+  },
+  {
+    id: 'agent_shared_023',
+    agentId: 'agent_023',
+    name: 'Investment Advisor',
+    description: '投资顾问，提供投资策略和理财建议',
+    codeHash: '0x3456789012abcdef3456789012abcdef3456789012abcdef3456789012abcdef',
+    profileHash: '0xcdefab1234567890cdefab1234567890cdefab1234567890cdefab1234567890',
+    status: 'active',
+    boundUser: '1-175826628',
+    boundAt: '2024-02-06T11:00:00Z',
+    createdAt: '2024-02-06T11:00:00Z',
+    updatedAt: '2024-02-11T16:00:00Z',
+    codeSize: 1280000,
+    language: 'java',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: '1-175826628',
+        bindingType: 'multiFactor',
+        bindingStrength: 'strict',
+        verificationFrequency: 'daily',
+        fallbackAllowed: false
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '投资顾问',
+    taskRequirements: ['投资策略', '理财规划', '风险评估', '市场分析'],
+    specialties: ['股票投资', '基金投资', '房地产投资', '加密货币'],
+    rating: 4.8,
+    connections: 267,
+    tags: ['投资', '理财', '金融']
+  },
+  {
+    id: 'agent_shared_024',
+    agentId: 'agent_024',
+    name: 'Environmental Assistant',
+    description: '环保助手，提供环保建议和可持续发展指导',
+    codeHash: '0x4567890123abcdef4567890123abcdef4567890123abcdef4567890123abcdef',
+    profileHash: '0xdefabc1234567890defabc1234567890defabc1234567890defabc1234567890',
+    status: 'active',
+    boundUser: 'user_003',
+    boundAt: '2024-02-07T13:00:00Z',
+    createdAt: '2024-02-07T13:00:00Z',
+    updatedAt: '2024-02-12T18:00:00Z',
+    codeSize: 1024000,
+    language: 'python',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'user_003',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'enhanced',
+        verificationFrequency: 'daily',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '环保顾问',
+    taskRequirements: ['环保建议', '节能方案', '可持续发展', '废物处理'],
+    specialties: ['绿色能源', '节能减排', '环保材料'],
+    rating: 4.3,
+    connections: 123,
+    tags: ['环保', '可持续发展', '节能']
+  },
+  {
+    id: 'agent_shared_025',
+    agentId: 'agent_025',
+    name: 'Writing Assistant',
+    description: '写作助手，提供文案创作和编辑服务',
+    codeHash: '0x5678901234abcdef5678901234abcdef5678901234abcdef5678901234abcdef',
+    profileHash: '0xefabcd1234567890efabcd1234567890efabcd1234567890efabcd1234567890',
+    status: 'active',
+    boundUser: 'lin-175879861',
+    boundAt: '2024-02-08T15:30:00Z',
+    createdAt: '2024-02-08T15:30:00Z',
+    updatedAt: '2024-02-13T20:30:00Z',
+    codeSize: 768000,
+    language: 'typescript',
+    config: {
+      permissions: ['read', 'write'],
+      userBinding: {
+        boundUserId: 'lin-175879861',
+        bindingType: 'faceBiometrics',
+        bindingStrength: 'basic',
+        verificationFrequency: 'once',
+        fallbackAllowed: true
+      }
+    },
+    permissions: ['read', 'write'],
+    role: '写作助手',
+    taskRequirements: ['文案创作', '编辑校对', '内容策划', '风格指导'],
+    specialties: ['商务写作', '创意写作', '技术文档', '学术写作'],
+    rating: 4.6,
+    connections: 145,
+    tags: ['写作', '编辑', '创作']
   }
 ];
 

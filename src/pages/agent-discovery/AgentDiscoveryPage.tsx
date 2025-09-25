@@ -697,12 +697,12 @@ const AgentDiscoveryPage: React.FC = () => {
                                       <Text type="secondary">任务需求:</Text>
                                       <div style={{ marginTop: 2 }}>
                                         {agent.taskRequirements.slice(0, 2).map(req => (
-                                          <Tag key={req} size="small" style={{ marginBottom: 2 }}>
+                                          <Tag key={req} style={{ marginBottom: 2, fontSize: '11px' }}>
                                             {req}
                                           </Tag>
                                         ))}
                                         {agent.taskRequirements.length > 2 && (
-                                          <Tag size="small" style={{ marginBottom: 2 }}>
+                                          <Tag style={{ marginBottom: 2, fontSize: '11px' }}>
                                             +{agent.taskRequirements.length - 2}
                                           </Tag>
                                         )}
