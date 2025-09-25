@@ -34,75 +34,29 @@ import {
   BlockchainAgentType,
   AgentCapability
 } from '../../types/blockchain';
+import { sharedAgentData } from '../../mocks/sharedAgentData';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 const { Step } = Steps;
 const { Option } = Select;
 
-// Mock agents data
-const MOCK_AGENTS: MockAgent[] = [
-  {
-    id: 'agent_001',
-    name: 'Claude AI Assistant',
+// 从共享数据源获取Agent列表
+const getMockAgents = (): MockAgent[] => {
+  const sharedAgents = sharedAgentData.getAgents();
+  return sharedAgents.map(agent => ({
+    id: agent.id,
+    name: agent.name,
     type: 'AI Assistant',
     capabilities: ['私人助理', '工作助理', '学习助理'],
-    description: '基于大语言模型的AI助手，支持自然语言交互和代码生成',
-    version: '3.5',
-    model: 'Claude-3.5-Sonnet',
-    apiEndpoint: 'https://api.claude.ai/v1',
-    status: 'active',
-    owner: 'Anthropic'
-  },
-  {
-    id: 'agent_002',
-    name: 'Data Analyzer Pro',
-    type: 'Data Processing',
-    capabilities: ['财务助理', '健康助理', '生活助理'],
-    description: '专业数据分析工具，支持机器学习模型训练和预测',
-    version: '2.1',
-    model: 'XGBoost-2.1',
-    apiEndpoint: 'https://api.analyzer.pro/v2',
-    status: 'active',
-    owner: 'DataTech Corp'
-  },
-  {
-    id: 'agent_003',
-    name: 'Chatbot Service',
-    type: 'Chatbot',
-    capabilities: ['客服助理', '旅行助理', '娱乐助理'],
-    description: '多语言聊天机器人服务，支持语音识别和翻译',
-    version: '1.8',
-    model: 'GPT-4',
-    apiEndpoint: 'https://chatbot.service.ai/v1',
-    status: 'active',
-    owner: 'ChatBot Inc'
-  },
-  {
-    id: 'agent_004',
-    name: 'Security Monitor',
-    type: 'Security',
-    capabilities: ['健康助理', '生活助理', '客服助理'],
-    description: 'AI安全监控系统，支持异常检测和威胁识别',
-    version: '3.0',
-    model: 'SecurityNet-V3',
-    apiEndpoint: 'https://security.monitor.ai/v3',
-    status: 'development',
-    owner: 'SecureAI'
-  },
-  {
-    id: 'agent_005',
-    name: 'Content Generator',
-    type: 'Content Generation',
-    capabilities: ['私人助理', '工作助理', '学习助理'],
-    description: '智能内容生成工具，支持文本、代码和图像生成',
-    version: '2.5',
-    model: 'ContentGen-2.5',
-    apiEndpoint: 'https://content.gen.ai/v2',
-    status: 'active',
-    owner: 'CreativeAI'
-  }
-];
+    description: agent.description,
+    version: '1.0.0',
+    model: agent.language || 'GPT-4',
+    apiEndpoint: 'https://api.example.com/v1',
+    status: agent.status as 'active' | 'inactive' | 'development' | 'deprecated',
+    owner: agent.boundUser || 'Unknown'
+  }));
+};
 
 const AGENT_TYPES: BlockchainAgentType[] = [
   'AI Assistant',
@@ -158,8 +112,11 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
   const [completedAgentInfo, setCompletedAgentInfo] = useState<BlockchainAgent | null>(null);
   const [completedContract, setCompletedContract] = useState<AgentIdentityContract | null>(null);
 
+  // 从共享数据源获取Agent列表
+  const mockAgents = getMockAgents();
+
   const handleAgentChange = (agentId: string) => {
-    const agent = MOCK_AGENTS.find(a => a.id === agentId);
+    const agent = mockAgents.find(a => a.id === agentId);
     setSelectedAgent(agent || null);
 
     if (agent) {
@@ -187,7 +144,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
         setCurrentStep(3);
 
         // 查找选中的Agent
-        const selectedAgentData = MOCK_AGENTS.find(agent => agent.id === values.agentId);
+        const selectedAgentData = mockAgents.find(agent => agent.id === values.agentId);
 
         // 创建Agent对象
         const agentInfo: BlockchainAgent = {
@@ -307,7 +264,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
             form.setFieldsValue(values);
           }}
           initialValues={{
-            agentId: MOCK_AGENTS[0]?.id || '',
+            agentId: mockAgents[0]?.id || '',
             contractName: '',
             agentType: '',
             capabilities: [],
@@ -331,7 +288,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
                   placeholder="选择要注册的Agent"
                   onChange={handleAgentChange}
                 >
-                  {MOCK_AGENTS.map(agent => (
+                  {mockAgents.map(agent => (
                     <Option key={agent.id} value={agent.id}>
                       <div>
                         <div className="font-medium">{agent.name}</div>
