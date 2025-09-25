@@ -42,6 +42,7 @@ import {
   FaceBiometricFeatures
 } from '../../types/agent-upload';
 import { sharedUserData, MOCK_USERS } from '../../mocks/sharedUserData';
+import { useIdentityStore } from '../../store/identityStore';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -49,15 +50,6 @@ const { Option } = Select;
 
 const DEMO_WATERMARK = '演示系统 - 用户绑定配置';
 
-// 从共享数据源获取用户列表
-const getUsersForConfig = () => {
-  return sharedUserData.getUsers().map(user => ({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    department: user.department
-  }));
-};
 
 const PERMISSION_DESCRIPTIONS: Record<string, string> = {
   read: '允许读取数据和文件',
@@ -104,6 +96,9 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
   const [faceUploadProgress, setFaceUploadProgress] = useState(0);
   const [isUploadingFace, setIsUploadingFace] = useState(false);
   const [faceFeatures, setFaceFeatures] = useState<FaceBiometricFeatures | null>(null);
+
+  // 使用身份标识store
+  const identities = useIdentityStore((state) => state.getIdentities());
 
   React.useEffect(() => {
     form.setFieldsValue(config);
@@ -234,9 +229,19 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
 
   const languageSuggestions = language ? COMMON_DEPENDENCIES[language.id as keyof typeof COMMON_DEPENDENCIES] || [] : [];
 
-  // 从共享数据源获取用户列表
-  const availableUsers = getUsersForConfig();
-  const selectedUser = availableUsers.find(user => user.id === config.userBinding.boundUserId);
+  // 从身份标识store获取可用的身份标识列表
+  const availableIdentities = identities.map(identity => ({
+    id: identity.identityId,
+    name: identity.credentialData.name,
+    email: `${identity.identityId.toLowerCase()}@agentid.local`,
+    department: identity.credentialData.nationality || '用户',
+    confidence: identity.confidence,
+    identityId: identity.identityId,
+    prefix: identity.prefix,
+    generatedAt: identity.generatedAt
+  }));
+
+  const selectedIdentity = availableIdentities.find(identity => identity.id === config.userBinding.boundUserId);
 
   return (
     <div className="space-y-6">
@@ -273,21 +278,21 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
                 label={
                   <span>
                     <UserOutlined className="mr-1" />
-                    绑定用户ID
+                    绑定身份标识
                   </span>
                 }
                 name={['userBinding', 'boundUserId']}
-                rules={[{ required: true, message: '请选择绑定的用户ID' }]}
+                rules={[{ required: true, message: '请选择绑定的身份标识' }]}
               >
-                <Select placeholder="选择要绑定的用户ID">
-                  {availableUsers.map((user) => (
-                    <Option key={user.id} value={user.id}>
+                <Select placeholder="选择要绑定的身份标识">
+                  {availableIdentities.map((identity) => (
+                    <Option key={identity.id} value={identity.id}>
                       <Space>
                         <Avatar size="small" icon={<UserOutlined />} />
                         <div>
-                          <div style={{ fontWeight: 'bold' }}>{user.id}</div>
+                          <div style={{ fontWeight: 'bold' }}>{identity.identityId}</div>
                           <div style={{ fontSize: '12px', color: '#666' }}>
-                            {user.email}
+                            {identity.name} · {identity.department}
                           </div>
                         </div>
                       </Space>
@@ -572,9 +577,9 @@ LOG_LEVEL=info`}
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12}>
             <Space direction="vertical" size="small" className="w-full">
-              <Text strong>绑定用户ID:</Text>
+              <Text strong>绑定身份标识:</Text>
               <Text type="secondary">
-                {selectedUser ? `${selectedUser.id} (${selectedUser.name} - ${selectedUser.department})` : '未选择用户ID'}
+                {selectedIdentity ? `${selectedIdentity.identityId} (${selectedIdentity.name} - ${selectedIdentity.department})` : '未选择身份标识'}
               </Text>
             </Space>
           </Col>

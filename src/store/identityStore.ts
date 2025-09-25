@@ -86,7 +86,71 @@ export const useIdentityStore = create<IdentityState>()(
       // 初始状态
       config: defaultConfig,
       currentProcess: null,
-      identities: [],
+      identities: [
+        // 默认身份标识数据
+        {
+          id: '1',
+          identityId: '1-175826628',
+          prefix: '1',
+          hash: 'mock-hash-001',
+          confidence: 0.95,
+          credentialData: {
+            id: 'cred-001',
+            type: 'id_card',
+            name: '张三',
+            documentNumber: 'ID123456789',
+            issuingCountry: 'CN',
+            issuedDate: '2020-01-01',
+            expiryDate: '2030-01-01',
+            dateOfBirth: '1990-01-01',
+            nationality: '中国',
+            gender: 'male',
+            address: '北京市朝阳区',
+            confidence: 0.95,
+            extractedAt: '2024-01-15T10:30:00Z'
+          },
+          generatedAt: '2024-01-15T10:30:00Z',
+          steps: [],
+          metadata: {
+            algorithm: 'AgentID-v1.0',
+            version: '1.0.0',
+            processingTime: 2000,
+            dataQuality: 'high',
+            validationStatus: 'passed'
+          }
+        },
+        {
+          id: '2',
+          identityId: 'lin-175879861',
+          prefix: 'lin',
+          hash: 'mock-hash-002',
+          confidence: 0.92,
+          credentialData: {
+            id: 'cred-002',
+            type: 'id_card',
+            name: '张三',
+            documentNumber: 'ID987654321',
+            issuingCountry: 'CN',
+            issuedDate: '2020-02-01',
+            expiryDate: '2030-02-01',
+            dateOfBirth: '1992-05-15',
+            nationality: '中国',
+            gender: 'male',
+            address: '北京市海淀区',
+            confidence: 0.92,
+            extractedAt: '2024-02-01T14:20:00Z'
+          },
+          generatedAt: '2024-02-01T14:20:00Z',
+          steps: [],
+          metadata: {
+            algorithm: 'AgentID-v1.0',
+            version: '1.0.0',
+            processingTime: 1800,
+            dataQuality: 'high',
+            validationStatus: 'passed'
+          }
+        }
+      ],
       history: [],
       stats: initialStats,
       isLoading: false,
