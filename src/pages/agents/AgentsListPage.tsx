@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   Card,
   Typography,
@@ -12,7 +12,8 @@ import {
   Tooltip,
   Badge,
   Statistic,
-  message
+  message,
+  Empty
 } from 'antd';
 import {
   PlusOutlined,
@@ -22,10 +23,12 @@ import {
   EyeOutlined,
   PlayCircleOutlined,
   PauseCircleOutlined,
-  SettingOutlined
+  SettingOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAgentStore } from '../../store/agentStore';
+import { useAuthStore } from '../../store/authStore';
 import { DemoWrapper } from '../../components/ui/DemoWrapper';
 
 const { Title, Text } = Typography;
@@ -42,6 +45,16 @@ const AgentsListPage: React.FC = () => {
     setSelectedAgent,
     clearError
   } = useAgentStore();
+
+  const { user, isAuthenticated } = useAuthStore();
+
+  // 筛选出当前用户的Agent
+  const userAgents = useMemo(() => {
+    if (!user || !isAuthenticated) {
+      return [];
+    }
+    return agents.filter(agent => agent.boundUser === user.userId || agent.boundUser === user.id);
+  }, [agents, user, isAuthenticated]);
 
   useEffect(() => {
     fetchAgents();
@@ -214,8 +227,8 @@ const AgentsListPage: React.FC = () => {
     },
   ];
 
-  const activeAgents = agents.filter(agent => agent.status === 'active').length;
-  const totalAgents = agents.length;
+  const activeAgents = userAgents.filter(agent => agent.status === 'active').length;
+  const totalAgents = userAgents.length;
 
   return (
     <DemoWrapper
@@ -230,9 +243,9 @@ const AgentsListPage: React.FC = () => {
           <div>
             <Title level={2}>
               <RobotOutlined className="mr-2" />
-              Agent管理
+              我的Agent
             </Title>
-            <Text type="secondary">管理和监控系统中的所有Agent智能代理</Text>
+            <Text type="secondary">管理绑定到您账户的Agent智能代理</Text>
           </div>
           <Button
             type="primary"
@@ -291,20 +304,57 @@ const AgentsListPage: React.FC = () => {
 
         {/* Agent列表 */}
         <Card>
-          <Table
-            dataSource={agents}
-            columns={columns}
-            rowKey="id"
-            loading={loading}
-            pagination={{
-              total: agents.length,
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) =>
-                `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-            }}
-          />
+          {!isAuthenticated || !user ? (
+            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <div>
+                    <Title level={4} type="secondary">
+                      <UserOutlined style={{ marginRight: 8 }} />
+                      请先登录
+                    </Title>
+                    <Text type="secondary">
+                      您需要登录后才能查看和管理您的Agent
+                    </Text>
+                  </div>
+                }
+              />
+            </div>
+          ) : (
+            <Table
+              dataSource={userAgents}
+              columns={columns}
+              rowKey="id"
+              loading={loading}
+              locale={{
+                emptyText: (
+                  <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description={
+                      <div>
+                        <Title level={4} type="secondary">
+                          <RobotOutlined style={{ marginRight: 8 }} />
+                          暂无Agent
+                        </Title>
+                        <Text type="secondary">
+                          您还没有创建任何Agent，点击上方按钮开始创建
+                        </Text>
+                      </div>
+                    }
+                  />
+                )
+              }}
+              pagination={{
+                total: userAgents.length,
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) =>
+                  `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+              }}
+            />
+          )}
         </Card>
       </div>
     </DemoWrapper>

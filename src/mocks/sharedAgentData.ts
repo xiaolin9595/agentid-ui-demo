@@ -10,7 +10,7 @@ export let sharedAgents: Agent[] = [
     codeHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
     profileHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
     status: 'active',
-    boundUser: 'user_001',
+    boundUser: 'demo_user_001',
     boundAt: '2024-01-15T10:30:00Z',
     createdAt: '2024-01-15T10:30:00Z',
     updatedAt: '2024-01-20T15:45:00Z',
@@ -19,7 +19,7 @@ export let sharedAgents: Agent[] = [
     config: {
       permissions: ['read', 'write'],
       userBinding: {
-        boundUserId: 'user_001',
+        boundUserId: 'demo_user_001',
         bindingType: 'faceBiometrics',
         bindingStrength: 'basic',
         verificationFrequency: 'once',
