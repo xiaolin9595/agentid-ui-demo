@@ -49,15 +49,78 @@ const mockApiValidation = async (file: File): Promise<{
   // 模拟API验证延迟
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // 模拟验证结果
-  const isValid = Math.random() > 0.3; // 70%成功率
-  const errors = isValid ? [] : [
-    'API规范格式不正确',
-    '缺少必需的paths字段',
-    '部分endpoint定义不完整'
-  ];
+  // 直接通过验证，不检查规范内容
+  const isValid = true;
+  const errors = [];
 
-  const endpoints = isValid ? [
+  // 根据文件类型生成默认的API端点
+  const fileName = file.name.toLowerCase();
+  let endpoints = [];
+
+  if (fileName.includes('openapi') || fileName.includes('swagger')) {
+    endpoints = [
+      {
+        path: '/api/agent/info',
+        method: 'GET',
+        description: '获取Agent基本信息',
+        parameters: [],
+        responses: [{ statusCode: 200, description: '成功响应' }]
+      },
+      {
+        path: '/api/agent/health',
+        method: 'GET',
+        description: '健康检查',
+        parameters: [],
+        responses: [{ statusCode: 200, description: '服务正常' }]
+      },
+      {
+        path: '/api/agent/execute',
+        method: 'POST',
+        description: '执行Agent任务',
+        parameters: [
+          {
+            name: 'task',
+            type: 'string',
+            required: true,
+            description: '要执行的任务'
+          }
+        ],
+        responses: [
+          { statusCode: 200, description: '执行成功' },
+          { statusCode: 400, description: '请求参数错误' }
+        ]
+      }
+    ];
+  } else if (fileName.includes('postman')) {
+    endpoints = [
+      {
+        path: '/v1/agent/status',
+        method: 'GET',
+        description: '获取Agent状态',
+        parameters: [],
+        responses: [{ statusCode: 200, description: '状态获取成功' }]
+      },
+      {
+        path: '/v1/agent/command',
+        method: 'POST',
+        description: '发送命令给Agent',
+        parameters: [
+          {
+            name: 'command',
+            type: 'string',
+            required: true,
+            description: '要执行的命令'
+          }
+        ],
+        responses: [
+          { statusCode: 200, description: '命令执行成功' },
+          { statusCode: 500, description: '内部服务器错误' }
+        ]
+      }
+    ];
+  } else {
+    // 默认API端点
+    endpoints = [
     {
       path: '/api/agent/status',
       method: 'GET',
@@ -82,7 +145,7 @@ const mockApiValidation = async (file: File): Promise<{
         { statusCode: 400, description: '请求参数错误' }
       ]
     }
-  ] : [];
+  ];
 
   return { isValid, errors, endpoints };
 };
