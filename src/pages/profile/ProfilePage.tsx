@@ -31,6 +31,7 @@ import {
   isValidCredentialFile,
   formatFileSize
 } from '../../utils/identityUtils';
+import { getCurrentUser } from '../../mocks/sharedUserData';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -105,17 +106,17 @@ const ProfilePage: React.FC = () => {
     removeIdentity(identityId);
   }, [removeIdentity]);
 
-  // 模拟用户数据
-  const userData = {
-    name: '张三',
-    email: 'zhangsan@example.com',
+  // 从共享数据源获取当前用户数据
+  const userData = getCurrentUser() || {
+    name: '未知用户',
+    email: 'unknown@example.com',
     phone: '+86 138 0000 0000',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-    joinDate: '2024-01-15',
-    location: '北京市朝阳区',
-    department: '技术部',
-    position: '高级工程师',
-    status: 'active'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=unknown',
+    joinDate: '2024-01-01',
+    location: '未知',
+    department: '未知部门',
+    position: '未知职位',
+    status: 'active' as const
   };
 
   return (

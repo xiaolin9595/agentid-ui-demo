@@ -38,10 +38,10 @@ import {
   DEFAULT_AGENT_CONFIG,
   DEFAULT_AGENT_PERMISSIONS,
   USER_BINDING_OPTIONS,
-  MOCK_USERS,
   UserBinding,
   FaceBiometricFeatures
 } from '../../types/agent-upload';
+import { sharedUserData, MOCK_USERS } from '../../mocks/sharedUserData';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -49,13 +49,15 @@ const { Option } = Select;
 
 const DEMO_WATERMARK = '演示系统 - 用户绑定配置';
 
-// 模拟用户数据
-const DEMO_USERS = [
-  { id: 'user_001', name: '张三', email: 'zhangsan@example.com', department: '技术部' },
-  { id: 'user_002', name: '李四', email: 'lisi@example.com', department: '产品部' },
-  { id: 'user_003', name: '王五', email: 'wangwu@example.com', department: '设计部' },
-  { id: 'user_004', name: '赵六', email: 'zhaoliu@example.com', department: '运营部' }
-];
+// 从共享数据源获取用户列表
+const getUsersForConfig = () => {
+  return sharedUserData.getUsers().map(user => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    department: user.department
+  }));
+};
 
 const PERMISSION_DESCRIPTIONS: Record<string, string> = {
   read: '允许读取数据和文件',
@@ -232,7 +234,9 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
 
   const languageSuggestions = language ? COMMON_DEPENDENCIES[language.id as keyof typeof COMMON_DEPENDENCIES] || [] : [];
 
-  const selectedUser = DEMO_USERS.find(user => user.id === config.userBinding.boundUserId);
+  // 从共享数据源获取用户列表
+  const availableUsers = getUsersForConfig();
+  const selectedUser = availableUsers.find(user => user.id === config.userBinding.boundUserId);
 
   return (
     <div className="space-y-6">
@@ -276,7 +280,7 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
                 rules={[{ required: true, message: '请选择绑定的用户ID' }]}
               >
                 <Select placeholder="选择要绑定的用户ID">
-                  {MOCK_USERS.map((user) => (
+                  {availableUsers.map((user) => (
                     <Option key={user.id} value={user.id}>
                       <Space>
                         <Avatar size="small" icon={<UserOutlined />} />
