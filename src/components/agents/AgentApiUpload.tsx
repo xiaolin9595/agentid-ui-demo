@@ -51,7 +51,7 @@ const mockApiValidation = async (file: File): Promise<{
 
   // 直接通过验证，不检查规范内容
   const isValid = true;
-  const errors = [];
+  const errors: string[] = [];
 
   // 根据文件类型生成默认的API端点
   const fileName = file.name.toLowerCase();
@@ -121,31 +121,32 @@ const mockApiValidation = async (file: File): Promise<{
   } else {
     // 默认API端点
     endpoints = [
-    {
-      path: '/api/agent/status',
-      method: 'GET',
-      description: '获取Agent状态信息',
-      parameters: [],
-      responses: [{ statusCode: 200, description: '成功响应' }]
-    },
-    {
-      path: '/api/agent/execute',
-      method: 'POST',
-      description: '执行Agent任务',
-      parameters: [
-        {
-          name: 'task',
-          type: 'string',
-          required: true,
-          description: '要执行的任务'
-        }
-      ],
-      responses: [
-        { statusCode: 200, description: '执行成功' },
-        { statusCode: 400, description: '请求参数错误' }
-      ]
-    }
-  ];
+      {
+        path: '/api/agent/status',
+        method: 'GET',
+        description: '获取Agent状态信息',
+        parameters: [],
+        responses: [{ statusCode: 200, description: '成功响应' }]
+      },
+      {
+        path: '/api/agent/execute',
+        method: 'POST',
+        description: '执行Agent任务',
+        parameters: [
+          {
+            name: 'task',
+            type: 'string',
+            required: true,
+            description: '要执行的任务'
+          }
+        ],
+        responses: [
+          { statusCode: 200, description: '执行成功' },
+          { statusCode: 400, description: '请求参数错误' }
+        ]
+      }
+    ];
+  }
 
   return { isValid, errors, endpoints };
 };
