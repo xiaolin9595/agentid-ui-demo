@@ -6,7 +6,11 @@ import {
   GenerationProcess,
   GenerationStep,
   GenerationHistoryItem,
-  GenerationStats
+  GenerationStats,
+  ZKKYCProof,
+  ZKProofGenerationConfig,
+  ZKProofGenerationProcess,
+  ZKProofVerificationResult
 } from '@/types/identity';
 
 interface IdentityState {
@@ -19,6 +23,11 @@ interface IdentityState {
   // 生成的身份标识列表
   identities: GeneratedIdentity[];
 
+  // ZK-KYC证明相关
+  zkProofs: ZKKYCProof[];
+  currentZKProcess: ZKProofGenerationProcess | null;
+  zkProofConfig: ZKProofGenerationConfig;
+
   // 历史记录
   history: GenerationHistoryItem[];
 
@@ -27,6 +36,7 @@ interface IdentityState {
 
   // UI状态
   isLoading: boolean;
+  zkGenerating: boolean;
   error: string | null;
 
   // 动作
@@ -43,20 +53,38 @@ interface IdentityState {
   removeIdentity: (identityId: string) => void;
   clearIdentities: () => void;
 
+  // ZK-KYC证明相关动作
+  generateZKProof: (identityId: string, config: ZKProofGenerationConfig) => Promise<void>;
+  updateZKProcess: (process: ZKProofGenerationProcess) => void;
+  completeZKGeneration: (proof: ZKKYCProof) => void;
+  failZKGeneration: (error: string) => void;
+  resetZKProcess: () => void;
+
+  addZKProof: (proof: ZKKYCProof) => void;
+  removeZKProof: (proofId: string) => void;
+  getZKProofsByIdentity: (identityId: string) => ZKKYCProof[];
+  verifyZKProof: (proofId: string) => Promise<ZKProofVerificationResult>;
+  setZKProofConfig: (config: Partial<ZKProofGenerationConfig>) => void;
+
   addToHistory: (item: GenerationHistoryItem) => void;
   clearHistory: () => void;
 
   updateStats: () => void;
   setLoading: (loading: boolean) => void;
+  setZKGenerating: (generating: boolean) => void;
   setError: (error: string | null) => void;
 
   // 选择器
   getConfig: () => IdentityGenerationConfig;
   getCurrentProcess: () => GenerationProcess | null;
   getIdentities: () => GeneratedIdentity[];
+  getZKProofs: () => ZKKYCProof[];
+  getCurrentZKProcess: () => ZKProofGenerationProcess | null;
+  getZKProofConfig: () => ZKProofGenerationConfig;
   getHistory: () => GenerationHistoryItem[];
   getStats: () => GenerationStats | null;
   getIsLoading: () => boolean;
+  getZKGenerating: () => boolean;
   getError: () => string | null;
 }
 
@@ -69,6 +97,13 @@ const defaultConfig: IdentityGenerationConfig = {
   enableSteps: true,
   generateMultiple: false,
   count: 1
+};
+
+const defaultZKConfig: ZKProofGenerationConfig = {
+  proofType: 'comprehensive_kyc',
+  securityLevel: 'medium',
+  validityPeriod: 365, // 1年
+  includeDetailedInfo: true
 };
 
 const initialStats: GenerationStats = {
@@ -151,9 +186,13 @@ export const useIdentityStore = create<IdentityState>()(
           }
         }
       ],
+      zkProofs: [],
+      currentZKProcess: null,
+      zkProofConfig: defaultZKConfig,
       history: [],
       stats: initialStats,
       isLoading: false,
+      zkGenerating: false,
       error: null,
 
       // 配置管理
@@ -386,9 +425,211 @@ export const useIdentityStore = create<IdentityState>()(
         });
       },
 
+      // ZK-KYC证明相关管理
+      generateZKProof: async (identityId, config) => {
+        const state = get();
+        const identity = state.identities.find(id => id.identityId === identityId);
+
+        if (!identity) {
+          throw new Error('身份凭证不存在');
+        }
+
+        set({
+          zkGenerating: true,
+          error: null,
+          currentZKProcess: {
+            id: Date.now().toString(),
+            identityId,
+            config,
+            status: 'preparing',
+            progress: 0,
+            currentStep: 0,
+            steps: [
+              {
+                id: '1',
+                name: '准备身份数据',
+                description: '从身份凭证中提取必要信息',
+                status: 'pending',
+                progress: 0
+              },
+              {
+                id: '2',
+                name: '构建证明电路',
+                description: '根据选择的证明类型构建零知识电路',
+                status: 'pending',
+                progress: 0
+              },
+              {
+                id: '3',
+                name: '生成证明',
+                description: '计算零知识证明',
+                status: 'pending',
+                progress: 0
+              },
+              {
+                id: '4',
+                name: '验证证明',
+                description: '验证生成的证明有效性',
+                status: 'pending',
+                progress: 0
+              }
+            ],
+            startedAt: new Date().toISOString()
+          }
+        });
+
+        try {
+          // 模拟ZK证明生成过程
+          await simulateZKProofGeneration(state.currentZKProcess!, (updatedProcess) => {
+            get().updateZKProcess(updatedProcess);
+          });
+
+          // 生成模拟证明数据
+          const proof: ZKKYCProof = {
+            id: `zk_proof_${Date.now()}`,
+            identityId,
+            proofType: config.proofType,
+            proofData: {
+              publicInputs: generateMockPublicInputs(identity, config.proofType),
+              proof: generateMockProof(),
+              verificationKey: generateMockVerificationKey(),
+              circuitHash: generateMockCircuitHash()
+            },
+            verificationStatus: 'verified',
+            confidence: 0.85 + Math.random() * 0.1,
+            metadata: {
+              algorithm: 'Groth16',
+              version: '1.0.0',
+              generatedAt: new Date().toISOString(),
+              expiresAt: new Date(Date.now() + config.validityPeriod * 24 * 60 * 60 * 1000).toISOString(),
+              processingTime: 3000 + Math.random() * 2000,
+              gasUsed: 50000 + Math.floor(Math.random() * 50000),
+              transactionHash: generateMockTransactionHash(),
+              blockNumber: Math.floor(Math.random() * 1000000)
+            },
+            verifiedAt: new Date().toISOString(),
+            verifiedBy: 'ZK-KYC Verifier v1.0'
+          };
+
+          get().completeZKGeneration(proof);
+        } catch (error) {
+          get().failZKGeneration(error instanceof Error ? error.message : 'ZK证明生成失败');
+        } finally {
+          set({ zkGenerating: false });
+        }
+      },
+
+      updateZKProcess: (process) => {
+        set({ currentZKProcess: process });
+      },
+
+      completeZKGeneration: (proof) => {
+        set((state) => {
+          const newZKProofs = [...state.zkProofs, proof];
+
+          return {
+            currentZKProcess: {
+              ...state.currentZKProcess!,
+              status: 'completed',
+              result: proof,
+              completedAt: new Date().toISOString()
+            },
+            zkProofs: newZKProofs
+          };
+        });
+      },
+
+      failZKGeneration: (error) => {
+        set((state) => ({
+          currentZKProcess: state.currentZKProcess ? {
+            ...state.currentZKProcess,
+            status: 'failed',
+            error,
+            completedAt: new Date().toISOString()
+          } : null,
+          error
+        }));
+      },
+
+      resetZKProcess: () => {
+        set({
+          currentZKProcess: null,
+          error: null
+        });
+      },
+
+      addZKProof: (proof) => {
+        set((state) => ({
+          zkProofs: [...state.zkProofs, proof]
+        }));
+      },
+
+      removeZKProof: (proofId) => {
+        set((state) => ({
+          zkProofs: state.zkProofs.filter(proof => proof.id !== proofId)
+        }));
+      },
+
+      getZKProofsByIdentity: (identityId) => {
+        const state = get();
+        return state.zkProofs.filter(proof => proof.identityId === identityId);
+      },
+
+      verifyZKProof: async (proofId) => {
+        const state = get();
+        const proof = state.zkProofs.find(p => p.id === proofId);
+
+        if (!proof) {
+          throw new Error('证明不存在');
+        }
+
+        // 模拟验证过程
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const result: ZKProofVerificationResult = {
+          isValid: Math.random() > 0.1, // 90%成功率
+          proofId,
+          verifiedAt: new Date().toISOString(),
+          verifier: 'ZK-KYC Verifier v1.0',
+          confidence: 0.9 + Math.random() * 0.1,
+          details: {
+            publicInputsMatched: true,
+            proofFormatValid: true,
+            signatureValid: true,
+            timestampValid: true
+          }
+        };
+
+        // 更新证明状态
+        set((state) => ({
+          zkProofs: state.zkProofs.map(p =>
+            p.id === proofId
+              ? {
+                  ...p,
+                  verificationStatus: result.isValid ? 'verified' : 'failed',
+                  verifiedAt: result.verifiedAt,
+                  verifiedBy: result.verifier
+                }
+              : p
+          )
+        }));
+
+        return result;
+      },
+
+      setZKProofConfig: (newConfig) => {
+        set((state) => ({
+          zkProofConfig: { ...state.zkProofConfig, ...newConfig }
+        }));
+      },
+
       // UI状态管理
       setLoading: (loading) => {
         set({ isLoading: loading });
+      },
+
+      setZKGenerating: (generating) => {
+        set({ zkGenerating: generating });
       },
 
       setError: (error) => {
@@ -399,19 +640,160 @@ export const useIdentityStore = create<IdentityState>()(
       getConfig: () => get().config,
       getCurrentProcess: () => get().currentProcess,
       getIdentities: () => get().identities,
+      getZKProofs: () => get().zkProofs,
+      getCurrentZKProcess: () => get().currentZKProcess,
+      getZKProofConfig: () => get().zkProofConfig,
       getHistory: () => get().history,
       getStats: () => get().stats,
       getIsLoading: () => get().isLoading,
+      getZKGenerating: () => get().zkGenerating,
       getError: () => get().error
     }),
     {
       name: 'identity-store',
       partialize: (state) => ({
         identities: state.identities,
+        zkProofs: state.zkProofs,
         history: state.history,
         stats: state.stats,
-        config: state.config
+        config: state.config,
+        zkProofConfig: state.zkProofConfig
       })
     }
   )
 );
+
+// ZK-KYC证明生成的辅助函数
+async function simulateZKProofGeneration(
+  process: ZKProofGenerationProcess,
+  onUpdate: (process: ZKProofGenerationProcess) => void
+): Promise<void> {
+  const steps = [
+    { status: 'preparing', duration: 1000 },
+    { status: 'generating', duration: 2000 },
+    { status: 'verifying', duration: 1000 }
+  ];
+
+  for (let i = 0; i < steps.length; i++) {
+    const step = steps[i];
+    const stepIndex = i;
+
+    // 更新为当前步骤
+    let updatedProcess: ZKProofGenerationProcess = {
+      ...process,
+      status: step.status as ZKProofGenerationProcess['status'],
+      currentStep: stepIndex,
+      steps: process.steps.map((s, index) =>
+        index === stepIndex
+          ? { ...s, status: 'in_progress' as const, startTime: new Date().toISOString() }
+          : index < stepIndex
+            ? { ...s, status: 'completed' as const, endTime: new Date().toISOString() }
+            : s
+      )
+    };
+    onUpdate(updatedProcess);
+
+    // 模拟进度更新
+    const progressUpdates = 5;
+    for (let j = 1; j <= progressUpdates; j++) {
+      await new Promise(resolve => setTimeout(resolve, step.duration / progressUpdates));
+
+      updatedProcess = {
+        ...updatedProcess,
+        progress: ((stepIndex * 100) + (j * (100 / steps.length) / progressUpdates)) / 100,
+        steps: updatedProcess.steps.map((s, index) =>
+          index === stepIndex
+            ? { ...s, progress: (j * 100) / progressUpdates }
+            : s
+        )
+      };
+      onUpdate(updatedProcess);
+    }
+
+    // 完成当前步骤
+    updatedProcess = {
+      ...updatedProcess,
+      steps: updatedProcess.steps.map((s, index) =>
+        index === stepIndex
+          ? { ...s, status: 'completed' as const, progress: 100, endTime: new Date().toISOString() }
+          : s
+      )
+    };
+    onUpdate(updatedProcess);
+  }
+}
+
+function generateMockPublicInputs(
+  identity: GeneratedIdentity,
+  proofType: ZKKYCProof['proofType']
+): string[] {
+  const baseInputs = [
+    identity.identityId,
+    identity.hash,
+    identity.credentialData.name,
+    identity.credentialData.dateOfBirth
+  ];
+
+  switch (proofType) {
+    case 'age_verification':
+      return [
+        ...baseInputs,
+        calculateAge(identity.credentialData.dateOfBirth).toString(),
+        '18' // 最低年龄要求
+      ];
+    case 'nationality_verification':
+      return [
+        ...baseInputs,
+        identity.credentialData.nationality,
+        'CN' // 允许的国家代码
+      ];
+    case 'document_validity':
+      return [
+        ...baseInputs,
+        identity.credentialData.issuedDate,
+        identity.credentialData.expiryDate,
+        new Date().toISOString()
+      ];
+    case 'comprehensive_kyc':
+    default:
+      return [
+        ...baseInputs,
+        identity.credentialData.nationality,
+        calculateAge(identity.credentialData.dateOfBirth).toString(),
+        identity.credentialData.issuedDate,
+        identity.credentialData.expiryDate,
+        identity.credentialData.documentNumber
+      ];
+  }
+}
+
+function calculateAge(birthDate: string): number {
+  const birth = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+
+  return age;
+}
+
+function generateMockProof(): string[] {
+  return Array.from({ length: 8 }, () =>
+    '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
+  );
+}
+
+function generateMockVerificationKey(): string {
+  return '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+}
+
+function generateMockCircuitHash(): string {
+  return '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+}
+
+function generateMockTransactionHash(): string {
+  return '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+}
