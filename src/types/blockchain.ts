@@ -90,6 +90,13 @@ export interface IdentityContract {
     userId: string;
     tags: string[];
     description?: string;
+    zkProof?: {
+      proofId: string;
+      proofType: string;
+      verificationStatus: string;
+      confidence: number;
+      generatedAt: string;
+    };
   };
   blockchain: {
     network: string;

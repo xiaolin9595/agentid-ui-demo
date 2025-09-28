@@ -14,6 +14,8 @@ import {
   Col,
   Steps,
   Spin,
+  Switch,
+  Progress,
   message
 } from 'antd';
 import {
@@ -29,6 +31,12 @@ import {
   IdentityCredential,
   BlockchainUser as User
 } from '../../types/blockchain';
+import { useIdentityStore } from '../../store/identityStore';
+import {
+  ZKKYCProof,
+  ZKProofGenerationConfig,
+  GeneratedIdentity
+} from '../../types/identity';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -142,16 +150,45 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
   const [registrationResult, setRegistrationResult] = useState<ContractRegistrationResult | null>(null);
   const [customTags, setCustomTags] = useState<string[]>([]);
 
+  // ZK-KYC相关状态
+  const [zkConfig, setZkConfig] = useState<ZKProofGenerationConfig>({
+    proofType: 'comprehensive_kyc',
+    securityLevel: 'medium',
+    validityPeriod: 365,
+    includeDetailedInfo: true
+  });
+  const [selectedIdentity, setSelectedIdentity] = useState<GeneratedIdentity | null>(null);
+  const [zkProof, setZkProof] = useState<ZKKYCProof | null>(null);
+  const [showZKConfig, setShowZKConfig] = useState(false);
+
+  // 从identityStore获取状态和方法
+  const {
+    identities,
+    zkProofs,
+    currentZKProcess,
+    zkGenerating,
+    generateZKProof,
+    getZKProofsByIdentity,
+    setZKProofConfig
+  } = useIdentityStore();
+
   const handleSubmit = async (values: ContractRegistrationForm) => {
     setLoading(true);
     try {
+      // 如果还没有生成ZK证明，先生成ZK-KYC证明
+      if (!zkProof && selectedIdentity) {
+        setCurrentStep(1); // 跳转到ZK-KYC证明步骤
+        setLoading(false);
+        return;
+      }
+
       // 模拟合约注册过程
       const result = await simulateContractRegistration(values);
       setRegistrationResult(result);
 
       if (result.success) {
         message.success('身份合约注册成功！');
-        setCurrentStep(2);
+        setCurrentStep(3);
 
         // 查找选中的身份凭证和用户
         const selectedCredential = MOCK_IDENTITY_CREDENTIALS.find(cred => cred.id === values.identityCredential);
@@ -171,8 +208,15 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
             identityType: values.identityType,
             identityCredential: selectedCredential || MOCK_IDENTITY_CREDENTIALS[0],
             userId: values.userId,
-            tags: [...values.tags, ...customTags],
-            description: values.description
+            tags: [...values.tags, ...customTags, 'ZK-KYC验证'],
+            description: values.description,
+            zkProof: zkProof ? {
+              proofId: zkProof.id,
+              proofType: zkProof.proofType,
+              verificationStatus: zkProof.verificationStatus,
+              confidence: zkProof.confidence,
+              generatedAt: zkProof.metadata.generatedAt
+            } : undefined
           },
           blockchain: {
             network: 'Ethereum Testnet',
@@ -206,7 +250,54 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
     setRegistrationResult(null);
     setCurrentStep(0);
     setCustomTags([]);
+    setZkProof(null);
+    setSelectedIdentity(null);
+    setShowZKConfig(false);
   };
+
+  // ZK-KYC相关处理函数
+  const handleGenerateZKProof = async () => {
+    if (!selectedIdentity) {
+      message.error('请先选择身份凭证');
+      return;
+    }
+
+    try {
+      await generateZKProof(selectedIdentity.identityId, zkConfig);
+      message.success('ZK-KYC证明生成成功！');
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'ZK-KYC证明生成失败');
+    }
+  };
+
+  const handleIdentitySelect = (identityId: string) => {
+    const identity = identities.find(id => id.identityId === identityId);
+    setSelectedIdentity(identity || null);
+
+    // 清除之前的ZK证明
+    setZkProof(null);
+
+    // 检查是否已有ZK证明
+    if (identity) {
+      const existingProofs = getZKProofsByIdentity(identity.identityId);
+      if (existingProofs.length > 0) {
+        setZkProof(existingProofs[0]); // 使用最新的证明
+      }
+    }
+  };
+
+  const handleZKConfigChange = (key: keyof ZKProofGenerationConfig, value: any) => {
+    const newConfig = { ...zkConfig, [key]: value };
+    setZkConfig(newConfig);
+    setZKProofConfig(newConfig);
+  };
+
+  // 监听ZK证明生成过程
+  React.useEffect(() => {
+    if (currentZKProcess && currentZKProcess.status === 'completed' && currentZKProcess.result) {
+      setZkProof(currentZKProcess.result);
+    }
+  }, [currentZKProcess]);
 
   const getStepStatus = (step: number) => {
     if (currentStep > step) return 'finish';
@@ -224,13 +315,18 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
             icon={<FileTextOutlined />}
           />
           <Step
-            title="部署合约"
+            title="ZK-KYC证明"
             status={getStepStatus(1)}
             icon={<LoadingOutlined />}
           />
           <Step
-            title="完成注册"
+            title="部署合约"
             status={getStepStatus(2)}
+            icon={<LoadingOutlined />}
+          />
+          <Step
+            title="完成注册"
+            status={getStepStatus(3)}
             icon={<CheckCircleOutlined />}
           />
         </Steps>
@@ -367,6 +463,140 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
                 />
               </Form.Item>
             </Col>
+
+            {/* ZK-KYC身份凭证选择 */}
+            <Col span={24}>
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Text strong>ZK-KYC身份凭证</Text>
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={() => setShowZKConfig(!showZKConfig)}
+                  >
+                    {showZKConfig ? '收起配置' : '展开配置'}
+                  </Button>
+                </div>
+
+                <Select
+                  placeholder="选择身份凭证用于ZK-KYC证明"
+                  style={{ width: '100%' }}
+                  onChange={handleIdentitySelect}
+                  value={selectedIdentity?.identityId}
+                >
+                  {identities.map(identity => (
+                    <Option key={identity.identityId} value={identity.identityId}>
+                      <div>
+                        <div className="font-medium">{identity.identityId}</div>
+                        <div className="text-xs text-gray-500">
+                          {identity.credentialData.name} - {identity.credentialData.type}
+                          <Tag color="blue" className="ml-2">
+                            置信度: {(identity.confidence * 100).toFixed(1)}%
+                          </Tag>
+                        </div>
+                      </div>
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+
+              {/* ZK-KYC配置面板 */}
+              {showZKConfig && (
+                <Card size="small" className="mb-4">
+                  <Space direction="vertical" className="w-full">
+                    <div>
+                      <Text strong>证明类型</Text>
+                      <Select
+                        style={{ width: '100%', marginTop: 4 }}
+                        value={zkConfig.proofType}
+                        onChange={(value) => handleZKConfigChange('proofType', value)}
+                      >
+                        <Option value="age_verification">年龄验证</Option>
+                        <Option value="nationality_verification">国籍验证</Option>
+                        <Option value="document_validity">证件有效性</Option>
+                        <Option value="comprehensive_kyc">综合KYC</Option>
+                      </Select>
+                    </div>
+
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <div>
+                          <Text strong>安全级别</Text>
+                          <Select
+                            style={{ width: '100%', marginTop: 4 }}
+                            value={zkConfig.securityLevel}
+                            onChange={(value) => handleZKConfigChange('securityLevel', value)}
+                          >
+                            <Option value="low">低</Option>
+                            <Option value="medium">中</Option>
+                            <Option value="high">高</Option>
+                          </Select>
+                        </div>
+                      </Col>
+                      <Col span={12}>
+                        <div>
+                          <Text strong>有效期（天）</Text>
+                          <Input
+                            type="number"
+                            style={{ marginTop: 4 }}
+                            value={zkConfig.validityPeriod}
+                            onChange={(e) => handleZKConfigChange('validityPeriod', parseInt(e.target.value) || 365)}
+                          />
+                        </div>
+                      </Col>
+                    </Row>
+
+                    <div>
+                      <Text strong>包含详细信息</Text>
+                      <Switch
+                        style={{ marginLeft: 8 }}
+                        checked={zkConfig.includeDetailedInfo}
+                        onChange={(checked) => handleZKConfigChange('includeDetailedInfo', checked)}
+                      />
+                    </div>
+
+                    {selectedIdentity && (
+                      <div className="mt-4">
+                        <Button
+                          type="primary"
+                          loading={zkGenerating}
+                          onClick={handleGenerateZKProof}
+                          disabled={!selectedIdentity}
+                        >
+                          {zkGenerating ? '生成中...' : '生成ZK-KYC证明'}
+                        </Button>
+                      </div>
+                    )}
+                  </Space>
+                </Card>
+              )}
+
+              {/* ZK证明状态显示 */}
+              {zkProof && (
+                <Alert
+                  message="ZK-KYC证明已生成"
+                  description={`证明类型: ${zkProof.proofType}, 置信度: ${(zkProof.confidence * 100).toFixed(1)}%`}
+                  type="success"
+                  showIcon
+                  className="mb-4"
+                />
+              )}
+
+              {currentZKProcess && currentZKProcess.status === 'generating' && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Text>正在生成ZK-KYC证明...</Text>
+                    <Text type="secondary">{(currentZKProcess.progress * 100).toFixed(0)}%</Text>
+                  </div>
+                  <Progress percent={currentZKProcess.progress * 100} size="small" />
+                  <div className="mt-2">
+                    <Text type="secondary">
+                      {currentZKProcess.steps[currentZKProcess.currentStep]?.name}
+                    </Text>
+                  </div>
+                </div>
+              )}
+            </Col>
           </Row>
 
           <div className="flex justify-end space-x-4">
@@ -386,6 +616,99 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
       )}
 
       {currentStep === 1 && (
+        <div className="py-8">
+          <Title level={4} className="text-center mb-6">ZK-KYC证明生成</Title>
+
+          {!selectedIdentity ? (
+            <Alert
+              message="请选择身份凭证"
+              description="请返回第一步选择身份凭证以生成ZK-KYC证明"
+              type="warning"
+              showIcon
+              className="mb-4"
+            />
+          ) : (
+            <div>
+              <Card size="small" className="mb-4">
+                <Space direction="vertical" className="w-full">
+                  <div>
+                    <Text strong>选中的身份凭证:</Text>
+                    <div className="mt-1">
+                      <Text>{selectedIdentity.identityId}</Text>
+                      <div className="text-sm text-gray-500">
+                        {selectedIdentity.credentialData.name} - {selectedIdentity.credentialData.type}
+                      </div>
+                    </div>
+                  </div>
+
+                  {!zkProof ? (
+                    <div className="text-center">
+                      <Button
+                        type="primary"
+                        size="large"
+                        loading={zkGenerating}
+                        onClick={handleGenerateZKProof}
+                        className="mb-4"
+                      >
+                        {zkGenerating ? '生成中...' : '生成ZK-KYC证明'}
+                      </Button>
+                      <div>
+                        <Text type="secondary">
+                          点击按钮开始生成零知识KYC证明
+                        </Text>
+                      </div>
+                    </div>
+                  ) : (
+                    <Alert
+                      message="ZK-KYC证明已生成"
+                      description={
+                        <div>
+                          <div>证明类型: {zkProof.proofType}</div>
+                          <div>置信度: {(zkProof.confidence * 100).toFixed(1)}%</div>
+                          <div>验证状态: {zkProof.verificationStatus === 'verified' ? '已验证' : '待验证'}</div>
+                          <div>有效期至: {new Date(zkProof.metadata.expiresAt).toLocaleDateString()}</div>
+                        </div>
+                      }
+                      type="success"
+                      showIcon
+                    />
+                  )}
+
+                  {currentZKProcess && currentZKProcess.status === 'generating' && (
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Text>正在生成ZK-KYC证明...</Text>
+                        <Text type="secondary">{(currentZKProcess.progress * 100).toFixed(0)}%</Text>
+                      </div>
+                      <Progress percent={currentZKProcess.progress * 100} />
+                      <div className="mt-2">
+                        <Text type="secondary">
+                          {currentZKProcess.steps[currentZKProcess.currentStep]?.name}
+                        </Text>
+                      </div>
+                    </div>
+                  )}
+                </Space>
+              </Card>
+
+              <div className="flex justify-center space-x-4">
+                <Button onClick={() => setCurrentStep(0)}>
+                  返回上一步
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => setCurrentStep(2)}
+                  disabled={!zkProof}
+                >
+                  下一步：部署合约
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {currentStep === 2 && (
         <div className="text-center py-8">
           <Spin size="large" />
           <div className="mt-4">
@@ -397,7 +720,7 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
         </div>
       )}
 
-      {currentStep === 2 && registrationResult && (
+      {currentStep === 3 && registrationResult && (
         <div>
           <Alert
             message="合约注册成功"
@@ -408,7 +731,7 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
           />
 
           <Row gutter={[16, 16]}>
-            <Col span={12}>
+            <Col span={8}>
               <Card size="small" title="合约信息">
                 <Space direction="vertical" className="w-full">
                   <div>
@@ -435,7 +758,7 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
               </Card>
             </Col>
 
-            <Col span={12}>
+            <Col span={8}>
               <Card size="small" title="网络信息">
                 <Space direction="vertical" className="w-full">
                   <div>
@@ -450,6 +773,39 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
                     <Text type="secondary">确认数:</Text>
                     <Text> 12/12 确认</Text>
                   </div>
+                </Space>
+              </Card>
+            </Col>
+
+            <Col span={8}>
+              <Card size="small" title="ZK-KYC证明">
+                <Space direction="vertical" className="w-full">
+                  {zkProof ? (
+                    <>
+                      <div>
+                        <Text type="secondary">证明类型:</Text>
+                        <Text> {zkProof.proofType}</Text>
+                      </div>
+                      <div>
+                        <Text type="secondary">验证状态:</Text>
+                        <Tag color={zkProof.verificationStatus === 'verified' ? 'success' : 'warning'}>
+                          {zkProof.verificationStatus === 'verified' ? '已验证' : '待验证'}
+                        </Tag>
+                      </div>
+                      <div>
+                        <Text type="secondary">置信度:</Text>
+                        <Text> {(zkProof.confidence * 100).toFixed(1)}%</Text>
+                      </div>
+                      <div>
+                        <Text type="secondary">有效期至:</Text>
+                        <Text> {new Date(zkProof.metadata.expiresAt).toLocaleDateString()}</Text>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center">
+                      <Text type="secondary">未生成ZK-KYC证明</Text>
+                    </div>
+                  )}
                 </Space>
               </Card>
             </Col>
