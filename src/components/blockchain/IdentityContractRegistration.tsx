@@ -894,30 +894,15 @@ async function simulateContractRegistration(
   values: ContractRegistrationForm,
   progressCallback?: (progress: number) => void
 ): Promise<ContractRegistrationResult> {
-  // 快速部署延迟设置
-  const baseDelay = 100;
-  const randomDelay = 50;
-  const totalDelay = baseDelay + Math.random() * randomDelay;
+  // 瞬时部署，无延迟
+  progressCallback?.(33);
+  await new Promise(resolve => setTimeout(resolve, 5));
+  progressCallback?.(66);
+  await new Promise(resolve => setTimeout(resolve, 5));
+  progressCallback?.(100);
 
-  // 快速部署步骤
-  const steps = [
-    '初始化合约参数',
-    '发送交易到网络',
-    '验证合约部署'
-  ];
-
-  // 分步骤更新进度
-  for (let i = 0; i < steps.length; i++) {
-    const stepDelay = totalDelay / steps.length;
-    await new Promise(resolve => setTimeout(resolve, stepDelay));
-
-    const progress = ((i + 1) / steps.length) * 100;
-    progressCallback?.(progress);
-  }
-
-  // 模拟98%成功率
-  const successRate = 0.98;
-  if (Math.random() < successRate) {
+  // 100%成功率，直接成功
+  if (true) {
     return {
       success: true,
       contractAddress: generateContractAddress(),
