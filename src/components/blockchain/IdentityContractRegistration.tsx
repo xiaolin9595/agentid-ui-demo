@@ -149,6 +149,9 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
   const [currentStep, setCurrentStep] = useState(0);
   const [registrationResult, setRegistrationResult] = useState<ContractRegistrationResult | null>(null);
   const [customTags, setCustomTags] = useState<string[]>([]);
+  const [fastDeployMode, setFastDeployMode] = useState(false);
+  const [deploymentProgress, setDeploymentProgress] = useState(0);
+  const [deploymentTimeout, setDeploymentTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // ZK-KYC相关状态
   const [zkConfig, setZkConfig] = useState<ZKProofGenerationConfig>({
@@ -174,7 +177,15 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
 
   const handleSubmit = async (values: ContractRegistrationForm) => {
     setLoading(true);
+    setDeploymentProgress(0);
+
     try {
+      // 清理之前的超时定时器
+      if (deploymentTimeout) {
+        clearTimeout(deploymentTimeout);
+        setDeploymentTimeout(null);
+      }
+
       // 如果还没有生成ZK证明，先生成ZK-KYC证明
       if (!zkProof && selectedIdentity) {
         setCurrentStep(1); // 跳转到ZK-KYC证明步骤
@@ -182,9 +193,26 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
         return;
       }
 
+      // 设置超时处理
+      const timeout = setTimeout(() => {
+        if (currentStep === 2) {
+          message.warning('部署超时，请检查网络连接或稍后重试');
+          setCurrentStep(0);
+          setLoading(false);
+          setDeploymentProgress(0);
+        }
+      }, 30000); // 30秒超时
+      setDeploymentTimeout(timeout);
+
       // 模拟合约注册过程
-      const result = await simulateContractRegistration(values);
+      const result = await simulateContractRegistration(values, fastDeployMode, setDeploymentProgress);
       setRegistrationResult(result);
+
+      // 清除超时定时器
+      if (deploymentTimeout) {
+        clearTimeout(deploymentTimeout);
+        setDeploymentTimeout(null);
+      }
 
       if (result.success) {
         message.success('身份合约注册成功！');
@@ -237,6 +265,11 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
       onError?.(errorMessage);
     } finally {
       setLoading(false);
+      setDeploymentProgress(0);
+      if (deploymentTimeout) {
+        clearTimeout(deploymentTimeout);
+        setDeploymentTimeout(null);
+      }
     }
   };
 
@@ -253,6 +286,12 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
     setZkProof(null);
     setSelectedIdentity(null);
     setShowZKConfig(false);
+    setFastDeployMode(false);
+    setDeploymentProgress(0);
+    if (deploymentTimeout) {
+      clearTimeout(deploymentTimeout);
+      setDeploymentTimeout(null);
+    }
   };
 
   // ZK-KYC相关处理函数
@@ -298,6 +337,15 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
       setZkProof(currentZKProcess.result);
     }
   }, [currentZKProcess]);
+
+  // 清理超时定时器
+  React.useEffect(() => {
+    return () => {
+      if (deploymentTimeout) {
+        clearTimeout(deploymentTimeout);
+      }
+    };
+  }, [deploymentTimeout]);
 
   const getStepStatus = (step: number) => {
     if (currentStep > step) return 'finish';
@@ -462,6 +510,32 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
                   showCount
                 />
               </Form.Item>
+            </Col>
+
+            <Col span={24}>
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Text strong>部署模式</Text>
+                  <div className="flex items-center space-x-2">
+                    <Text>快速部署</Text>
+                    <Switch
+                      checked={fastDeployMode}
+                      onChange={setFastDeployMode}
+                      checkedChildren="快速"
+                      unCheckedChildren="正常"
+                    />
+                  </div>
+                </div>
+                {fastDeployMode && (
+                  <Alert
+                    message="快速部署模式已启用"
+                    description="部署过程将显著加快，适合演示和测试环境"
+                    type="info"
+                    showIcon
+                    className="mb-2"
+                  />
+                )}
+              </div>
             </Col>
 
             {/* ZK-KYC身份凭证选择 */}
@@ -716,6 +790,34 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
             <Paragraph type="secondary">
               请稍候，系统正在区块链上部署您的身份合约
             </Paragraph>
+
+            {deploymentProgress > 0 && (
+              <div className="mt-6 max-w-md mx-auto">
+                <div className="flex items-center justify-between mb-2">
+                  <Text>部署进度</Text>
+                  <Text type="secondary">{deploymentProgress.toFixed(0)}%</Text>
+                </div>
+                <Progress percent={deploymentProgress} size="small" className="mb-2" />
+                <Text type="secondary" className="text-sm">
+                  {deploymentProgress < 20 && '初始化合约参数...'}
+                  {deploymentProgress >= 20 && deploymentProgress < 40 && '编译合约代码...'}
+                  {deploymentProgress >= 40 && deploymentProgress < 60 && '估算Gas费用...'}
+                  {deploymentProgress >= 60 && deploymentProgress < 80 && '发送交易到网络...'}
+                  {deploymentProgress >= 80 && deploymentProgress < 100 && '等待区块确认...'}
+                  {deploymentProgress >= 100 && '验证合约部署...'}
+                </Text>
+              </div>
+            )}
+
+            {fastDeployMode && (
+              <Alert
+                message="快速部署模式"
+                description="当前使用快速部署模式，部署过程已加速"
+                type="info"
+                showIcon
+                className="mt-4 max-w-md mx-auto"
+              />
+            )}
           </div>
         </div>
       )}
@@ -829,13 +931,37 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
 
 // 辅助函数
 async function simulateContractRegistration(
-  values: ContractRegistrationForm
+  values: ContractRegistrationForm,
+  fastMode: boolean = false,
+  progressCallback?: (progress: number) => void
 ): Promise<ContractRegistrationResult> {
-  // 模拟网络延迟
-  await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 2000));
+  // 根据模式设置延迟时间
+  const baseDelay = fastMode ? 300 : 1500;
+  const randomDelay = fastMode ? 200 : 2000;
+  const totalDelay = baseDelay + Math.random() * randomDelay;
 
-  // 模拟90%成功率
-  if (Math.random() < 0.9) {
+  // 模拟部署进度
+  const steps = [
+    '初始化合约参数',
+    '编译合约代码',
+    '估算Gas费用',
+    '发送交易到网络',
+    '等待区块确认',
+    '验证合约部署'
+  ];
+
+  // 分步骤更新进度
+  for (let i = 0; i < steps.length; i++) {
+    const stepDelay = totalDelay / steps.length;
+    await new Promise(resolve => setTimeout(resolve, stepDelay));
+
+    const progress = ((i + 1) / steps.length) * 100;
+    progressCallback?.(progress);
+  }
+
+  // 模拟95%成功率（快速模式成功率更高）
+  const successRate = fastMode ? 0.98 : 0.9;
+  if (Math.random() < successRate) {
     return {
       success: true,
       contractAddress: generateContractAddress(),
