@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Agent, AgentMetrics, AgentPaginationParams, AgentFilterParams, AgentSortParams } from '../types/agent';
 import { AgentCreateInfo, AgentApiSpec, AgentCodePackage } from '../types/agent-upload';
 import { sharedAgentData } from '../mocks/sharedAgentData';
+import { useAuthStore } from './authStore';
 
 interface AgentState {
   // Agent数据
@@ -103,12 +104,16 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   createAgent: async (agentData) => {
     const { basicInfo, apiSpec, codePackage } = agentData;
     const state = get();
+    const authState = useAuthStore.getState();
 
     set({ isCreating: true, error: null });
 
     try {
       // 模拟创建延迟
       await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // 获取当前用户ID
+      const currentUserId = authState.user?.userId || authState.user?.id || 'demo_user_001';
 
       // 生成新的Agent
       const newAgent: Agent = {
@@ -119,7 +124,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         codeHash: `0x${Math.random().toString(16).substr(2, 64)}`,
         profileHash: `0x${Math.random().toString(16).substr(2, 64)}`,
         status: 'active',
-        boundUser: 'current_user', // 模拟当前用户
+        boundUser: currentUserId,
         boundAt: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -127,7 +132,10 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         language: codePackage.language.id,
         config: {
           permissions: basicInfo.config.permissions.map(p => p as any),
-          userBinding: basicInfo.config.userBinding
+          userBinding: {
+            ...basicInfo.config.userBinding,
+            boundUserId: currentUserId
+          }
         },
         permissions: basicInfo.config.permissions.map(id => ({
           id: id as any,

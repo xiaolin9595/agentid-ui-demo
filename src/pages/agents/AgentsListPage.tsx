@@ -60,6 +60,18 @@ const AgentsListPage: React.FC = () => {
     fetchAgents();
   }, []);
 
+  // 监听路由变化，当从创建页面返回时刷新数据
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchAgents();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
   const handleCreateAgent = () => {
     navigate('/agents/create');
   };
