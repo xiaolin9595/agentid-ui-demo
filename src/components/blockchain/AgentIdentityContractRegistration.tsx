@@ -109,6 +109,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
   const [registrationResult, setRegistrationResult] = useState<AgentContractRegistrationResult | null>(null);
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<MockAgent | null>(null);
+  const [generatedAgentId, setGeneratedAgentId] = useState<string>('');
   const [completedAgentInfo, setCompletedAgentInfo] = useState<BlockchainAgent | null>(null);
   const [completedContract, setCompletedContract] = useState<AgentIdentityContract | null>(null);
 
@@ -141,7 +142,22 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
         model: agent.model,
         description: agent.description
       });
+
+      // 生成AgentID
+      const newAgentId = generateAgentId(agent);
+      setGeneratedAgentId(newAgentId);
+    } else {
+      setGeneratedAgentId('');
     }
+  };
+
+  // 生成AgentID的函数
+  const generateAgentId = (agent: MockAgent): string => {
+    const timestamp = Date.now().toString();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const agentNameHash = agent.name.substring(0, 8).toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    return `agent_${agentNameHash}_${timestamp.slice(-6)}_${randomSuffix}`;
   };
 
   const handleSubmit = async (values: AgentContractRegistrationForm) => {
@@ -230,6 +246,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
     setCurrentStep(0);
     setCustomTags([]);
     setSelectedAgent(null);
+    setGeneratedAgentId('');
     setCompletedAgentInfo(null);
     setCompletedContract(null);
   };
@@ -375,6 +392,27 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
                     <Text type="secondary">描述:</Text>
                     <Paragraph className="text-sm">{selectedAgent.description}</Paragraph>
                   </div>
+                </Card>
+              </Col>
+
+              {/* Agent ID 生成显示 */}
+              <Col span={24}>
+                <Card size="small" title="生成的Agent ID">
+                  <Space direction="vertical" className="w-full">
+                    <div>
+                      <Text type="secondary">Agent ID:</Text>
+                      <div className="bg-gray-50 p-2 rounded font-mono text-sm">
+                        {generatedAgentId}
+                      </div>
+                    </div>
+                    <Alert
+                      message="Agent ID已生成"
+                      description="此Agent ID将用于区块链合约注册，具有唯一标识性"
+                      type="info"
+                      showIcon
+                      size="small"
+                    />
+                  </Space>
                 </Card>
               </Col>
             )}
