@@ -149,7 +149,7 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
   const [currentStep, setCurrentStep] = useState(0);
   const [registrationResult, setRegistrationResult] = useState<ContractRegistrationResult | null>(null);
   const [customTags, setCustomTags] = useState<string[]>([]);
-  const [fastDeployMode, setFastDeployMode] = useState(false);
+  const [fastDeployMode, setFastDeployMode] = useState(true);
   const [deploymentProgress, setDeploymentProgress] = useState(0);
   const [deploymentTimeout, setDeploymentTimeout] = useState<NodeJS.Timeout | null>(null);
 
@@ -528,8 +528,8 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
                 </div>
                 {fastDeployMode && (
                   <Alert
-                    message="快速部署模式已启用"
-                    description="部署过程将显著加快，适合演示和测试环境"
+                    message="快速部署模式（默认）"
+                    description="部署过程已优化，约0.15秒完成。可切换为正常模式体验完整流程。"
                     type="info"
                     showIcon
                     className="mb-2"
@@ -799,12 +799,22 @@ export const IdentityContractRegistration: React.FC<IdentityContractRegistration
                 </div>
                 <Progress percent={deploymentProgress} size="small" className="mb-2" />
                 <Text type="secondary" className="text-sm">
-                  {deploymentProgress < 20 && '初始化合约参数...'}
-                  {deploymentProgress >= 20 && deploymentProgress < 40 && '编译合约代码...'}
-                  {deploymentProgress >= 40 && deploymentProgress < 60 && '估算Gas费用...'}
-                  {deploymentProgress >= 60 && deploymentProgress < 80 && '发送交易到网络...'}
-                  {deploymentProgress >= 80 && deploymentProgress < 100 && '等待区块确认...'}
-                  {deploymentProgress >= 100 && '验证合约部署...'}
+                  {fastDeployMode ? (
+                    <>
+                      {deploymentProgress < 33 && '初始化合约参数...'}
+                      {deploymentProgress >= 33 && deploymentProgress < 66 && '发送交易到网络...'}
+                      {deploymentProgress >= 66 && deploymentProgress < 100 && '验证合约部署...'}
+                    </>
+                  ) : (
+                    <>
+                      {deploymentProgress < 20 && '初始化合约参数...'}
+                      {deploymentProgress >= 20 && deploymentProgress < 40 && '编译合约代码...'}
+                      {deploymentProgress >= 40 && deploymentProgress < 60 && '估算Gas费用...'}
+                      {deploymentProgress >= 60 && deploymentProgress < 80 && '发送交易到网络...'}
+                      {deploymentProgress >= 80 && deploymentProgress < 100 && '等待区块确认...'}
+                      {deploymentProgress >= 100 && '验证合约部署...'}
+                    </>
+                  )}
                 </Text>
               </div>
             )}
@@ -935,13 +945,17 @@ async function simulateContractRegistration(
   fastMode: boolean = false,
   progressCallback?: (progress: number) => void
 ): Promise<ContractRegistrationResult> {
-  // 根据模式设置延迟时间
-  const baseDelay = fastMode ? 300 : 1500;
-  const randomDelay = fastMode ? 200 : 2000;
+  // 根据模式设置延迟时间 - 大幅减少快速模式延迟
+  const baseDelay = fastMode ? 100 : 1500;
+  const randomDelay = fastMode ? 50 : 2000;
   const totalDelay = baseDelay + Math.random() * randomDelay;
 
-  // 模拟部署进度
-  const steps = [
+  // 模拟部署进度 - 快速模式下减少步骤
+  const steps = fastMode ? [
+    '初始化合约参数',
+    '发送交易到网络',
+    '验证合约部署'
+  ] : [
     '初始化合约参数',
     '编译合约代码',
     '估算Gas费用',
