@@ -35,26 +35,25 @@ import {
   AgentCapability
 } from '../../types/blockchain';
 import { useIdentityStore } from '../../store/identityStore';
-import { sharedAgentData } from '../../mocks/sharedAgentData';
+import { useAgentStore } from '../../store/agentStore';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 const { Step } = Steps;
 const { Option } = Select;
 
-// 从共享数据源获取Agent列表
-const getMockAgents = (): MockAgent[] => {
-  const sharedAgents = sharedAgentData.getAgents();
-  return sharedAgents.map(agent => ({
+// 从AgentStore获取真实的Agent列表
+const getStoreAgents = (agents: any[]): MockAgent[] => {
+  return agents.map(agent => ({
     id: agent.id,
     name: agent.name,
-    type: 'AI Assistant',
-    capabilities: ['私人助理', '工作助理', '学习助理'],
+    type: 'AI Assistant' as BlockchainAgentType,
+    capabilities: (agent.specialties || ['私人助理', '工作助理', '学习助理']) as AgentCapability[],
     description: agent.description,
     version: '1.0.0',
     model: agent.language || 'GPT-4',
     apiEndpoint: 'https://api.example.com/v1',
-    status: agent.status as 'active' | 'inactive' | 'development' | 'deprecated',
+    status: (agent.status as 'active' | 'inactive' | 'development' | 'deprecated') || 'active',
     owner: agent.boundUser || 'Unknown'
   }));
 };
@@ -113,16 +112,23 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
   const [completedAgentInfo, setCompletedAgentInfo] = useState<BlockchainAgent | null>(null);
   const [completedContract, setCompletedContract] = useState<AgentIdentityContract | null>(null);
 
-  // 从共享数据源获取Agent列表
-  const mockAgents = getMockAgents();
-
   // 从identityStore获取数据和操作
   const {
     identities
   } = useIdentityStore();
 
+  // 从AgentStore获取Agent列表
+  const {
+    agents,
+    fetchAgents,
+    loading: agentsLoading
+  } = useAgentStore();
+
+  // 将Store中的Agent转换为选择器需要的格式
+  const storeAgents = getStoreAgents(agents);
+
   const handleAgentChange = (agentId: string) => {
-    const agent = mockAgents.find(a => a.id === agentId);
+    const agent = storeAgents.find(a => a.id === agentId);
     setSelectedAgent(agent || null);
 
     if (agent) {
@@ -150,7 +156,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
         setCurrentStep(3); // 进入完成步骤
 
         // 查找选中的Agent
-        const selectedAgentData = mockAgents.find(agent => agent.id === values.agentId);
+        const selectedAgentData = storeAgents.find(agent => agent.id === values.agentId);
 
         // 创建Agent对象
         const agentInfo: BlockchainAgent = {
@@ -229,6 +235,14 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
   };
 
   
+  // 初始化时获取Agent列表
+  React.useEffect(() => {
+    if (agents.length === 0) {
+      fetchAgents();
+    }
+  }, [agents.length, fetchAgents]);
+
+
   const getStepStatus = (step: number) => {
     if (currentStep > step) return 'finish';
     if (currentStep === step) return 'process';
@@ -271,7 +285,7 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
             form.setFieldsValue(values);
           }}
           initialValues={{
-            agentId: mockAgents[0]?.id || '',
+            agentId: storeAgents[0]?.id || '',
             contractName: '',
             agentType: '',
             capabilities: [],
@@ -294,8 +308,10 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
                 <Select
                   placeholder="选择要注册的Agent"
                   onChange={handleAgentChange}
+                  loading={agentsLoading}
+                  notFoundContent={agentsLoading ? <Spin size="small" /> : "暂无可用Agent，请先创建Agent"}
                 >
-                  {mockAgents.map(agent => (
+                  {storeAgents.map(agent => (
                     <Option key={agent.id} value={agent.id}>
                       <div>
                         <div className="font-medium">{agent.name}</div>
