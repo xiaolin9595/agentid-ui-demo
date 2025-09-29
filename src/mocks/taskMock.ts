@@ -941,6 +941,44 @@ export const mockFormConfigs: Record<string, TaskFormConfig> = {
       showDebug: true,
       allowSaveTemplate: true
     }
+  },
+  laptop_purchase: {
+    templateId: 'template_laptop_purchase',
+    parameters: mockTaskParameters.laptop_purchase,
+    validation: {
+      rules: {
+        budget_min: [{ required: true, message: '请输入最低预算' }],
+        budget_max: [{ required: true, message: '请输入最高预算' }],
+        usage_type: [{ required: true, message: '请选择主要用途' }],
+        screen_size: [{ required: true, message: '请选择屏幕尺寸' }],
+        performance_level: [{ required: true, message: '请选择性能要求' }]
+      },
+      messages: {
+        required: '此字段为必填项',
+        invalid: '输入格式不正确'
+      }
+    },
+    ui: {
+      layout: 'vertical',
+      columns: 1,
+      sections: [
+        {
+          title: '基础配置',
+          fields: ['budget_min', 'budget_max', 'usage_type', 'performance_level', 'brand_preference'],
+          collapsed: false
+        },
+        {
+          title: '高级选项',
+          fields: ['screen_size', 'weight_preference', 'storage_type', 'special_requirements'],
+          collapsed: true
+        }
+      ]
+    },
+    actions: {
+      showPreview: true,
+      showDebug: true,
+      allowSaveTemplate: true
+    }
   }
 };
 
@@ -1052,6 +1090,11 @@ export const getTaskTemplateById = (id: string): TaskTemplate | undefined => {
 export const getFormConfigByTemplate = (templateId: string): TaskFormConfig | undefined => {
   const template = getTaskTemplateById(templateId);
   if (!template) return undefined;
+
+  // 对于买笔记本任务，直接映射到对应的配置
+  if (templateId === 'template_laptop_purchase') {
+    return mockFormConfigs.laptop_purchase;
+  }
 
   const type = template.type;
   return mockFormConfigs[type] || mockFormConfigs.data_processing;

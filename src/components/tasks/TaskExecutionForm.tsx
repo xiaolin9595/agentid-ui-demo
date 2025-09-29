@@ -38,6 +38,7 @@ import {
 } from '@ant-design/icons';
 import { useTaskStore } from '../../store/taskStore';
 import { useAgentStore } from '../../store/agentStore';
+import { useAuthStore } from '../../store/authStore';
 import {
   TaskTemplate,
   TaskParameter,
@@ -97,7 +98,7 @@ const ParameterRenderer: React.FC<{
       case 'input':
         return (
           <Input
-            placeholder={ui.placeholder || `请输入${name}`}
+            placeholder={ui?.placeholder || `请输入${name}`}
             value={value || ''}
             onChange={(e) => handleChange(e.target.value)}
             disabled={disabled}
@@ -107,10 +108,10 @@ const ParameterRenderer: React.FC<{
       case 'textarea':
         return (
           <TextArea
-            placeholder={ui.placeholder || `请输入${name}`}
+            placeholder={ui?.placeholder || `请输入${name}`}
             value={value || ''}
             onChange={(e) => handleChange(e.target.value)}
-            rows={ui.rows || 4}
+            rows={ui?.rows || 4}
             disabled={disabled}
           />
         );
@@ -118,13 +119,13 @@ const ParameterRenderer: React.FC<{
       case 'select':
         return (
           <Select
-            placeholder={ui.placeholder || `请选择${name}`}
+            placeholder={ui?.placeholder || `请选择${name}`}
             value={value || defaultValue}
             onChange={handleChange}
             disabled={disabled}
             allowClear={!required}
           >
-            {ui.options?.map((option) => (
+            {ui?.options?.map((option) => (
               <Option key={option.value} value={option.value}>
                 {option.label}
               </Option>
@@ -144,7 +145,7 @@ const ParameterRenderer: React.FC<{
         } else {
           return (
             <Checkbox.Group
-              options={ui.options?.map(opt => ({ label: opt.label, value: opt.value }))}
+              options={ui?.options?.map(opt => ({ label: opt.label, value: opt.value }))}
               value={value || defaultValue || []}
               onChange={handleChange}
               disabled={disabled}
@@ -159,7 +160,7 @@ const ParameterRenderer: React.FC<{
             onChange={(e) => handleChange(e.target.value)}
             disabled={disabled}
           >
-            {ui.options?.map((option) => (
+            {ui?.options?.map((option) => (
               <Radio key={option.value} value={option.value}>
                 {option.label}
               </Radio>
@@ -214,7 +215,7 @@ const ParameterRenderer: React.FC<{
       default:
         return (
           <Input
-            placeholder={ui.placeholder || `请输入${name}`}
+            placeholder={ui?.placeholder || `请输入${name}`}
             value={value || ''}
             onChange={(e) => handleChange(e.target.value)}
             disabled={disabled}
@@ -259,6 +260,16 @@ const TaskExecutionForm: React.FC<TaskExecutionFormProps> = ({
 }) => {
   const [form] = Form.useForm();
   const { agents } = useAgentStore();
+  const { user, isAuthenticated } = useAuthStore();
+
+  // 筛选出当前用户的Agent，与Agent管理界面保持一致
+  const userAgents = React.useMemo(() => {
+    if (!user || !isAuthenticated) {
+      return [];
+    }
+    return agents.filter(agent => agent.boundUser === user.userId || agent.boundUser === user.id);
+  }, [agents, user, isAuthenticated]);
+
   const {
     selectedTemplate,
     setSelectedTemplate,
@@ -294,11 +305,11 @@ const TaskExecutionForm: React.FC<TaskExecutionFormProps> = ({
       form.setFieldsValue(formDraft);
       setFormValues(formDraft);
       if (formDraft.agentId) {
-        const agent = agents.find(a => a.id === formDraft.agentId);
+        const agent = userAgents.find(a => a.id === formDraft.agentId);
         setSelectedAgent(agent || null);
       }
     }
-  }, [formDraft, form, agents]);
+  }, [formDraft, form, userAgents]);
 
   const initializeForm = (template: TaskTemplate) => {
     const initialValues: Record<string, any> = {};
@@ -329,7 +340,7 @@ const TaskExecutionForm: React.FC<TaskExecutionFormProps> = ({
   };
 
   const handleAgentChange = (agentId: string) => {
-    const agent = agents.find(a => a.id === agentId);
+    const agent = userAgents.find(a => a.id === agentId);
     setSelectedAgent(agent || null);
     updateFormDraft('agentId', agentId);
   };
@@ -528,9 +539,9 @@ const TaskExecutionForm: React.FC<TaskExecutionFormProps> = ({
                   value={selectedAgent?.id}
                   loading={loading}
                 >
-                  {agents
+                  {userAgents
                     .filter(agent =>
-                      selectedTemplate
+                      selectedTemplate && agent.type
                         ? selectedTemplate.agentTypes.includes(agent.type)
                         : true
                     )
@@ -621,7 +632,14 @@ const TaskExecutionForm: React.FC<TaskExecutionFormProps> = ({
               disabled={loading || executing}
             >
               {formConfig?.ui.sections ? (
-                <Collapse defaultActiveKey={['section-0']} ghost>
+                <Collapse
+                  defaultActiveKey={
+                    formConfig.ui.sections
+                      .map((section, index) => !section.collapsed ? `section-${index}` : null)
+                      .filter((key): key is string => key !== null)
+                  }
+                  ghost
+                >
                   {formConfig.ui.sections.map((section, index) => (
                     <Panel
                       header={
