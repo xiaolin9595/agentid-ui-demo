@@ -13,7 +13,8 @@ export enum TaskType {
   COMMUNICATION = 'communication',
   SECURITY = 'security',
   RESEARCH = 'research',
-  MONITORING = 'monitoring'
+  MONITORING = 'monitoring',
+  LAPTOP_PURCHASE = 'laptop_purchase'
 }
 
 /**
@@ -69,10 +70,11 @@ export interface TaskParameter {
     custom?: (value: any) => boolean | string;
   };
   ui?: {
-    component: 'input' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'slider' | 'file-upload';
+    component: 'input' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'slider' | 'file-upload' | 'input-number' | 'rate';
     placeholder?: string;
     options?: Array<{ label: string; value: any }>;
     rows?: number;
+    addonAfter?: string;
   };
 }
 

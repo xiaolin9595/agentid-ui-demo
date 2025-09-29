@@ -16,6 +16,7 @@ import {
   TaskType,
   TaskParameterType
 } from '../types/task';
+import { mockTaskTemplates as importedMockTaskTemplates } from '../mocks/taskMock';
 
 // 模拟API响应延迟
 const API_DELAY = 300;
@@ -288,7 +289,7 @@ export class TaskService {
       throw new Error(`任务 ${taskId} 状态不允许恢复`);
     }
 
-    task.status = 'running';
+    task.status = TaskStatus.RUNNING;
     task.updatedAt = new Date();
   }
 
@@ -311,7 +312,7 @@ export class TaskService {
       throw new Error(`任务 ${taskId} 已达到最大重试次数`);
     }
 
-    task.status = 'running';
+    task.status = TaskStatus.RUNNING;
     task.retryCount++;
     task.updatedAt = new Date();
 
@@ -540,7 +541,7 @@ export class TaskService {
         return;
       }
 
-      if (task.status !== 'running') {
+      if (task.status !== TaskStatus.RUNNING) {
         clearInterval(progressInterval);
         return;
       }
@@ -555,10 +556,20 @@ export class TaskService {
       if (task.progress >= 100) {
         // 85% 概率成功
         if (Math.random() < 0.85) {
-          task.status = 'completed';
+          task.status = TaskStatus.COMPLETED;
           task.completedAt = new Date();
+
+          // 为买笔记本任务生成特殊结果
+          if (task.type === TaskType.LAPTOP_PURCHASE) {
+            task.result = {
+              success: true,
+              ...this.generateLaptopPurchaseResult(task.parameters),
+              completedAt: new Date()
+            };
+          }
+
         } else {
-          task.status = 'failed';
+          task.status = TaskStatus.FAILED;
           task.error = '任务执行失败';
           task.completedAt = new Date();
         }
@@ -568,67 +579,250 @@ export class TaskService {
   }
 
   /**
+   * 生成买笔记本任务的结果
+   */
+  private static generateLaptopPurchaseResult(parameters: Record<string, any>): Partial<TaskResult> {
+    const budgetMin = parameters.budget_min || 3000;
+    const budgetMax = parameters.budget_max || 8000;
+    const usageType = parameters.usage_type || 'office';
+    const brandPreference = parameters.brand_preference || [];
+    const performanceLevel = parameters.performance_level || 'medium';
+
+    // 模拟笔记本推荐数据
+    const laptopDatabase = [
+      {
+        id: 'laptop_1',
+        brand: 'lenovo',
+        model: 'ThinkPad E14',
+        price: 4299,
+        screenSize: '14',
+        weight: 1.59,
+        performance: 'medium',
+        suitableFor: ['office', 'programming', 'student'],
+        specs: {
+          processor: 'AMD Ryzen 5 5500U',
+          memory: '16GB DDR4',
+          storage: '512GB SSD',
+          graphics: '集成显卡'
+        },
+        pros: ['经典商务设计', '键盘手感好', '性价比高'],
+        cons: ['屏幕色彩一般'],
+        rating: 4.3,
+        availability: true
+      },
+      {
+        id: 'laptop_2',
+        brand: 'apple',
+        model: 'MacBook Air M2',
+        price: 7999,
+        screenSize: '13',
+        weight: 1.24,
+        performance: 'high',
+        suitableFor: ['design', 'programming', 'office'],
+        specs: {
+          processor: 'Apple M2',
+          memory: '8GB 统一内存',
+          storage: '256GB SSD',
+          graphics: 'M2集成GPU'
+        },
+        pros: ['续航极佳', '性能强劲', '做工精良'],
+        cons: ['价格较高', '接口较少'],
+        rating: 4.7,
+        availability: true
+      },
+      {
+        id: 'laptop_3',
+        brand: 'asus',
+        model: 'ROG Strix G15',
+        price: 6899,
+        screenSize: '15',
+        weight: 2.3,
+        performance: 'extreme',
+        suitableFor: ['gaming', 'design'],
+        specs: {
+          processor: 'AMD Ryzen 7 5800H',
+          memory: '16GB DDR4',
+          storage: '512GB SSD',
+          graphics: 'RTX 3060'
+        },
+        pros: ['游戏性能强', '散热好', '屏幕好'],
+        cons: ['续航一般', '较重'],
+        rating: 4.4,
+        availability: true
+      },
+      {
+        id: 'laptop_4',
+        brand: 'dell',
+        model: 'XPS 13',
+        price: 7299,
+        screenSize: '13',
+        weight: 1.2,
+        performance: 'high',
+        suitableFor: ['office', 'business', 'design'],
+        specs: {
+          processor: 'Intel i7-1265U',
+          memory: '16GB LPDDR5',
+          storage: '512GB SSD',
+          graphics: 'Intel Iris Xe'
+        },
+        pros: ['轻薄便携', '屏幕优秀', '做工精良'],
+        cons: ['价格偏高', '接口少'],
+        rating: 4.5,
+        availability: true
+      },
+      {
+        id: 'laptop_5',
+        brand: 'xiaomi',
+        model: 'RedmiBook Pro 14',
+        price: 3999,
+        screenSize: '14',
+        weight: 1.4,
+        performance: 'medium',
+        suitableFor: ['office', 'student', 'programming'],
+        specs: {
+          processor: 'Intel i5-11300H',
+          memory: '16GB DDR4',
+          storage: '512GB SSD',
+          graphics: 'Intel Iris Xe'
+        },
+        pros: ['性价比高', '屏幕不错', '接口齐全'],
+        cons: ['品牌认知度低'],
+        rating: 4.2,
+        availability: true
+      }
+    ];
+
+    // 根据参数筛选推荐笔记本
+    let recommendations = laptopDatabase.filter(laptop => {
+      // 预算筛选
+      if (laptop.price < budgetMin || laptop.price > budgetMax) return false;
+
+      // 用途筛选
+      if (!laptop.suitableFor.includes(usageType)) return false;
+
+      // 品牌筛选
+      if (brandPreference.length > 0 && !brandPreference.includes(laptop.brand)) return false;
+
+      // 性能筛选
+      const performanceMapping: { [key: string]: number } = { low: 1, medium: 2, high: 3, extreme: 4 };
+      const requiredLevel = performanceMapping[performanceLevel] || 2;
+      const laptopLevel = performanceMapping[laptop.performance] || 2;
+      if (laptopLevel < requiredLevel) return false;
+
+      return true;
+    });
+
+    // 如果筛选结果太少，放宽条件
+    if (recommendations.length < 2) {
+      recommendations = laptopDatabase.filter(laptop =>
+        laptop.price >= budgetMin && laptop.price <= budgetMax * 1.1
+      ).slice(0, 3);
+    }
+
+    // 按评分排序
+    recommendations.sort((a, b) => b.rating - a.rating);
+    recommendations = recommendations.slice(0, 3);
+
+    return {
+      data: {
+        type: 'laptop_purchase_result',
+        searchParams: {
+          budget: `${budgetMin} - ${budgetMax}元`,
+          usage: usageType,
+          brands: brandPreference,
+          performance: performanceLevel
+        },
+        recommendations,
+        summary: {
+          totalFound: recommendations.length,
+          priceRange: recommendations.length > 0 ? {
+            min: Math.min(...recommendations.map(l => l.price)),
+            max: Math.max(...recommendations.map(l => l.price))
+          } : null,
+          topChoice: recommendations[0] || null
+        },
+        buyingAdvice: this.generateBuyingAdvice(usageType, performanceLevel, budgetMax),
+        purchaseLinks: recommendations.map(laptop => ({
+          laptopId: laptop.id,
+          platform: 'jd',
+          url: `https://item.jd.com/mock-${laptop.id}.html`,
+          price: laptop.price,
+          inStock: true
+        }))
+      },
+      output: {
+        type: 'structured_data',
+        content: {
+          searchParams: {
+            budget: `${budgetMin} - ${budgetMax}元`,
+            usage: usageType,
+            brands: brandPreference,
+            performance: performanceLevel
+          },
+          recommendations: recommendations.slice(0, 3),
+          totalFound: recommendations.length
+        },
+        format: 'json'
+      },
+      summary: `根据您的需求（预算${budgetMin}-${budgetMax}元，用途：${usageType}），为您推荐了${recommendations.length}款笔记本电脑。`,
+      metrics: {
+        executionTime: 3000,
+        dataProcessed: recommendations.length,
+        networkCalls: 1,
+        successRate: 1.0
+      }
+    };
+  }
+
+  /**
+   * 生成购买建议
+   */
+  private static generateBuyingAdvice(usageType: string, performanceLevel: string, budget: number): string[] {
+    const advice = [];
+
+    switch (usageType) {
+      case 'gaming':
+        advice.push('游戏用途建议选择独立显卡的机型');
+        advice.push('关注散热性能和屏幕刷新率');
+        break;
+      case 'design':
+        advice.push('设计工作建议选择色彩准确的高分屏');
+        advice.push('内存建议16GB起步，CPU性能要强');
+        break;
+      case 'programming':
+        advice.push('编程建议选择键盘手感好的机型');
+        advice.push('内存16GB，SSD存储，多接口');
+        break;
+      default:
+        advice.push('日常办公选择轻薄本即可');
+        advice.push('注重续航和便携性');
+    }
+
+    if (budget < 5000) {
+      advice.push('该预算建议关注性价比品牌');
+    } else if (budget > 8000) {
+      advice.push('该预算可以考虑高端机型');
+    }
+
+    return advice;
+  }
+
+  /**
    * 初始化模拟数据
    */
   static initializeMockData(): void {
-    // 初始化任务模板
-    mockTaskTemplates = [
-      {
-        id: 'template_1',
-        name: '数据分析任务',
-        description: '对提供的数据进行分析和处理',
-        type: 'data_processing',
-        category: '数据处理',
-        version: '1.0.0',
-        agentTypes: ['AI Assistant', 'Data Processing'],
-        parameters: [
-          {
-            id: 'data_source',
-            name: '数据源',
-            type: 'string',
-            description: '数据源路径或URL',
-            required: true,
-            ui: { component: 'input', placeholder: '请输入数据源' }
-          },
-          {
-            id: 'analysis_type',
-            name: '分析类型',
-            type: 'string',
-            description: '选择分析类型',
-            required: true,
-            ui: {
-              component: 'select',
-              options: [
-                { label: '统计分析', value: 'statistical' },
-                { label: '趋势分析', value: 'trend' },
-                { label: '预测分析', value: 'prediction' }
-              ]
-            }
-          }
-        ],
-        expectedOutput: {
-          type: 'analysis_report',
-          description: '分析结果报告'
-        },
-        estimatedDuration: 300,
-        maxRetries: 3,
-        timeout: 600,
-        tags: ['数据分析', '处理'],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        isActive: true
-      }
-    ];
+    // 使用导入的模板数据
+    mockTaskTemplates.push(...importedMockTaskTemplates);
 
     // 初始化一些示例任务
     mockTasks = [
       {
         id: 'task_1',
-        templateId: 'template_1',
-        template: mockTaskTemplates[0],
+        templateId: 'template_data_analysis',
+        template: importedMockTaskTemplates.find(t => t.id === 'template_data_analysis') || importedMockTaskTemplates[0],
         name: '用户行为分析',
-        type: 'data_processing',
-        priority: 'normal',
+        type: TaskType.DATA_PROCESSING,
+        priority: TaskPriority.NORMAL,
         status: TaskStatus.COMPLETED,
         agentId: 'agent_1',
         agent: {} as any,
@@ -650,28 +844,31 @@ export class TaskService {
       },
       {
         id: 'task_2',
-        templateId: 'template_1',
-        template: mockTaskTemplates[0],
-        name: '销售数据预测',
-        type: 'data_processing',
-        priority: 'high',
+        templateId: 'template_laptop_purchase',
+        template: importedMockTaskTemplates.find(t => t.id === 'template_laptop_purchase') || importedMockTaskTemplates[0],
+        name: '买笔记本推荐',
+        type: TaskType.LAPTOP_PURCHASE,
+        priority: TaskPriority.HIGH,
         status: TaskStatus.RUNNING,
-        agentId: 'agent_2',
+        agentId: 'agent_shopping',
         agent: {} as any,
         parameters: {
-          data_source: '/data/sales.csv',
-          analysis_type: 'prediction'
+          budget_min: 5000,
+          budget_max: 8000,
+          usage_type: 'programming',
+          brand_preference: ['apple', 'lenovo'],
+          performance_level: 'high'
         },
         progress: 65,
         executionTime: 1800,
-        estimatedDuration: 300,
+        estimatedDuration: 180,
         maxRetries: 3,
         retryCount: 0,
         timeout: 600,
         startedAt: new Date(Date.now() - 3000),
         createdAt: new Date(Date.now() - 5000),
         updatedAt: new Date(Date.now() - 1000),
-        tags: ['预测', '销售']
+        tags: ['购物', '推荐']
       }
     ];
   }

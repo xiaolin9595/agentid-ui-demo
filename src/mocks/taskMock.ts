@@ -7,6 +7,7 @@ import {
   TaskParameter,
   TaskParameterType,
   TaskType,
+  TaskStatus,
   TaskExecution,
   TaskLog,
   TaskResult,
@@ -217,6 +218,190 @@ export const mockTaskParameters: Record<string, TaskParameter[]> = {
         ]
       }
     }
+  ],
+  // 买笔记本任务参数
+  laptop_purchase: [
+    {
+      id: 'budget_min',
+      name: '最低预算',
+      type: TaskParameterType.NUMBER,
+      description: '笔记本购买的最低预算（人民币）',
+      required: true,
+      defaultValue: 3000,
+      validation: {
+        min: 1000,
+        max: 50000
+      },
+      ui: {
+        component: 'input-number',
+        placeholder: '请输入最低预算',
+        addonAfter: '元'
+      }
+    },
+    {
+      id: 'budget_max',
+      name: '最高预算',
+      type: TaskParameterType.NUMBER,
+      description: '笔记本购买的最高预算（人民币）',
+      required: true,
+      defaultValue: 8000,
+      validation: {
+        min: 1000,
+        max: 50000
+      },
+      ui: {
+        component: 'input-number',
+        placeholder: '请输入最高预算',
+        addonAfter: '元'
+      }
+    },
+    {
+      id: 'usage_type',
+      name: '主要用途',
+      type: TaskParameterType.ENUM,
+      description: '笔记本的主要使用场景',
+      required: true,
+      defaultValue: 'office',
+      validation: {
+        enum: ['office', 'gaming', 'design', 'programming', 'student', 'business']
+      },
+      ui: {
+        component: 'select',
+        placeholder: '请选择主要用途',
+        options: [
+          { label: '办公学习', value: 'office' },
+          { label: '游戏娱乐', value: 'gaming' },
+          { label: '设计创作', value: 'design' },
+          { label: '编程开发', value: 'programming' },
+          { label: '学生使用', value: 'student' },
+          { label: '商务出差', value: 'business' }
+        ]
+      }
+    },
+    {
+      id: 'screen_size',
+      name: '屏幕尺寸',
+      type: TaskParameterType.ENUM,
+      description: '期望的屏幕尺寸范围',
+      required: true,
+      defaultValue: '14-15',
+      validation: {
+        enum: ['13', '14-15', '16-17', 'any']
+      },
+      ui: {
+        component: 'select',
+        placeholder: '请选择屏幕尺寸',
+        options: [
+          { label: '13英寸以下（便携）', value: '13' },
+          { label: '14-15英寸（平衡）', value: '14-15' },
+          { label: '16-17英寸（大屏）', value: '16-17' },
+          { label: '不限制', value: 'any' }
+        ]
+      }
+    },
+    {
+      id: 'brand_preference',
+      name: '品牌偏好',
+      type: TaskParameterType.ARRAY,
+      description: '偏好的笔记本品牌（可多选）',
+      required: false,
+      defaultValue: [],
+      validation: {
+        enum: ['apple', 'dell', 'hp', 'lenovo', 'asus', 'acer', 'msi', 'razer', 'surface', 'huawei', 'xiaomi']
+      },
+      ui: {
+        component: 'checkbox',
+        options: [
+          { label: 'Apple MacBook', value: 'apple' },
+          { label: 'Dell 戴尔', value: 'dell' },
+          { label: 'HP 惠普', value: 'hp' },
+          { label: 'Lenovo 联想', value: 'lenovo' },
+          { label: 'ASUS 华硕', value: 'asus' },
+          { label: 'Acer 宏碁', value: 'acer' },
+          { label: 'MSI 微星', value: 'msi' },
+          { label: 'Razer 雷蛇', value: 'razer' },
+          { label: 'Surface', value: 'surface' },
+          { label: 'Huawei 华为', value: 'huawei' },
+          { label: 'Xiaomi 小米', value: 'xiaomi' }
+        ]
+      }
+    },
+    {
+      id: 'performance_level',
+      name: '性能要求',
+      type: TaskParameterType.ENUM,
+      description: '对性能的要求程度',
+      required: true,
+      defaultValue: 'medium',
+      validation: {
+        enum: ['low', 'medium', 'high', 'extreme']
+      },
+      ui: {
+        component: 'select',
+        placeholder: '请选择性能要求',
+        options: [
+          { label: '基础性能（日常办公）', value: 'low' },
+          { label: '中等性能（多任务处理）', value: 'medium' },
+          { label: '高性能（专业工作）', value: 'high' },
+          { label: '极致性能（游戏/创作）', value: 'extreme' }
+        ]
+      }
+    },
+    {
+      id: 'weight_preference',
+      name: '重量偏好',
+      type: TaskParameterType.ENUM,
+      description: '对笔记本重量的要求',
+      required: false,
+      defaultValue: 'balanced',
+      validation: {
+        enum: ['ultra_light', 'light', 'balanced', 'any']
+      },
+      ui: {
+        component: 'select',
+        placeholder: '请选择重量偏好',
+        options: [
+          { label: '超轻薄（<1.5kg）', value: 'ultra_light' },
+          { label: '轻便（1.5-2kg）', value: 'light' },
+          { label: '平衡（2-2.5kg）', value: 'balanced' },
+          { label: '不限制', value: 'any' }
+        ]
+      }
+    },
+    {
+      id: 'storage_type',
+      name: '存储偏好',
+      type: TaskParameterType.ENUM,
+      description: '存储类型和容量偏好',
+      required: false,
+      defaultValue: 'ssd_512',
+      validation: {
+        enum: ['ssd_256', 'ssd_512', 'ssd_1tb', 'any']
+      },
+      ui: {
+        component: 'select',
+        placeholder: '请选择存储偏好',
+        options: [
+          { label: 'SSD 256GB（够用）', value: 'ssd_256' },
+          { label: 'SSD 512GB（推荐）', value: 'ssd_512' },
+          { label: 'SSD 1TB+（大容量）', value: 'ssd_1tb' },
+          { label: '不限制', value: 'any' }
+        ]
+      }
+    },
+    {
+      id: 'special_requirements',
+      name: '特殊需求',
+      type: TaskParameterType.STRING,
+      description: '其他特殊需求或偏好（可选）',
+      required: false,
+      defaultValue: '',
+      ui: {
+        component: 'textarea',
+        placeholder: '请描述其他特殊需求，如：触屏、数字键盘、特定接口、颜色偏好等',
+        rows: 3
+      }
+    }
   ]
 };
 
@@ -393,6 +578,27 @@ export const mockTaskTemplates: TaskTemplate[] = [
     createdAt: new Date('2024-01-20'),
     updatedAt: new Date('2024-02-05'),
     isActive: true
+  },
+  {
+    id: 'template_laptop_purchase',
+    name: '买笔记本',
+    description: '根据用户需求推荐和协助购买笔记本电脑',
+    type: TaskType.LAPTOP_PURCHASE,
+    category: '购物助手',
+    version: '1.0.0',
+    agentTypes: ['购物助手', '产品推荐', 'AI Assistant'],
+    parameters: mockTaskParameters.laptop_purchase,
+    expectedOutput: {
+      type: 'purchase_recommendation',
+      description: '推荐的笔记本列表、价格对比和购买建议'
+    },
+    estimatedDuration: 180,
+    maxRetries: 3,
+    timeout: 600,
+    tags: ['购物', '笔记本', '产品推荐', '价格对比'],
+    createdAt: new Date('2024-02-01'),
+    updatedAt: new Date('2024-02-15'),
+    isActive: true
   }
 ];
 
@@ -568,8 +774,12 @@ export const mockTaskStatistics: TaskStatistics = {
     [TaskType.DATA_PROCESSING]: 45,
     [TaskType.CONTENT_GENERATION]: 38,
     [TaskType.ANALYSIS]: 32,
+    [TaskType.AUTOMATION]: 20,
+    [TaskType.COMMUNICATION]: 18,
     [TaskType.SECURITY]: 25,
-    [TaskType.MONITORING]: 16
+    [TaskType.RESEARCH]: 15,
+    [TaskType.MONITORING]: 16,
+    [TaskType.LAPTOP_PURCHASE]: 8
   },
   tasksByStatus: {
     completed: 134,
@@ -748,7 +958,7 @@ export const generateMockTaskExecution = (taskId: string, agent: BlockchainAgent
     taskId,
     task: {} as any, // 这里应该传入完整的task对象
     executionId: generateId('exec'),
-    status: Math.random() > 0.3 ? 'running' : 'completed',
+    status: Math.random() > 0.3 ? TaskStatus.RUNNING : TaskStatus.COMPLETED,
     agentId: agent.id,
     startTime,
     endTime: Math.random() > 0.3 ? new Date() : undefined,
