@@ -353,14 +353,12 @@ export const useTaskStore = create<TaskState>()(
         retryTask: async (taskId: string) => {
           set({ executing: true, error: null });
           try {
-            const execution = await taskService.retryTask(taskId);
+            await taskService.retryTask(taskId);
             get().updateTask(taskId, {
               status: TaskStatus.RUNNING,
               retryCount: (get().selectedTask?.retryCount || 0) + 1
             });
-            get().setActiveExecution(execution.executionId, execution);
             set({ executing: false });
-            return execution;
           } catch (error) {
             set({
               error: error instanceof Error ? error.message : '重试任务失败',

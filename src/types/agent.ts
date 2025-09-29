@@ -21,6 +21,9 @@ export interface Agent {
   rating?: number;
   connections?: number;
   tags?: string[];
+  // 新增缺失字段
+  type?: string;
+  model?: string;
 }
 
 export interface AgentConfig {

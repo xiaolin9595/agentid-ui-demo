@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import {
   PlusOutlined,
-  ListOutlined,
+  CiOutlined,
   BarChartOutlined,
   SettingOutlined,
   ReloadOutlined,
@@ -24,13 +24,15 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   ExclamationCircleOutlined,
-  SyncOutlined
+  SyncOutlined,
+  MessageOutlined
 } from '@ant-design/icons';
 import { useTaskStore } from '../../store/taskStore';
 import { useAgentStore } from '../../store/agentStore';
 import { useUIStore } from '../../store/uiStore';
 import TaskExecutionForm from '../../components/tasks/TaskExecutionForm';
 import TaskMonitor from '../../components/tasks/TaskMonitor';
+import TaskInstructionDialog from '../../components/tasks/TaskInstructionDialog';
 import { TaskTemplate, TaskStatistics, TaskMonitorStatus } from '../../types/task';
 import { getAllTaskTemplates } from '../../mocks/taskMock';
 
@@ -136,7 +138,7 @@ const QuickTaskTemplates: React.FC<{
                   </Space>
                 }
                 description={
-                  <Text ellipsis={{ rows: 2 }}>
+                  <Text ellipsis>
                     {template.description}
                   </Text>
                 }
@@ -170,12 +172,13 @@ const TaskExecutionPage: React.FC = () => {
     clearError
   } = useTaskStore();
 
-  const { agents } = useAgentStore();
+  const { agents, fetchAgents } = useAgentStore();
   const { sidebarCollapsed } = useUIStore();
 
   const [activeTab, setActiveTab] = useState('create');
   const [selectedTemplate, setSelectedTemplate] = useState<TaskTemplate | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [instructionDialogOpen, setInstructionDialogOpen] = useState(false);
 
   // 页面初始化
   useEffect(() => {
@@ -199,6 +202,7 @@ const TaskExecutionPage: React.FC = () => {
   const loadInitialData = async () => {
     try {
       await Promise.all([
+        fetchAgents(),
         fetchTaskTemplates(),
         fetchStatistics(),
         fetchMonitorStatus()
@@ -296,6 +300,13 @@ const TaskExecutionPage: React.FC = () => {
               />
             </Space>
           )}
+          <Button
+            type="primary"
+            icon={<MessageOutlined />}
+            onClick={() => setInstructionDialogOpen(true)}
+          >
+            AI对话
+          </Button>
           <Button icon={<SettingOutlined />}>
             设置
           </Button>
@@ -349,7 +360,7 @@ const TaskExecutionPage: React.FC = () => {
 
                       {/* 任务创建表单 */}
                       <TaskExecutionForm
-                        template={selectedTemplate}
+                        template={selectedTemplate || undefined}
                       />
                     </Space>
                   )
@@ -358,7 +369,7 @@ const TaskExecutionPage: React.FC = () => {
                   key: 'monitor',
                   label: (
                     <span>
-                      <ListOutlined />
+                      <CiOutlined />
                       任务监控
                       {getTabBadge('monitor') > 0 && (
                         <Badge
@@ -419,7 +430,7 @@ const TaskExecutionPage: React.FC = () => {
                                 }
                                 description={
                                   <div>
-                                    <Text ellipsis={{ rows: 3 }}>
+                                    <Text ellipsis>
                                       {template.description}
                                     </Text>
                                     <div style={{ marginTop: 8 }}>
@@ -513,6 +524,12 @@ const TaskExecutionPage: React.FC = () => {
             />
           </Card>
         </Spin>
+
+        {/* AI对话框 */}
+        <TaskInstructionDialog
+          open={instructionDialogOpen}
+          onClose={() => setInstructionDialogOpen(false)}
+        />
       </Content>
     </Layout>
   );
