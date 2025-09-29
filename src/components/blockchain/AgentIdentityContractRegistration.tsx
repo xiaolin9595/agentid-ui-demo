@@ -350,8 +350,9 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
             </Col>
 
             {selectedAgent && (
-              <Col span={24}>
-                <Card size="small" title="Agent信息预览">
+              <>
+                <Col span={24}>
+                  <Card size="small" title="Agent信息预览">
                   <Row gutter={[16, 16]}>
                     <Col span={12}>
                       <Space direction="vertical" className="w-full">
@@ -410,11 +411,31 @@ export const AgentIdentityContractRegistration: React.FC<AgentIdentityContractRe
                       description="此Agent ID将用于区块链合约注册，具有唯一标识性"
                       type="info"
                       showIcon
-                      size="small"
                     />
                   </Space>
                 </Card>
               </Col>
+
+              {/* Agent ID 生成显示 */}
+              <Col span={24}>
+                <Card size="small" title="生成的Agent ID">
+                  <Space direction="vertical" className="w-full">
+                    <div>
+                      <Text type="secondary">Agent ID:</Text>
+                      <div className="bg-gray-50 p-2 rounded font-mono text-sm">
+                        {generatedAgentId}
+                      </div>
+                    </div>
+                    <Alert
+                      message="Agent ID已生成"
+                      description="此Agent ID将用于区块链合约注册，具有唯一标识性"
+                      type="info"
+                      showIcon
+                    />
+                  </Space>
+                </Card>
+              </Col>
+              </>
             )}
 
             <Col span={24}>

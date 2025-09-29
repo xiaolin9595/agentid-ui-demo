@@ -6,3 +6,4 @@ export { useIdentityStore } from './identityStore';
 export { useBlockchainStore } from './blockchainStore';
 export { useFileUploadStore } from './fileUploadStore';
 export { useAgentDiscoveryStore } from './agentDiscoveryStore';
+export { useTaskStore } from './taskStore';

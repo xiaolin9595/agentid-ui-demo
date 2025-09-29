@@ -11,6 +11,7 @@ import {
   SettingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  PlayCircleOutlined,
 } from '@ant-design/icons';
 import { useUIStore } from '../../store';
 
@@ -36,6 +37,11 @@ const Sidebar: React.FC = () => {
       key: '/agent-discovery',
       icon: <SearchOutlined />,
       label: 'Agent发现',
+    },
+    {
+      key: '/tasks',
+      icon: <PlayCircleOutlined />,
+      label: '任务执行',
     },
     {
       key: '/blockchain',
