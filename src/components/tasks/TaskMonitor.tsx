@@ -31,6 +31,7 @@ import {
   DatePicker,
   Popconfirm
 } from 'antd';
+import TaskExecutionResult from './TaskExecutionResult';
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
@@ -402,7 +403,7 @@ const TaskDetailDrawer: React.FC<{
                     <div style={{ marginTop: 4 }}>
                       <Text>{log.message}</Text>
                       {log.source && (
-                        <Tag size="small" style={{ marginLeft: 8 }}>
+                        <Tag style={{ marginLeft: 8 }}>
                           {log.source}
                         </Tag>
                       )}
@@ -413,34 +414,11 @@ const TaskDetailDrawer: React.FC<{
             </TabPane>
 
             <TabPane tab="执行结果" key="result">
-              {result ? (
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  <Alert
-                    message={result.success ? '执行成功' : '执行失败'}
-                    type={result.success ? 'success' : 'error'}
-                    showIcon
-                  />
-                  {result.summary && (
-                    <Card title="结果摘要" size="small">
-                      <Paragraph>{result.summary}</Paragraph>
-                    </Card>
-                  )}
-                  {result.data && (
-                    <Card title="结果数据" size="small">
-                      <pre style={{ fontSize: '12px', maxHeight: '300px', overflow: 'auto' }}>
-                        {JSON.stringify(result.data, null, 2)}
-                      </pre>
-                    </Card>
-                  )}
-                </Space>
-              ) : (
-                <Alert
-                  message="暂无执行结果"
-                  description="任务尚未完成或结果不可用"
-                  type="info"
-                  showIcon
-                />
-              )}
+              <TaskExecutionResult
+                task={task}
+                result={task.result || result || undefined}
+                loading={loading}
+              />
             </TabPane>
           </Tabs>
         </Spin>
@@ -614,9 +592,9 @@ const TaskMonitor: React.FC<TaskMonitorProps> = ({
         <Space direction="vertical" size="small">
           <Text strong>{text}</Text>
           <Space size={4}>
-            <Tag size="small">{record.type}</Tag>
+            <Tag>{record.type}</Tag>
             {record.tags.slice(0, 2).map((tag, index) => (
-              <Tag key={index} size="small" color="blue">
+              <Tag key={index} color="blue">
                 {tag}
               </Tag>
             ))}
@@ -680,7 +658,9 @@ const TaskMonitor: React.FC<TaskMonitorProps> = ({
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: setSelectedRowKeys,
+    onChange: (selectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(selectedRowKeys as string[]);
+    },
     getCheckboxProps: (record: Task) => ({
       disabled: record.status === TaskStatus.COMPLETED
     })
