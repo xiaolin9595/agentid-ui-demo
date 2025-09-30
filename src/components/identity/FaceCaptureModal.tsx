@@ -11,7 +11,6 @@ import {
 import {
   CameraOutlined,
   CheckCircleOutlined,
-  RedoOutlined,
   ScanOutlined
 } from '@ant-design/icons';
 import type { FaceBiometricFeatures } from '@/types/agent';
@@ -33,9 +32,9 @@ const FaceCaptureModal: React.FC<FaceCaptureModalProps> = ({
   onCapture,
   onCancel
 }) => {
-  const [step, setStep] = useState<'camera' | 'preview' | 'processing' | 'success'>('camera');
+  const [step, setStep] = useState<'camera' | 'processing' | 'success'>('camera');
   const [cameraActive, setCameraActive] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState<number>(0); // 0表示未开始，1-3表示倒计时
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -68,7 +67,7 @@ const FaceCaptureModal: React.FC<FaceCaptureModalProps> = ({
     setCameraActive(false);
   };
 
-  // 拍照
+  // 拍照（自动触发，无需按钮）
   const capturePhoto = () => {
     if (!videoRef.current || !canvasRef.current) return;
 
@@ -85,24 +84,10 @@ const FaceCaptureModal: React.FC<FaceCaptureModalProps> = ({
     // 绘制当前帧到 canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // 转换为 base64
-    const imageData = canvas.toDataURL('image/jpeg', 0.95);
-    setCapturedImage(imageData);
-    setStep('preview');
-
-    // 停止摄像头（预览时不需要）
+    // 停止摄像头
     stopCamera();
-  };
 
-  // 重新拍摄
-  const retakePhoto = () => {
-    setCapturedImage(null);
-    setStep('camera');
-    startCamera();
-  };
-
-  // 确认并生成特征数据
-  const confirmCapture = () => {
+    // 直接进入处理状态（跳过预览）
     setStep('processing');
 
     // 模拟特征提取过程
@@ -136,12 +121,12 @@ const FaceCaptureModal: React.FC<FaceCaptureModalProps> = ({
     };
   };
 
-  // 组件打开时启动摄像头
+  // 组件打开时启动摄像头并开始倒计时
   useEffect(() => {
     if (!open) return;
 
     setStep('camera');
-    setCapturedImage(null);
+    setCountdown(0);
     startCamera();
 
     return () => {
@@ -149,10 +134,42 @@ const FaceCaptureModal: React.FC<FaceCaptureModalProps> = ({
     };
   }, [open]);
 
+  // 摄像头启动后开始倒计时
+  useEffect(() => {
+    if (!cameraActive || step !== 'camera') return;
+
+    // 延迟500ms后开始倒计时，确保摄像头画面稳定
+    const startTimer = setTimeout(() => {
+      setCountdown(3);
+    }, 500);
+
+    return () => clearTimeout(startTimer);
+  }, [cameraActive, step]);
+
+  // 倒计时逻辑
+  useEffect(() => {
+    if (countdown === 0) return;
+
+    if (countdown === 1) {
+      // 倒计时结束，自动拍照
+      const timer = setTimeout(() => {
+        setCountdown(0);
+        capturePhoto();
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      // 继续倒计时
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
+
   const handleCancel = () => {
     stopCamera();
     setStep('camera');
-    setCapturedImage(null);
+    setCountdown(0);
     onCancel();
   };
 
@@ -213,72 +230,40 @@ const FaceCaptureModal: React.FC<FaceCaptureModalProps> = ({
                   opacity: 0.6
                 }}
               />
-            </div>
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Text style={{ fontSize: '16px', color: '#1890ff' }}>
-                <CameraOutlined /> 请将面部置于框内
-              </Text>
-              <Text type="secondary">保持面部清晰可见，正面对准摄像头</Text>
-              <Button
-                type="primary"
-                size="large"
-                icon={<CameraOutlined />}
-                onClick={capturePhoto}
-                disabled={!cameraActive}
-              >
-                拍照
-              </Button>
-            </Space>
-          </div>
-        );
 
-      case 'preview':
-        return (
-          <div style={{ textAlign: 'center' }}>
-            <div
-              style={{
-                width: '100%',
-                height: '360px',
-                background: '#000',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                position: 'relative',
-                marginBottom: '20px'
-              }}
-            >
-              {capturedImage && (
-                <img
-                  src={capturedImage}
-                  alt="Captured"
+              {/* 倒计时显示 */}
+              {countdown > 0 && (
+                <div
                   style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    fontSize: '120px',
+                    fontWeight: 'bold',
+                    color: '#fff',
+                    textShadow: '0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(24,144,255,0.6)',
+                    animation: 'countdownPulse 1s ease-in-out',
+                    zIndex: 10
                   }}
-                />
+                >
+                  {countdown}
+                </div>
               )}
             </div>
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Text style={{ fontSize: '16px' }}>
-                <CheckCircleOutlined style={{ color: '#52c41a' }} /> 照片预览
+              <Text style={{ fontSize: '16px', color: '#1890ff' }}>
+                <CameraOutlined /> {countdown > 0 ? `${countdown} 秒后自动拍照...` : '自动采集中，请保持面部在框内...'}
               </Text>
-              <Text type="secondary">请确认照片清晰可用</Text>
-              <Space size="middle">
-                <Button
-                  icon={<RedoOutlined />}
-                  onClick={retakePhoto}
-                >
-                  重新拍摄
-                </Button>
-                <Button
-                  type="primary"
-                  icon={<CheckCircleOutlined />}
-                  onClick={confirmCapture}
-                >
-                  确认使用
-                </Button>
-              </Space>
+              <Text type="secondary">保持面部清晰可见，正面对准摄像头</Text>
             </Space>
+            <style>{`
+              @keyframes countdownPulse {
+                0% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+                50% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+              }
+            `}</style>
           </div>
         );
 
