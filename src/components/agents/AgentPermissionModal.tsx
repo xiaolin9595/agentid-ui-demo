@@ -373,7 +373,7 @@ const AgentPermissionModal: React.FC<AgentPermissionModalProps> = ({
       title={
         <Space>
           <SafetyCertificateOutlined />
-          <span>Agent 权限管理 - {agent?.name}</span>
+          <span>Agent 权限管理{agent ? ` - ${agent.name}` : ''}</span>
         </Space>
       }
       open={open}
@@ -385,7 +385,15 @@ const AgentPermissionModal: React.FC<AgentPermissionModalProps> = ({
         </Button>
       ]}
     >
-      {/* 统计信息 */}
+      {!agent ? (
+        <div style={{ textAlign: 'center', padding: '60px 0' }}>
+          <Typography.Text type="secondary">
+            未选择 Agent，请先选择一个 Agent
+          </Typography.Text>
+        </div>
+      ) : (
+        <>
+          {/* 统计信息 */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={6}>
           <Card>
@@ -553,6 +561,8 @@ const AgentPermissionModal: React.FC<AgentPermissionModalProps> = ({
         }}
         pagination={{ pageSize: 5 }}
       />
+        </>
+      )}
     </Modal>
   );
 };
