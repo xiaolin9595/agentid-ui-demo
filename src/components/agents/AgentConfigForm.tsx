@@ -14,7 +14,6 @@ import {
   Tag,
   Alert,
   Button,
-  Upload,
   message,
   Progress,
   Avatar
@@ -26,11 +25,11 @@ import {
   UserOutlined,
   SafetyCertificateOutlined,
   SecurityScanOutlined,
-  UploadOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
   CameraOutlined
 } from '@ant-design/icons';
+import FaceCaptureModal from '../identity/FaceCaptureModal';
 import {
   AgentConfig,
   AgentConfigFormProps,
@@ -93,8 +92,7 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
   disabled = false
 }) => {
   const [form] = Form.useForm();
-  const [faceUploadProgress, setFaceUploadProgress] = useState(0);
-  const [isUploadingFace, setIsUploadingFace] = useState(false);
+  const [showFaceCaptureModal, setShowFaceCaptureModal] = useState(false);
   const [faceFeatures, setFaceFeatures] = useState<FaceBiometricFeatures | null>(null);
 
   // 使用身份标识store
@@ -166,51 +164,30 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
     onChange(newConfig);
   };
 
-  const handleFaceUpload = async (file: File) => {
-    setIsUploadingFace(true);
-    setFaceUploadProgress(0);
+  const handleFaceCaptureClick = () => {
+    setShowFaceCaptureModal(true);
+  };
 
-    try {
-      // 模拟人脸特征上传和提取过程
-      for (let i = 0; i <= 100; i += 10) {
-        setFaceUploadProgress(i);
-        await new Promise(resolve => setTimeout(resolve, 100));
+  const handleFaceCaptureComplete = (capturedFeatures: FaceBiometricFeatures) => {
+    setFaceFeatures(capturedFeatures);
+    setShowFaceCaptureModal(false);
+
+    // 更新配置
+    const newConfig: AgentConfig = {
+      ...config,
+      userBinding: {
+        ...config.userBinding,
+        userFaceFeatures: capturedFeatures,
+        bindingType: 'multiFactor'
       }
+    };
 
-      // 模拟生成的人脸特征数据
-      const mockFaceFeatures: FaceBiometricFeatures = {
-        featureVector: Array.from({ length: 128 }, () => Math.random()),
-        templateId: `face_${Date.now()}`,
-        confidence: 0.95 + Math.random() * 0.04, // 0.95-0.99
-        livenessCheck: true,
-        antiSpoofing: true,
-        enrollmentDate: new Date(),
-        lastVerified: new Date()
-      };
+    onChange(newConfig);
+    message.success('人脸特征采集成功！');
+  };
 
-      setFaceFeatures(mockFaceFeatures);
-
-      // 更新配置
-      const newConfig: AgentConfig = {
-        ...config,
-        userBinding: {
-          ...config.userBinding,
-          userFaceFeatures: mockFaceFeatures,
-          bindingType: 'multiFactor'
-        }
-      };
-
-      onChange(newConfig);
-      message.success('人脸特征上传成功！');
-
-    } catch (error) {
-      message.error('人脸特征上传失败，请重试');
-    } finally {
-      setIsUploadingFace(false);
-      setFaceUploadProgress(0);
-    }
-
-    return false; // 阻止默认上传行为
+  const handleFaceCaptureCancel = () => {
+    setShowFaceCaptureModal(false);
   };
 
   const handleRemoveFaceFeatures = () => {
@@ -438,31 +415,16 @@ export const AgentConfigForm: React.FC<AgentConfigFormProps> = ({
                 </Card>
               ) : (
                 <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
-                  <Upload
-                    accept="image/*"
-                    showUploadList={false}
-                    beforeUpload={handleFaceUpload}
-                    disabled={isUploadingFace || disabled}
+                  <Button
+                    icon={<CameraOutlined />}
+                    onClick={handleFaceCaptureClick}
+                    disabled={disabled}
                   >
-                    <Button
-                      icon={<UploadOutlined />}
-                      loading={isUploadingFace}
-                      disabled={disabled}
-                    >
-                      上传人脸照片
-                    </Button>
-                  </Upload>
-                  {isUploadingFace && (
-                    <div className="mt-4">
-                      <Progress percent={faceUploadProgress} size="small" />
-                      <Text type="secondary" className="text-sm">
-                        正在提取人脸特征...
-                      </Text>
-                    </div>
-                  )}
+                    开始人脸采集
+                  </Button>
                   <div className="mt-2">
                     <Text type="secondary" className="text-sm">
-                      支持 JPG、PNG 格式，将自动提取生物特征用于身份验证
+                      点击按钮开始人脸采集，系统将自动提取生物特征用于身份验证
                     </Text>
                   </div>
                 </div>
@@ -612,6 +574,13 @@ LOG_LEVEL=info`}
         description="此配置界面仅用于演示目的，实际的Agent部署会根据这些配置参数进行用户绑定验证和权限控制。"
         type="warning"
         showIcon
+      />
+
+      {/* Face Capture Modal */}
+      <FaceCaptureModal
+        open={showFaceCaptureModal}
+        onCapture={handleFaceCaptureComplete}
+        onCancel={handleFaceCaptureCancel}
       />
     </div>
   );
