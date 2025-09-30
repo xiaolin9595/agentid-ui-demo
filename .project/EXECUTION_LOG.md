@@ -87,6 +87,23 @@
 - 状态管理和切换控制
 - 移除Gas消耗统计，优化UI布局
 
+### Task-Extra: 创建 FaceCaptureModal 人脸采集组件
+**状态**: ✅ 已完成
+**开始时间**: 2025-09-30 16:50
+**结束时间**: 2025-09-30 16:58
+**执行人**: execution-mode-enforcer
+**变更详情**: 创建人脸采集模态框组件，用于Agent创建时采集用户人脸照片并生成生物特征数据
+**提交哈希**: 0e5b4f6
+**测试结果**: TypeScript编译通过，构建成功
+**备注**:
+- 实现真实摄像头调用（navigator.mediaDevices.getUserMedia）
+- 支持拍照、预览、重拍和确认的完整工作流
+- 使用 canvas 元素捕获视频帧并转换为 base64
+- 自动生成 128 维人脸特征向量（FaceBiometricFeatures）
+- 包含活体检测和防伪检测状态模拟
+- 界面风格与 FaceVerificationModal 保持一致
+- 正确清理摄像头资源，防止内存泄漏
+
 ## 下一步计划
 - 等待scope-supervisor审核
 - 准备进入审查阶段
