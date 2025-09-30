@@ -281,11 +281,28 @@ const TaskExecutionPage: React.FC = () => {
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
-        <Space>
+        <Space size="large">
           <PlayCircleOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
           <Title level={3} style={{ margin: 0 }}>
             任务执行中心
           </Title>
+          {/* AI对话按钮 - 放在显眼位置 */}
+          <Button
+            type="primary"
+            size="large"
+            icon={<MessageOutlined style={{ fontSize: '20px' }} />}
+            onClick={() => setInstructionDialogOpen(true)}
+            style={{
+              height: '48px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              boxShadow: '0 4px 12px rgba(24, 144, 255, 0.3)',
+              borderRadius: '8px',
+              padding: '0 24px'
+            }}
+          >
+            AI对话
+          </Button>
         </Space>
         <Space>
           {monitorStatus && (
@@ -300,13 +317,6 @@ const TaskExecutionPage: React.FC = () => {
               />
             </Space>
           )}
-          <Button
-            type="primary"
-            icon={<MessageOutlined />}
-            onClick={() => setInstructionDialogOpen(true)}
-          >
-            AI对话
-          </Button>
           <Button icon={<SettingOutlined />}>
             设置
           </Button>

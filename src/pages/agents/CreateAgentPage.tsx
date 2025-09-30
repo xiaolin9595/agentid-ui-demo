@@ -15,7 +15,6 @@ const CreateAgentPage: React.FC = () => {
 
   const handleComplete = async (agentData: {
     basicInfo: any;
-    apiSpec: any;
     codePackage: any;
   }) => {
     try {
@@ -51,7 +50,7 @@ const CreateAgentPage: React.FC = () => {
       showWatermark={true}
       showTooltip={true}
       tooltipTitle="Agent创建功能演示"
-      tooltipContent="此页面演示了完整的Agent创建流程，包括基本信息录入、API规范上传、代码包上传和配置确认。所有功能均为演示目的。"
+      tooltipContent="此页面演示了完整的Agent创建流程，包括基本信息录入、代码包上传和配置确认。所有功能均为演示目的。"
     >
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
@@ -60,7 +59,7 @@ const CreateAgentPage: React.FC = () => {
             创建新Agent
           </Title>
           <Typography.Text type="secondary">
-            按照向导步骤创建新的智能代理，包括API规范和代码包上传
+            按照向导步骤创建新的智能代理，包括代码包上传和配置
           </Typography.Text>
         </div>
 

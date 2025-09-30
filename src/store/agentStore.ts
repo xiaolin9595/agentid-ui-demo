@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Agent, AgentMetrics, AgentPaginationParams, AgentFilterParams, AgentSortParams } from '../types/agent';
-import { AgentCreateInfo, AgentApiSpec, AgentCodePackage } from '../types/agent-upload';
+import { AgentCreateInfo, AgentCodePackage } from '../types/agent-upload';
 import { sharedAgentData } from '../mocks/sharedAgentData';
 import { useAuthStore } from './authStore';
 
@@ -36,7 +36,6 @@ interface AgentState {
   clearFilters: () => void;
   createAgent: (agentData: {
     basicInfo: AgentCreateInfo;
-    apiSpec: AgentApiSpec;
     codePackage: AgentCodePackage;
   }) => Promise<Agent>;
   fetchAgents: () => Promise<void>;
@@ -102,7 +101,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   })),
 
   createAgent: async (agentData) => {
-    const { basicInfo, apiSpec, codePackage } = agentData;
+    const { basicInfo, codePackage } = agentData;
     const state = get();
     const authState = useAuthStore.getState();
 

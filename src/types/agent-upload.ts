@@ -151,7 +151,6 @@ export interface AgentConfigFormProps {
 export interface AgentCreationWizardProps {
   onComplete: (agentData: {
     basicInfo: AgentCreateInfo;
-    apiSpec: AgentApiSpec;
     codePackage: AgentCodePackage;
   }) => void;
   onCancel: () => void;

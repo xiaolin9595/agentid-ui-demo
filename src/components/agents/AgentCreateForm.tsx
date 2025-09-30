@@ -18,7 +18,6 @@ import {
 } from 'antd';
 import {
   UserOutlined,
-  ApiOutlined,
   CodeOutlined,
   SettingOutlined,
   CheckCircleOutlined,
@@ -28,14 +27,12 @@ import {
 } from '@ant-design/icons';
 import {
   AgentCreateInfo,
-  AgentApiSpec,
   AgentCodePackage,
   AgentCreationWizardProps,
   AgentCreationStep,
   SUPPORTED_AGENT_LANGUAGES,
   DEFAULT_AGENT_CONFIG
 } from '../../types/agent-upload';
-import { AgentApiUpload } from './AgentApiUpload';
 import { AgentCodeUpload } from './AgentCodeUpload';
 import { AgentConfigForm } from './AgentConfigForm';
 
@@ -51,13 +48,11 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [steps, setSteps] = useState<AgentCreationStep[]>([
     { id: 0, title: '基本信息', description: '配置Agent基本信息', status: 'pending' },
-    { id: 1, title: 'API规范', description: '上传API规范文档', status: 'pending' },
-    { id: 2, title: '代码上传', description: '上传Agent代码包', status: 'pending' },
-    { id: 3, title: '配置确认', description: '确认配置并创建', status: 'pending' }
+    { id: 1, title: '代码上传', description: '上传Agent代码包', status: 'pending' },
+    { id: 2, title: '配置确认', description: '确认配置并创建', status: 'pending' }
   ]);
 
   const [basicInfo, setBasicInfo] = useState<AgentCreateInfo | null>(null);
-  const [apiSpec, setApiSpec] = useState<AgentApiSpec | null>(null);
   const [codePackage, setCodePackage] = useState<AgentCodePackage | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,31 +71,17 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
     setError(null);
   };
 
-  const handleApiSpecSelect = (spec: AgentApiSpec) => {
-    setApiSpec(spec);
+  const handleCodePackageSelect = (pkg: AgentCodePackage) => {
+    setCodePackage(pkg);
     updateStepStatus(1, 'completed');
     updateStepStatus(2, 'in_progress');
     setCurrentStep(2);
     setError(null);
   };
 
-  const handleApiSpecRemove = () => {
-    setApiSpec(null);
-    updateStepStatus(1, 'in_progress');
-    setError(null);
-  };
-
-  const handleCodePackageSelect = (pkg: AgentCodePackage) => {
-    setCodePackage(pkg);
-    updateStepStatus(2, 'completed');
-    updateStepStatus(3, 'in_progress');
-    setCurrentStep(3);
-    setError(null);
-  };
-
   const handleCodePackageRemove = () => {
     setCodePackage(null);
-    updateStepStatus(2, 'in_progress');
+    updateStepStatus(1, 'in_progress');
     setError(null);
   };
 
@@ -120,7 +101,7 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
   };
 
   const handleCreateAgent = async () => {
-    if (!basicInfo || !apiSpec || !codePackage) {
+    if (!basicInfo || !codePackage) {
       setError('请完成所有必要步骤');
       return;
     }
@@ -134,19 +115,18 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
 
       const agentData = {
         basicInfo,
-        apiSpec,
         codePackage
       };
 
       // 更新步骤状态
-      updateStepStatus(3, 'completed');
+      updateStepStatus(2, 'completed');
 
       // 调用完成回调
       onComplete(agentData);
 
     } catch (err) {
       setError('创建Agent失败，请重试');
-      updateStepStatus(3, 'error');
+      updateStepStatus(2, 'error');
     } finally {
       setIsCreating(false);
     }
@@ -155,9 +135,8 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
   const getStepIcon = (step: AgentCreationStep) => {
     switch (step.id) {
       case 0: return <UserOutlined />;
-      case 1: return <ApiOutlined />;
-      case 2: return <CodeOutlined />;
-      case 3: return <SettingOutlined />;
+      case 1: return <CodeOutlined />;
+      case 2: return <SettingOutlined />;
       default: return null;
     }
   };
@@ -165,9 +144,8 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
   const isStepComplete = (stepId: number) => {
     switch (stepId) {
       case 0: return basicInfo !== null;
-      case 1: return apiSpec !== null;
-      case 2: return codePackage !== null;
-      case 3: return basicInfo !== null && apiSpec !== null && codePackage !== null;
+      case 1: return codePackage !== null;
+      case 2: return basicInfo !== null && codePackage !== null;
       default: return false;
     }
   };
@@ -178,14 +156,6 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
         return <BasicInfoForm onSubmit={handleBasicInfoSubmit} initialData={basicInfo} />;
       case 1:
         return (
-          <AgentApiUpload
-            onApiSpecSelect={handleApiSpecSelect}
-            onApiSpecRemove={handleApiSpecRemove}
-            selectedApiSpec={apiSpec}
-          />
-        );
-      case 2:
-        return (
           <AgentCodeUpload
             onCodePackageSelect={handleCodePackageSelect}
             onCodePackageRemove={handleCodePackageRemove}
@@ -193,7 +163,7 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
             supportedLanguages={SUPPORTED_AGENT_LANGUAGES}
           />
         );
-      case 3:
+      case 2:
         return (
           <AgentConfigForm
             config={basicInfo?.config || DEFAULT_AGENT_CONFIG}
@@ -339,7 +309,7 @@ export const AgentCreateForm: React.FC<AgentCreationWizardProps> = ({
                   icon={<CheckCircleOutlined />}
                   onClick={handleCreateAgent}
                   loading={isCreating}
-                  disabled={!basicInfo || !apiSpec || !codePackage}
+                  disabled={!basicInfo || !codePackage}
                 >
                   {isCreating ? '创建中...' : '创建Agent'}
                 </Button>
@@ -450,7 +420,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ onSubmit, initialData }) 
 
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
-            下一步：API规范
+            下一步：代码上传
           </Button>
         </Form.Item>
       </Form>

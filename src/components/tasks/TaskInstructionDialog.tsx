@@ -26,6 +26,7 @@ import {
 import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
 import { useTaskStore } from '../../store/taskStore';
+import FaceVerificationModal from '../identity/FaceVerificationModal';
 import {
   TaskExecutionRequest,
   TaskPriority,
@@ -62,6 +63,8 @@ const TaskInstructionDialog: React.FC<TaskInstructionDialogProps> = ({
   const [priority, setPriority] = useState<TaskPriority>(TaskPriority.NORMAL);
   const [suggestedTemplate, setSuggestedTemplate] = useState<TaskTemplate | null>(null);
   const [executing, setExecuting] = useState(false);
+  const [showFaceVerification, setShowFaceVerification] = useState(false);
+  const [pendingRequest, setPendingRequest] = useState<TaskExecutionRequest | null>(null);
 
   // 筛选当前用户的Agent
   const userAgents = React.useMemo(() => {
@@ -183,8 +186,6 @@ const TaskInstructionDialog: React.FC<TaskInstructionDialogProps> = ({
     }
 
     try {
-      setExecuting(true);
-
       let request: TaskExecutionRequest;
 
       if (suggestedTemplate) {
@@ -227,10 +228,31 @@ const TaskInstructionDialog: React.FC<TaskInstructionDialogProps> = ({
         };
       }
 
+      // 保存请求，先进行人脸验证
+      setPendingRequest(request);
+      setShowFaceVerification(true);
+    } catch (error) {
+      console.error('任务准备失败:', error);
+      message.error('任务准备失败，请重试');
+    }
+  };
+
+  // 人脸验证成功后执行任务
+  const handleVerificationSuccess = async () => {
+    setShowFaceVerification(false);
+
+    if (!pendingRequest) {
+      message.error('未找到待执行的任务');
+      return;
+    }
+
+    try {
+      setExecuting(true);
+
       if (onSubmit) {
-        onSubmit(request);
+        onSubmit(pendingRequest);
       } else {
-        await createTask(request);
+        await createTask(pendingRequest);
         message.success('任务创建成功');
       }
 
@@ -241,7 +263,15 @@ const TaskInstructionDialog: React.FC<TaskInstructionDialogProps> = ({
       message.error('任务创建失败，请重试');
     } finally {
       setExecuting(false);
+      setPendingRequest(null);
     }
+  };
+
+  // 取消人脸验证
+  const handleVerificationCancel = () => {
+    setShowFaceVerification(false);
+    setPendingRequest(null);
+    message.info('已取消任务执行');
   };
 
   const handleClear = () => {
@@ -260,22 +290,23 @@ const TaskInstructionDialog: React.FC<TaskInstructionDialogProps> = ({
   ];
 
   return (
-    <Modal
-      title={
-        <Space>
-          <MessageOutlined />
-          <span>AI助手对话</span>
-        </Space>
-      }
-      open={open}
-      onCancel={onClose}
-      width={800}
-      footer={null}
-      className={className}
-      destroyOnClose
-    >
-      <Spin spinning={loading || executing}>
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
+    <>
+      <Modal
+        title={
+          <Space>
+            <MessageOutlined />
+            <span>AI助手对话</span>
+          </Space>
+        }
+        open={open}
+        onCancel={onClose}
+        width={800}
+        footer={null}
+        className={className}
+        destroyOnClose
+      >
+        <Spin spinning={loading || executing}>
+          <Space direction="vertical" style={{ width: '100%' }} size="large">
           {/* Agent选择 */}
           <Card size="small">
             <Space direction="vertical" style={{ width: '100%' }}>
@@ -407,6 +438,15 @@ const TaskInstructionDialog: React.FC<TaskInstructionDialogProps> = ({
         </Space>
       </Spin>
     </Modal>
+
+      {/* 人脸识别验证模态框 */}
+      <FaceVerificationModal
+        open={showFaceVerification}
+        onSuccess={handleVerificationSuccess}
+        onCancel={handleVerificationCancel}
+        userName={user?.username || '用户'}
+      />
+    </>
   );
 };
 
