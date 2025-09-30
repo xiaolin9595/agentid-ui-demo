@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Card,
   Typography,
@@ -24,12 +24,14 @@ import {
   PlayCircleOutlined,
   PauseCircleOutlined,
   SettingOutlined,
-  UserOutlined
+  UserOutlined,
+  SafetyCertificateOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
 import { DemoWrapper } from '../../components/ui/DemoWrapper';
+import AgentPermissionModal from '../../components/agents/AgentPermissionModal';
 
 const { Title, Text } = Typography;
 
@@ -47,6 +49,10 @@ const AgentsListPage: React.FC = () => {
   } = useAgentStore();
 
   const { user, isAuthenticated } = useAuthStore();
+
+  // 权限管理模态框状态
+  const [permissionModalOpen, setPermissionModalOpen] = useState(false);
+  const [selectedAgentForPermission, setSelectedAgentForPermission] = useState<any>(null);
 
   // 筛选出当前用户的Agent
   const userAgents = useMemo(() => {
@@ -103,6 +109,16 @@ const AgentsListPage: React.FC = () => {
     } catch (error) {
       message.error('状态更新失败');
     }
+  };
+
+  const handleManagePermissions = (agent: any) => {
+    setSelectedAgentForPermission(agent);
+    setPermissionModalOpen(true);
+  };
+
+  const handleClosePermissionModal = () => {
+    setPermissionModalOpen(false);
+    setSelectedAgentForPermission(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -202,7 +218,7 @@ const AgentsListPage: React.FC = () => {
     {
       title: '操作',
       key: 'actions',
-      width: 200,
+      width: 240,
       render: (record: any) => (
         <Space size="small">
           <Tooltip title="查看详情">
@@ -217,6 +233,14 @@ const AgentsListPage: React.FC = () => {
               type="text"
               icon={<EditOutlined />}
               onClick={() => handleEditAgent(record)}
+            />
+          </Tooltip>
+          <Tooltip title="权限管理">
+            <Button
+              type="text"
+              icon={<SafetyCertificateOutlined />}
+              onClick={() => handleManagePermissions(record)}
+              style={{ color: '#722ed1' }}
             />
           </Tooltip>
           <Tooltip title={record.status === 'active' ? '停止' : '启动'}>
@@ -369,6 +393,13 @@ const AgentsListPage: React.FC = () => {
           )}
         </Card>
       </div>
+
+      {/* 权限管理模态框 */}
+      <AgentPermissionModal
+        open={permissionModalOpen}
+        agent={selectedAgentForPermission}
+        onClose={handleClosePermissionModal}
+      />
     </DemoWrapper>
   );
 };
