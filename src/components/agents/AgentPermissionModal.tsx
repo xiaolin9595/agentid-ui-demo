@@ -394,173 +394,173 @@ const AgentPermissionModal: React.FC<AgentPermissionModalProps> = ({
       ) : (
         <>
           {/* 统计信息 */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="总凭证数"
-              value={statistics.total}
-              prefix={<SafetyCertificateOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="活跃凭证"
-              value={statistics.active}
-              prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="已撤销"
-              value={statistics.revoked}
-              prefix={<CloseCircleOutlined />}
-              valueStyle={{ color: '#ff4d4f' }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="已过期"
-              value={statistics.expired}
-              prefix={<ExclamationCircleOutlined />}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-      </Row>
+          <Row gutter={16} style={{ marginBottom: 24 }}>
+            <Col span={6}>
+              <Card>
+                <Statistic
+                  title="总凭证数"
+                  value={statistics.total}
+                  prefix={<SafetyCertificateOutlined />}
+                  valueStyle={{ color: '#1890ff' }}
+                />
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card>
+                <Statistic
+                  title="活跃凭证"
+                  value={statistics.active}
+                  prefix={<CheckCircleOutlined />}
+                  valueStyle={{ color: '#52c41a' }}
+                />
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card>
+                <Statistic
+                  title="已撤销"
+                  value={statistics.revoked}
+                  prefix={<CloseCircleOutlined />}
+                  valueStyle={{ color: '#ff4d4f' }}
+                />
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card>
+                <Statistic
+                  title="已过期"
+                  value={statistics.expired}
+                  prefix={<ExclamationCircleOutlined />}
+                  valueStyle={{ color: '#faad14' }}
+                />
+              </Card>
+            </Col>
+          </Row>
 
-      {/* 添加凭证按钮 */}
-      <div style={{ marginBottom: 16 }}>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setShowAddForm(!showAddForm)}
-        >
-          {showAddForm ? '取消添加' : '添加权限凭证'}
-        </Button>
-      </div>
-
-      {/* 添加凭证表单 */}
-      {showAddForm && (
-        <Card style={{ marginBottom: 16 }}>
-          <Form form={form} layout="vertical">
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  label="权限类型"
-                  name="permissionType"
-                  rules={[{ required: true, message: '请选择权限类型' }]}
-                >
-                  <Select placeholder="选择权限类型">
-                    <Option value="READ">读取</Option>
-                    <Option value="WRITE">写入</Option>
-                    <Option value="EXECUTE">执行</Option>
-                    <Option value="DELETE">删除</Option>
-                    <Option value="ADMIN">管理员</Option>
-                    <Option value="API_ACCESS">API访问</Option>
-                    <Option value="DATA_ACCESS">数据访问</Option>
-                    <Option value="NETWORK_ACCESS">网络访问</Option>
-                    <Option value="FILE_SYSTEM">文件系统</Option>
-                    <Option value="DATABASE">数据库</Option>
-                    <Option value="EXTERNAL_SERVICE">外部服务</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="资源名称"
-                  name="resource"
-                  rules={[{ required: true, message: '请输入资源名称' }]}
-                >
-                  <Input placeholder="例如: /api/users, database.users" />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Form.Item
-              label="操作权限"
-              name="actions"
-              rules={[{ required: true, message: '请选择至少一个操作' }]}
+          {/* 添加凭证按钮 */}
+          <div style={{ marginBottom: 16 }}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setShowAddForm(!showAddForm)}
             >
-              <Select mode="multiple" placeholder="选择允许的操作">
-                <Option value="read">读取</Option>
-                <Option value="write">写入</Option>
-                <Option value="update">更新</Option>
-                <Option value="delete">删除</Option>
-                <Option value="create">创建</Option>
-                <Option value="list">列表</Option>
-                <Option value="get">获取</Option>
-                <Option value="execute">执行</Option>
-                <Option value="invoke">调用</Option>
-                <Option value="call">呼叫</Option>
-              </Select>
-            </Form.Item>
+              {showAddForm ? '取消添加' : '添加权限凭证'}
+            </Button>
+          </div>
 
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item label="作用域" name="scope">
-                  <Select mode="tags" placeholder="输入作用域标签">
-                    <Option value="production">生产环境</Option>
-                    <Option value="development">开发环境</Option>
-                    <Option value="testing">测试环境</Option>
+          {/* 添加凭证表单 */}
+          {showAddForm && (
+            <Card style={{ marginBottom: 16 }}>
+              <Form form={form} layout="vertical">
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      label="权限类型"
+                      name="permissionType"
+                      rules={[{ required: true, message: '请选择权限类型' }]}
+                    >
+                      <Select placeholder="选择权限类型">
+                        <Option value="READ">读取</Option>
+                        <Option value="WRITE">写入</Option>
+                        <Option value="EXECUTE">执行</Option>
+                        <Option value="DELETE">删除</Option>
+                        <Option value="ADMIN">管理员</Option>
+                        <Option value="API_ACCESS">API访问</Option>
+                        <Option value="DATA_ACCESS">数据访问</Option>
+                        <Option value="NETWORK_ACCESS">网络访问</Option>
+                        <Option value="FILE_SYSTEM">文件系统</Option>
+                        <Option value="DATABASE">数据库</Option>
+                        <Option value="EXTERNAL_SERVICE">外部服务</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label="资源名称"
+                      name="resource"
+                      rules={[{ required: true, message: '请输入资源名称' }]}
+                    >
+                      <Input placeholder="例如: /api/users, database.users" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Form.Item
+                  label="操作权限"
+                  name="actions"
+                  rules={[{ required: true, message: '请选择至少一个操作' }]}
+                >
+                  <Select mode="multiple" placeholder="选择允许的操作">
+                    <Option value="read">读取</Option>
+                    <Option value="write">写入</Option>
+                    <Option value="update">更新</Option>
+                    <Option value="delete">删除</Option>
+                    <Option value="create">创建</Option>
+                    <Option value="list">列表</Option>
+                    <Option value="get">获取</Option>
+                    <Option value="execute">执行</Option>
+                    <Option value="invoke">调用</Option>
+                    <Option value="call">呼叫</Option>
                   </Select>
                 </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="过期日期" name="expirationDate">
-                  <DatePicker style={{ width: '100%' }} placeholder="不设置则永久有效" />
+
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item label="作用域" name="scope">
+                      <Select mode="tags" placeholder="输入作用域标签">
+                        <Option value="production">生产环境</Option>
+                        <Option value="development">开发环境</Option>
+                        <Option value="testing">测试环境</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item label="过期日期" name="expirationDate">
+                      <DatePicker style={{ width: '100%' }} placeholder="不设置则永久有效" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Form.Item label="约束条件（可选）" name="constraints">
+                  <TextArea
+                    rows={2}
+                    placeholder="例如: 仅在工作时间访问, IP白名单限制等"
+                  />
                 </Form.Item>
-              </Col>
-            </Row>
 
-            <Form.Item label="约束条件（可选）" name="constraints">
-              <TextArea
-                rows={2}
-                placeholder="例如: 仅在工作时间访问, IP白名单限制等"
-              />
-            </Form.Item>
+                <Form.Item>
+                  <Space>
+                    <Button type="primary" onClick={handleAddCredential}>
+                      创建凭证
+                    </Button>
+                    <Button onClick={() => {
+                      setShowAddForm(false);
+                      form.resetFields();
+                    }}>
+                      取消
+                    </Button>
+                  </Space>
+                </Form.Item>
+              </Form>
+            </Card>
+          )}
 
-            <Form.Item>
-              <Space>
-                <Button type="primary" onClick={handleAddCredential}>
-                  创建凭证
-                </Button>
-                <Button onClick={() => {
-                  setShowAddForm(false);
-                  form.resetFields();
-                }}>
-                  取消
-                </Button>
-              </Space>
-            </Form.Item>
-          </Form>
-        </Card>
-      )}
-
-      {/* 凭证列表表格 */}
-      <Table
-        columns={columns}
-        dataSource={credentials}
-        rowKey="id"
-        expandable={{
-          expandedRowRender,
-          expandIcon: ({ expanded, onExpand, record }) =>
-            expanded ? (
-              <UnlockOutlined onClick={e => onExpand(record, e)} style={{ cursor: 'pointer' }} />
-            ) : (
-              <LockOutlined onClick={e => onExpand(record, e)} style={{ cursor: 'pointer' }} />
-            )
-        }}
-        pagination={{ pageSize: 5 }}
-      />
+          {/* 凭证列表表格 */}
+          <Table
+            columns={columns}
+            dataSource={credentials}
+            rowKey="id"
+            expandable={{
+              expandedRowRender,
+              expandIcon: ({ expanded, onExpand, record }) =>
+                expanded ? (
+                  <UnlockOutlined onClick={e => onExpand(record, e)} style={{ cursor: 'pointer' }} />
+                ) : (
+                  <LockOutlined onClick={e => onExpand(record, e)} style={{ cursor: 'pointer' }} />
+                )
+            }}
+            pagination={{ pageSize: 5 }}
+          />
         </>
       )}
     </Modal>

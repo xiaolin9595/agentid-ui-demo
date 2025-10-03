@@ -129,7 +129,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         updatedAt: new Date().toISOString(),
         codeSize: codePackage.files.reduce((total, file) => total + file.size, 0),
         language: codePackage.language.id,
-        config: {
+        version: "1.0.0",        config: {
           permissions: basicInfo.config.permissions.map(p => p as any),
           userBinding: {
             ...basicInfo.config.userBinding,

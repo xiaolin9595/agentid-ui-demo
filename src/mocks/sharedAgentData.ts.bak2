@@ -16,9 +16,7 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-20T15:45:00Z',
     codeSize: 1024000,
     language: 'typescript',
-    version: "1.0.0",
-    version: "1.0.0",
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'write'],
       userBinding: {
         boundUserId: 'demo_user_001',
@@ -50,8 +48,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-21T16:30:00Z',
     codeSize: 2048000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write', 'execute'],
       userBinding: {
@@ -148,8 +144,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-24T13:45:00Z',
     codeSize: 1280000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -182,8 +176,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-25T12:00:00Z',
     codeSize: 768000,
     language: 'javascript',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -216,8 +208,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-26T15:00:00Z',
     codeSize: 1152000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -250,9 +240,7 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-27T16:30:00Z',
     codeSize: 1536000,
     language: 'typescript',
-    version: "1.0.0",
-    version: "1.0.0",
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'write', 'execute'],
       userBinding: {
         boundUserId: 'lin-175879861',
@@ -316,8 +304,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-29T13:00:00Z',
     codeSize: 896000,
     language: 'javascript',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write', 'execute'],
       userBinding: {
@@ -351,8 +337,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-30T09:30:00Z',
     codeSize: 1152000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -385,8 +369,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-01-31T11:00:00Z',
     codeSize: 896000,
     language: 'javascript',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write', 'execute'],
       userBinding: {
@@ -419,9 +401,7 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-01T15:30:00Z',
     codeSize: 1280000,
     language: 'typescript',
-    version: "1.0.0",
-    version: "1.0.0",
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'write'],
       userBinding: {
         boundUserId: 'lin-175879861',
@@ -453,8 +433,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-02T17:00:00Z',
     codeSize: 768000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -519,8 +497,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-04T18:30:00Z',
     codeSize: 1408000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -553,8 +529,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-05T16:00:00Z',
     codeSize: 896000,
     language: 'javascript',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write', 'execute'],
       userBinding: {
@@ -587,9 +561,7 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-06T20:00:00Z',
     codeSize: 1536000,
     language: 'typescript',
-    version: "1.0.0",
-    version: "1.0.0",
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'write', 'execute'],
       userBinding: {
         boundUserId: 'agent-18239478',
@@ -621,8 +593,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-07T13:30:00Z',
     codeSize: 640000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -655,8 +625,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-08T15:00:00Z',
     codeSize: 768000,
     language: 'javascript',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -689,9 +657,7 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-09T19:30:00Z',
     codeSize: 896000,
     language: 'typescript',
-    version: "1.0.0",
-    version: "1.0.0",
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'write'],
       userBinding: {
         boundUserId: 'user_001',
@@ -723,8 +689,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-10T14:30:00Z',
     codeSize: 1152000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write', 'execute'],
       userBinding: {
@@ -789,8 +753,6 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-12T18:00:00Z',
     codeSize: 1024000,
     language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",
     config: {
       permissions: ['read', 'write'],
       userBinding: {
@@ -823,9 +785,7 @@ export let sharedAgents: Agent[] = [
     updatedAt: '2024-02-13T20:30:00Z',
     codeSize: 768000,
     language: 'typescript',
-    version: "1.0.0",
-    version: "1.0.0",
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'write'],
       userBinding: {
         boundUserId: 'lin-175879861',
@@ -908,7 +868,6 @@ export const sharedAgentData = {
         updatedAt: '2024-01-20T15:45:00Z',
         codeSize: 1024000,
         language: 'typescript',
-    version: "1.0.0",
     version: "1.0.0",        config: {
           permissions: ['read', 'write'],
           userBinding: {
@@ -935,8 +894,7 @@ export const sharedAgentData = {
         updatedAt: '2024-01-21T16:30:00Z',
         codeSize: 2048000,
         language: 'python',
-    version: "1.0.0",
-    version: "1.0.0",        config: {
+        config: {
           permissions: ['read', 'write', 'execute'],
           userBinding: {
             boundUserId: 'user_002',

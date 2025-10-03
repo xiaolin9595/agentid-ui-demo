@@ -40,7 +40,7 @@ export const mockAgents: Agent[] = [
     updatedAt: '2024-01-20T14:30:00Z',
     codeSize: 256,
     language: 'typescript',
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'write', 'execute'],
       userBinding: {
         boundUserId: 'user_001',
@@ -66,7 +66,7 @@ export const mockAgents: Agent[] = [
     updatedAt: '2024-01-21T16:45:00Z',
     codeSize: 384,
     language: 'python',
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'execute'],
       userBinding: {
         boundUserId: 'user_002',
@@ -100,7 +100,7 @@ export const mockAgents: Agent[] = [
     updatedAt: '2024-01-22T10:15:00Z',
     codeSize: 128,
     language: 'javascript',
-    config: {
+    version: "1.0.0",    config: {
       permissions: ['read', 'write'],
       userBinding: {
         boundUserId: 'user_456',

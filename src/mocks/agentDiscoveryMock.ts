@@ -217,7 +217,7 @@ export function generateMockAgentDiscoveryList(): AgentDiscoveryItem[] {
       updatedAt: new Date().toISOString(),
       codeSize: Math.floor(Math.random() * 1000000) + 100000,
       language: 'javascript',
-      config: {
+      version: "1.0.0",      config: {
         permissions: ['read', 'write'],
         userBinding: {
           boundUserId: 'user_random',
