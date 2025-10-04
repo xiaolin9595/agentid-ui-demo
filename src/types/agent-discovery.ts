@@ -170,9 +170,10 @@ export interface AgentDiscoveryFilterParams {
 }
 
 // 扩展的Agent信息
-export interface AgentDiscoveryItem extends Omit<Agent, 'description'> {
+export interface AgentDiscoveryItem extends Omit<Agent, 'description' | 'version'> {
   // 基础字段重新定义以避免冲突
   description: string;
+  version?: string;
 
   // 区块链相关信息
   blockchainInfo?: AgentBlockchainInfo;
@@ -193,7 +194,6 @@ export interface AgentDiscoveryItem extends Omit<Agent, 'description'> {
   categories?: string[];
   apiEndpoint?: string;
   model?: string;
-  version?: string;
 
   // 统计信息
   stats?: {
@@ -318,8 +318,8 @@ export interface AgentDiscoveryStats {
 export interface AgentCommunicationRequest {
   fromAgentId: string; // 发起通信的Agent ID
   agentId: string;     // 目标Agent ID
-  type: 'message' | 'call' | 'data_request' | 'command';
-  payload: any;
+  type: 'data_analysis' | 'content_creation' | 'research' | 'automation' | 'monitoring' | 'integration';
+  payload?: any;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   timeout?: number;
   requiresResponse?: boolean;

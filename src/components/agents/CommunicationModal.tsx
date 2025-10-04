@@ -13,10 +13,12 @@ import {
   Tag
 } from 'antd';
 import {
-  MessageOutlined,
-  PhoneOutlined,
-  DatabaseOutlined,
-  CodeOutlined,
+  BarChartOutlined,
+  EditOutlined,
+  SearchOutlined,
+  RobotOutlined,
+  EyeOutlined,
+  ApiOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons';
 import type { AgentCommunicationRequest } from '../../types/agent-discovery';
@@ -47,23 +49,27 @@ interface CommunicationModalProps {
 }
 
 /**
- * 通信类型图标映射
+ * 任务类型图标映射
  */
 const COMMUNICATION_TYPE_ICONS = {
-  message: <MessageOutlined />,
-  call: <PhoneOutlined />,
-  data_request: <DatabaseOutlined />,
-  command: <CodeOutlined />
+  data_analysis: <BarChartOutlined />,
+  content_creation: <EditOutlined />,
+  research: <SearchOutlined />,
+  automation: <RobotOutlined />,
+  monitoring: <EyeOutlined />,
+  integration: <ApiOutlined />
 };
 
 /**
- * 通信类型标签映射
+ * 任务类型标签映射
  */
 const COMMUNICATION_TYPE_LABELS = {
-  message: '消息通信',
-  call: '实时调用',
-  data_request: '数据请求',
-  command: '命令执行'
+  data_analysis: '📊 数据分析任务',
+  content_creation: '✍️ 内容创作任务',
+  research: '🔍 调研分析任务',
+  automation: '🤖 自动化执行任务',
+  monitoring: '👁️ 监控预警任务',
+  integration: '🔗 系统集成任务'
 };
 
 /**
@@ -204,7 +210,7 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
         layout="vertical"
         initialValues={{
           fromAgentId: undefined,
-          type: 'message',
+          type: 'data_analysis',
           priority: 'medium',
           timeout: 30,
           requiresResponse: true
@@ -245,14 +251,14 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
           </Select>
         </Form.Item>
 
-        {/* 通信类型 */}
+        {/* 任务类型 */}
         <Form.Item
-          label="通信类型"
+          label="任务类型"
           name="type"
-          rules={[{ required: true, message: '请选择通信类型' }]}
+          rules={[{ required: true, message: '请选择任务类型' }]}
         >
           <Select
-            placeholder="选择与Agent的通信方式"
+            placeholder="选择要指派的任务类型"
             size="large"
           >
             {(Object.keys(COMMUNICATION_TYPE_LABELS) as Array<keyof typeof COMMUNICATION_TYPE_LABELS>).map(

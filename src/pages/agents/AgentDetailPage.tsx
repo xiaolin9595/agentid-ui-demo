@@ -148,10 +148,12 @@ const AgentDetailPage: React.FC = () => {
       const fromAgentName = fromAgent?.name || request.fromAgentId;
 
       message.success(`已建立 ${fromAgentName} 与 ${agent.name} 的${
-        request.type === 'message' ? '消息通信' :
-        request.type === 'call' ? '实时调用' :
-        request.type === 'data_request' ? '数据请求' :
-        '命令执行'
+        request.type === 'data_analysis' ? '数据分析任务' :
+        request.type === 'content_creation' ? '内容创作任务' :
+        request.type === 'research' ? '调研分析任务' :
+        request.type === 'automation' ? '自动化执行任务' :
+        request.type === 'monitoring' ? '监控预警任务' :
+        '系统集成任务'
       }连接`);
 
       setCommunicationModalVisible(false);
