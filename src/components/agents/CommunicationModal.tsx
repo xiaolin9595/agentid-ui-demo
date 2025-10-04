@@ -57,7 +57,8 @@ const COMMUNICATION_TYPE_ICONS = {
   research: <SearchOutlined />,
   automation: <RobotOutlined />,
   monitoring: <EyeOutlined />,
-  integration: <ApiOutlined />
+  integration: <ApiOutlined />,
+  other: <EditOutlined />
 };
 
 /**
@@ -69,7 +70,8 @@ const COMMUNICATION_TYPE_LABELS = {
   research: '🔍 调研分析任务',
   automation: '🤖 自动化执行任务',
   monitoring: '👁️ 监控预警任务',
-  integration: '🔗 系统集成任务'
+  integration: '🔗 系统集成任务',
+  other: '📝 其他'
 };
 
 /**
@@ -132,6 +134,7 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
   loading = false
 }) => {
   const [form] = Form.useForm();
+  const [selectedType, setSelectedType] = React.useState<string>('data_analysis');
 
   /**
    * Modal关闭时重置表单
@@ -157,7 +160,11 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
         priority: values.priority,
         timeout: values.timeout * 1000, // 转换为毫秒
         requiresResponse: values.requiresResponse,
-        payload: values.message ? { message: values.message } : undefined,
+        payload: values.type === 'other' && values.customInstruction
+          ? { customInstruction: values.customInstruction, message: values.message }
+          : values.message
+          ? { message: values.message }
+          : undefined,
         metadata: {
           userId: 'current-user', // 实际应用中应从上下文获取
           sessionId: `session-${Date.now()}`,
@@ -260,6 +267,7 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
           <Select
             placeholder="选择要指派的任务类型"
             size="large"
+            onChange={(value) => setSelectedType(value)}
           >
             {(Object.keys(COMMUNICATION_TYPE_LABELS) as Array<keyof typeof COMMUNICATION_TYPE_LABELS>).map(
               (type) => (
@@ -273,6 +281,27 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
             )}
           </Select>
         </Form.Item>
+
+        {/* 当选择"其他"时显示自定义指令输入框 */}
+        {selectedType === 'other' && (
+          <Form.Item
+            label="自定义指令"
+            name="customInstruction"
+            rules={[{ required: true, message: '请输入自定义指令' }]}
+            extra={
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                请详细描述您要指派给Agent的具体任务和指令
+              </Text>
+            }
+          >
+            <TextArea
+              rows={3}
+              placeholder="输入详细的任务指令，例如：帮我分析最近一周的销售数据并生成报告"
+              maxLength={200}
+              showCount
+            />
+          </Form.Item>
+        )}
 
         {/* 优先级 */}
         <Form.Item

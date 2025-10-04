@@ -318,7 +318,7 @@ export interface AgentDiscoveryStats {
 export interface AgentCommunicationRequest {
   fromAgentId: string; // 发起通信的Agent ID
   agentId: string;     // 目标Agent ID
-  type: 'data_analysis' | 'content_creation' | 'research' | 'automation' | 'monitoring' | 'integration';
+  type: 'data_analysis' | 'content_creation' | 'research' | 'automation' | 'monitoring' | 'integration' | 'other';
   payload?: any;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   timeout?: number;
