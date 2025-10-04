@@ -16,6 +16,8 @@ import {
 import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
 import { Agent } from '../../types/agent';
+import CommunicationModal from '../../components/agents/CommunicationModal';
+import type { AgentCommunicationRequest } from '../../types/agent-discovery';
 
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
@@ -40,6 +42,8 @@ const AgentDetailPage: React.FC = () => {
   const [fetching, setFetching] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [communicationModalVisible, setCommunicationModalVisible] = useState(false);
+  const [communicating, setCommunicating] = useState(false);
 
   // 判断来源
   const isFromDiscovery = searchParams.get('from') === 'discovery';
@@ -123,8 +127,31 @@ const AgentDetailPage: React.FC = () => {
   // 处理建立通信
   const handleEstablishCommunication = () => {
     if (!agent) return;
-    message.success(`已向Agent "${agent.name}" 发起通信请求`);
-    // TODO: 实现真实的通信功能
+    setCommunicationModalVisible(true);
+  };
+
+  // 处理通信提交
+  const handleCommunicationSubmit = async (request: AgentCommunicationRequest) => {
+    if (!agent) return;
+
+    try {
+      setCommunicating(true);
+      // 模拟通信建立过程（延迟2秒）
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      message.success(`已成功与Agent "${agent.name}" 建立${
+        request.type === 'message' ? '消息通信' :
+        request.type === 'call' ? '实时调用' :
+        request.type === 'data_request' ? '数据请求' :
+        '命令执行'
+      }通道`);
+
+      setCommunicationModalVisible(false);
+    } catch (error) {
+      message.error(`通信建立失败：${error instanceof Error ? error.message : '未知错误'}`);
+    } finally {
+      setCommunicating(false);
+    }
   };
 
   // 处理重启Agent
@@ -295,6 +322,8 @@ const AgentDetailPage: React.FC = () => {
                     type="primary"
                     icon={<MessageOutlined />}
                     onClick={handleEstablishCommunication}
+                    loading={communicating}
+                    disabled={communicating}
                   >
                     建立通信
                   </Button>
@@ -560,6 +589,18 @@ const AgentDetailPage: React.FC = () => {
           />
         </div>
       </Card>
+
+      {/* 通信配置弹窗 */}
+      {agent && (
+        <CommunicationModal
+          visible={communicationModalVisible}
+          agentId={agent.agentId}
+          agentName={agent.name}
+          onSubmit={handleCommunicationSubmit}
+          onCancel={() => setCommunicationModalVisible(false)}
+          loading={communicating}
+        />
+      )}
     </div>
   );
 };
