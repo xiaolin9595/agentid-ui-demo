@@ -17,11 +17,25 @@ import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
 import { Agent } from '../../types/agent';
 import CommunicationModal from '../../components/agents/CommunicationModal';
+import VerificationModal from '../../components/agents/VerificationModal';
 import type { AgentCommunicationRequest } from '../../types/agent-discovery';
 import { sharedAgentData } from '../../mocks/sharedAgentData';
 
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
+
+/**
+ * 任务类型标签映射
+ */
+const COMMUNICATION_TYPE_LABELS: Record<string, string> = {
+  data_analysis: '数据分析任务',
+  content_creation: '内容创作任务',
+  research: '调研分析任务',
+  automation: '自动化执行任务',
+  monitoring: '监控预警任务',
+  integration: '系统集成任务',
+  other: '其他'
+};
 
 const AgentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,6 +59,8 @@ const AgentDetailPage: React.FC = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [communicationModalVisible, setCommunicationModalVisible] = useState(false);
   const [communicating, setCommunicating] = useState(false);
+  const [verificationVisible, setVerificationVisible] = useState(false);
+  const [pendingRequest, setPendingRequest] = useState<AgentCommunicationRequest | null>(null);
 
   // 判断来源
   const isFromDiscovery = searchParams.get('from') === 'discovery';
@@ -138,30 +154,14 @@ const AgentDetailPage: React.FC = () => {
   const handleCommunicationSubmit = async (request: AgentCommunicationRequest) => {
     if (!agent) return;
 
-    try {
-      setCommunicating(true);
-      // 模拟通信建立过程（延迟2秒）
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    // 保存请求到pendingRequest
+    setPendingRequest(request);
 
-      // 查找源Agent的名称
-      const fromAgent = myAgents.find(a => a.agentId === request.fromAgentId);
-      const fromAgentName = fromAgent?.name || request.fromAgentId;
+    // 关闭配置Modal
+    setCommunicationModalVisible(false);
 
-      message.success(`已建立 ${fromAgentName} 与 ${agent.name} 的${
-        request.type === 'data_analysis' ? '数据分析任务' :
-        request.type === 'content_creation' ? '内容创作任务' :
-        request.type === 'research' ? '调研分析任务' :
-        request.type === 'automation' ? '自动化执行任务' :
-        request.type === 'monitoring' ? '监控预警任务' :
-        '系统集成任务'
-      }连接`);
-
-      setCommunicationModalVisible(false);
-    } catch (error) {
-      message.error(`通信建立失败：${error instanceof Error ? error.message : '未知错误'}`);
-    } finally {
-      setCommunicating(false);
-    }
+    // 打开验证Modal
+    setVerificationVisible(true);
   };
 
   // 处理重启Agent
@@ -190,6 +190,33 @@ const AgentDetailPage: React.FC = () => {
         }
       }
     });
+  };
+
+  // 处理验证成功
+  const handleVerificationSuccess = async () => {
+    setVerificationVisible(false);
+
+    if (!pendingRequest || !agent) return;
+
+    try {
+      // 模拟建立通信
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const myAgent = myAgents.find(a => a.agentId === pendingRequest.fromAgentId);
+      const taskType = COMMUNICATION_TYPE_LABELS[pendingRequest.type] || pendingRequest.type;
+
+      message.success(`已建立 ${myAgent?.name} 与 ${agent.name} 的${taskType}连接`);
+      setPendingRequest(null);
+    } catch (error) {
+      message.error('建立通信失败');
+    }
+  };
+
+  // 处理验证失败
+  const handleVerificationError = (error: string) => {
+    setVerificationVisible(false);
+    message.error(`验证失败: ${error}`);
+    setPendingRequest(null);
   };
 
   // 处理删除Agent
@@ -612,6 +639,15 @@ const AgentDetailPage: React.FC = () => {
           loading={communicating}
         />
       )}
+
+      {/* 验证流程弹窗 */}
+      <VerificationModal
+        visible={verificationVisible}
+        fromAgentName={myAgents.find(a => a.agentId === pendingRequest?.fromAgentId)?.name || '我的Agent'}
+        toAgentName={agent?.name || '目标Agent'}
+        onSuccess={handleVerificationSuccess}
+        onError={handleVerificationError}
+      />
     </div>
   );
 };
