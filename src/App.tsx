@@ -15,6 +15,7 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ImageTest from './components/ImageTest';
 import SimpleTestPage from './pages/SimpleTestPage';
+import PermissionTestPage from './pages/PermissionTestPage';
 import { CredentialUploadDemo } from './pages/demo/CredentialUploadDemo';
 import { useAuthStore } from './store/authStore';
 import './styles/index.css';
@@ -61,6 +62,7 @@ const App: React.FC = () => {
           <Route path="/public-image-test" element={<ImageTest />} />
           <Route path="/public-credential-upload" element={<CredentialUploadDemo />} />
           <Route path="/simple-test" element={<SimpleTestPage />} />
+          <Route path="/permission-test" element={<PermissionTestPage />} />
 
           {/* 404页面 */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
