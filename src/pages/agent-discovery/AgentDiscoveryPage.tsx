@@ -128,7 +128,7 @@ const AgentDiscoveryPage: React.FC = () => {
     const fullAgent = sharedAgentData.getAgents().find(a => a.id === agent.id);
     if (fullAgent) {
       setSelectedAgent(fullAgent);
-      navigate(`/agents/${agent.id}`);
+      navigate(`/agents/${agent.id}?from=discovery`);
     }
   };
 
