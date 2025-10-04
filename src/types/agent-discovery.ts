@@ -316,7 +316,8 @@ export interface AgentDiscoveryStats {
 
 // 通信相关类型
 export interface AgentCommunicationRequest {
-  agentId: string;
+  fromAgentId: string; // 发起通信的Agent ID
+  agentId: string;     // 目标Agent ID
   type: 'message' | 'call' | 'data_request' | 'command';
   payload: any;
   priority: 'low' | 'medium' | 'high' | 'urgent';

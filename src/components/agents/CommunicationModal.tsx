@@ -9,7 +9,8 @@ import {
   Space,
   Button,
   Typography,
-  Divider
+  Divider,
+  Tag
 } from 'antd';
 import {
   MessageOutlined,
@@ -19,6 +20,7 @@ import {
   ThunderboltOutlined
 } from '@ant-design/icons';
 import type { AgentCommunicationRequest } from '../../types/agent-discovery';
+import type { Agent } from '../../types/agent';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -34,6 +36,8 @@ interface CommunicationModalProps {
   agentId: string;
   /** 目标 Agent 名称 */
   agentName: string;
+  /** 用户管理的Agent列表 */
+  myAgents: Agent[];
   /** 提交通信请求的回调函数 */
   onSubmit: (request: AgentCommunicationRequest) => void;
   /** 取消操作的回调函数 */
@@ -116,6 +120,7 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
   visible,
   agentId,
   agentName,
+  myAgents,
   onSubmit,
   onCancel,
   loading = false
@@ -140,6 +145,7 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
 
       // 构造 AgentCommunicationRequest 对象
       const request: AgentCommunicationRequest = {
+        fromAgentId: values.fromAgentId,
         agentId,
         type: values.type,
         priority: values.priority,
@@ -197,12 +203,48 @@ const CommunicationModal: React.FC<CommunicationModalProps> = ({
         form={form}
         layout="vertical"
         initialValues={{
+          fromAgentId: undefined,
           type: 'message',
           priority: 'medium',
           timeout: 30,
           requiresResponse: true
         }}
       >
+        {/* 选择我的Agent */}
+        <Form.Item
+          label="选择我的Agent"
+          name="fromAgentId"
+          rules={[{ required: true, message: '请选择您的Agent' }]}
+          extra={
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              选择您管理的Agent来与目标Agent建立通信
+            </Text>
+          }
+        >
+          <Select
+            placeholder="选择您的Agent"
+            size="large"
+            showSearch
+            optionFilterProp="children"
+          >
+            {myAgents
+              .filter(agent => agent.status === 'active')
+              .map(agent => (
+                <Option key={agent.id} value={agent.agentId}>
+                  <Space>
+                    <span>{agent.name}</span>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      ({agent.agentId})
+                    </Text>
+                    <Tag color="green" style={{ fontSize: 11 }}>
+                      {agent.status}
+                    </Tag>
+                  </Space>
+                </Option>
+              ))}
+          </Select>
+        </Form.Item>
+
         {/* 通信类型 */}
         <Form.Item
           label="通信类型"

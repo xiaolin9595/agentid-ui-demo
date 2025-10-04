@@ -18,6 +18,7 @@ import { useAuthStore } from '../../store/authStore';
 import { Agent } from '../../types/agent';
 import CommunicationModal from '../../components/agents/CommunicationModal';
 import type { AgentCommunicationRequest } from '../../types/agent-discovery';
+import { sharedAgentData } from '../../mocks/sharedAgentData';
 
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
@@ -49,6 +50,9 @@ const AgentDetailPage: React.FC = () => {
   const isFromDiscovery = searchParams.get('from') === 'discovery';
   // 判断是否为所有者
   const isOwner = user?.id === agent?.boundUser;
+
+  // 获取当前用户管理的Agent列表（只显示active状态的）
+  const myAgents = sharedAgentData.getAgents().filter(a => a.boundUser === user?.id);
 
   useEffect(() => {
     if (!id) {
@@ -139,12 +143,16 @@ const AgentDetailPage: React.FC = () => {
       // 模拟通信建立过程（延迟2秒）
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      message.success(`已成功与Agent "${agent.name}" 建立${
+      // 查找源Agent的名称
+      const fromAgent = myAgents.find(a => a.agentId === request.fromAgentId);
+      const fromAgentName = fromAgent?.name || request.fromAgentId;
+
+      message.success(`已建立 ${fromAgentName} 与 ${agent.name} 的${
         request.type === 'message' ? '消息通信' :
         request.type === 'call' ? '实时调用' :
         request.type === 'data_request' ? '数据请求' :
         '命令执行'
-      }通道`);
+      }连接`);
 
       setCommunicationModalVisible(false);
     } catch (error) {
@@ -596,6 +604,7 @@ const AgentDetailPage: React.FC = () => {
           visible={communicationModalVisible}
           agentId={agent.agentId}
           agentName={agent.name}
+          myAgents={myAgents}
           onSubmit={handleCommunicationSubmit}
           onCancel={() => setCommunicationModalVisible(false)}
           loading={communicating}
