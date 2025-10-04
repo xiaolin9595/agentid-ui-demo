@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, Typography, Spin, Alert, Button, Tag, Descriptions, Space, Divider, Modal, message, Row, Col, Badge, Table, Collapse } from 'antd';
 import {
   PlayCircleOutlined,
@@ -10,9 +10,11 @@ import {
   EditOutlined,
   EyeOutlined,
   WarningOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  MessageOutlined
 } from '@ant-design/icons';
 import { useAgentStore } from '../../store/agentStore';
+import { useAuthStore } from '../../store/authStore';
 import { Agent } from '../../types/agent';
 
 const { Title, Text } = Typography;
@@ -21,6 +23,7 @@ const { Panel } = Collapse;
 const AgentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const {
     agents,
     loading,
@@ -31,11 +34,17 @@ const AgentDetailPage: React.FC = () => {
     updateAgentStatus,
     deleteAgent
   } = useAgentStore();
+  const { user } = useAuthStore();
 
   const [agent, setAgent] = useState<Agent | null>(null);
   const [fetching, setFetching] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // 判断来源
+  const isFromDiscovery = searchParams.get('from') === 'discovery';
+  // 判断是否为所有者
+  const isOwner = user?.id === agent?.boundUser;
 
   useEffect(() => {
     if (!id) {
@@ -77,7 +86,12 @@ const AgentDetailPage: React.FC = () => {
 
   // 处理返回按钮
   const handleBack = () => {
-    navigate('/agents');
+    // 如果从发现页来，返回发现页；否则返回管理页
+    if (isFromDiscovery) {
+      navigate('/agent-discovery');
+    } else {
+      navigate('/agents');
+    }
   };
 
   // 处理状态变更
@@ -104,6 +118,13 @@ const AgentDetailPage: React.FC = () => {
         }
       }
     });
+  };
+
+  // 处理建立通信
+  const handleEstablishCommunication = () => {
+    if (!agent) return;
+    message.success(`已向Agent "${agent.name}" 发起通信请求`);
+    // TODO: 实现真实的通信功能
   };
 
   // 处理重启Agent
@@ -268,67 +289,83 @@ const AgentDetailPage: React.FC = () => {
             </Col>
             <Col>
               <Space>
-                {agent.status === 'active' && (
-                  <Button
-                    icon={<PauseCircleOutlined />}
-                    onClick={() => handleStatusChange('inactive')}
-                    loading={statusLoading}
-                    disabled={statusLoading}
-                  >
-                    暂停
-                  </Button>
-                )}
-                {agent.status === 'inactive' && (
+                {/* 从发现页来或非所有者：显示建立通信按钮 */}
+                {(isFromDiscovery || !isOwner) && (
                   <Button
                     type="primary"
-                    icon={<PlayCircleOutlined />}
-                    onClick={() => handleStatusChange('active')}
-                    loading={statusLoading}
-                    disabled={statusLoading}
+                    icon={<MessageOutlined />}
+                    onClick={handleEstablishCommunication}
                   >
-                    启动
+                    建立通信
                   </Button>
                 )}
-                {agent.status !== 'stopped' && (
-                  <Button
-                    icon={<StopOutlined />}
-                    onClick={() => handleStatusChange('stopped')}
-                    loading={statusLoading}
-                    disabled={statusLoading}
-                    danger
-                  >
-                    停止
-                  </Button>
+
+                {/* 管理按钮：只在非发现页且是所有者时显示 */}
+                {!isFromDiscovery && isOwner && (
+                  <>
+                    {agent.status === 'active' && (
+                      <Button
+                        icon={<PauseCircleOutlined />}
+                        onClick={() => handleStatusChange('inactive')}
+                        loading={statusLoading}
+                        disabled={statusLoading}
+                      >
+                        暂停
+                      </Button>
+                    )}
+                    {agent.status === 'inactive' && (
+                      <Button
+                        type="primary"
+                        icon={<PlayCircleOutlined />}
+                        onClick={() => handleStatusChange('active')}
+                        loading={statusLoading}
+                        disabled={statusLoading}
+                      >
+                        启动
+                      </Button>
+                    )}
+                    {agent.status !== 'stopped' && (
+                      <Button
+                        icon={<StopOutlined />}
+                        onClick={() => handleStatusChange('stopped')}
+                        loading={statusLoading}
+                        disabled={statusLoading}
+                        danger
+                      >
+                        停止
+                      </Button>
+                    )}
+                    <Button
+                      icon={<RedoOutlined />}
+                      onClick={handleRestart}
+                      loading={statusLoading}
+                      disabled={statusLoading || agent.status === 'stopped'}
+                    >
+                      重启
+                    </Button>
+                    <Button
+                      icon={<EditOutlined />}
+                      onClick={handleEditConfig}
+                    >
+                      编辑配置
+                    </Button>
+                    <Button
+                      icon={<EyeOutlined />}
+                      onClick={handleViewLogs}
+                    >
+                      查看日志
+                    </Button>
+                    <Button
+                      icon={<DeleteOutlined />}
+                      onClick={handleDelete}
+                      loading={deleteLoading}
+                      disabled={deleteLoading}
+                      danger
+                    >
+                      删除
+                    </Button>
+                  </>
                 )}
-                <Button
-                  icon={<RedoOutlined />}
-                  onClick={handleRestart}
-                  loading={statusLoading}
-                  disabled={statusLoading || agent.status === 'stopped'}
-                >
-                  重启
-                </Button>
-                <Button
-                  icon={<EditOutlined />}
-                  onClick={handleEditConfig}
-                >
-                  编辑配置
-                </Button>
-                <Button
-                  icon={<EyeOutlined />}
-                  onClick={handleViewLogs}
-                >
-                  查看日志
-                </Button>
-                <Button
-                  icon={<DeleteOutlined />}
-                  onClick={handleDelete}
-                  loading={deleteLoading}
-                  disabled={deleteLoading}
-                  danger
-                >
-                  删除
-                </Button>
               </Space>
             </Col>
           </Row>
