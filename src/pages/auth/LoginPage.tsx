@@ -3,6 +3,7 @@ import { Form, Input, Button, Card, message, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store';
+import { loginUser } from '../../services/userService';
 
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -12,27 +13,17 @@ const LoginPage: React.FC = () => {
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // 模拟登录请求
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // 模拟用户数据
-      const mockUser = {
-        id: '1',
-        userId: 'user_123',
+      // 调用登录服务
+      const user = await loginUser({
         username: values.username,
-        email: 'demo@example.com',
-        publicKey: '0x1234567890abcdef1234567890abcdef12345678',
-        biometricStatus: 'bound' as const,
-        status: 'active' as const,
-        createdAt: new Date().toISOString(),
-        authCount: 0
-      };
+        password: values.password
+      });
 
-      setUser(mockUser);
+      setUser(user);
       message.success('登录成功！');
       navigate('/dashboard');
-    } catch (error) {
-      message.error('登录失败，请检查用户名和密码');
+    } catch (error: any) {
+      message.error(error.message || '登录失败');
     } finally {
       setLoading(false);
     }

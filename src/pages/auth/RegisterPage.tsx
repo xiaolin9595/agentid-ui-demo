@@ -3,6 +3,7 @@ import { Form, Input, Button, Card, Steps, message, Progress, Alert } from 'antd
 import { UserOutlined, MailOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store';
+import { registerUser } from '../../services/userService';
 
 const { Step } = Steps;
 
@@ -62,25 +63,23 @@ const RegisterPage: React.FC = () => {
   };
 
   const handleKeyGeneration = async () => {
-    setCurrent(3);
+    try {
+      setCurrent(3);
 
-    // 模拟创建用户
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      // 调用注册服务
+      const newUser = await registerUser({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
+      });
 
-    const newUser = {
-      id: Date.now().toString(),
-      userId: `user_${Date.now()}`,
-      username: formData.username,
-      email: formData.email,
-      publicKey: `0x${Math.random().toString(16).substr(2, 40)}`,
-      biometricStatus: 'bound' as const,
-      status: 'active' as const,
-      createdAt: new Date().toISOString(),
-      authCount: 0
-    };
-
-    setUser(newUser);
-    message.success('注册成功！');
+      setUser(newUser);
+      message.success('注册成功！');
+    } catch (error: any) {
+      message.error(error.message || '注册失败');
+      // 返回到第一步
+      setCurrent(0);
+    }
   };
 
   const renderStepContent = () => {

@@ -21,39 +21,46 @@ interface AuthState {
   logout: () => void;
 }
 
+// 从localStorage恢复用户状态
+const loadUserFromStorage = (): User | null => {
+  try {
+    const userStr = localStorage.getItem('agentid_user');
+    return userStr ? JSON.parse(userStr) : null;
+  } catch {
+    return null;
+  }
+};
+
+// 保存用户到localStorage
+const saveUserToStorage = (user: User | null) => {
+  try {
+    if (user) {
+      localStorage.setItem('agentid_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('agentid_user');
+    }
+  } catch (error) {
+    console.error('Failed to save user to localStorage:', error);
+  }
+};
+
 export const useAuthStore = create<AuthState>((set, get) => ({
-  // 初始状态 - 演示用默认用户
-  user: {
-    id: 'demo_user_001',
-    userId: 'demo_user_001',
-    username: 'demo_user',
-    email: 'demo@example.com',
-    publicKey: '0x1234567890abcdef1234567890abcdef12345678',
-    biometricStatus: 'bound',
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    authCount: 1
-  },
-  isAuthenticated: true,
-  authSession: {
-    id: 'demo_session_001',
-    userId: 'demo_user_001',
-    agentId: 'demo_agent_001',
-    biometricVerified: true,
-    contractVerified: true,
-    zkProof: null,
-    status: 'success',
-    timestamp: new Date().toISOString()
-  },
+  // 初始状态 - 从localStorage恢复或默认未登录
+  user: loadUserFromStorage(),
+  isAuthenticated: !!loadUserFromStorage(),
+  authSession: null,
   loading: false,
   error: null,
 
   // Actions
-  setUser: (user) => set({
-    user,
-    isAuthenticated: !!user,
-    error: null
-  }),
+  setUser: (user) => {
+    saveUserToStorage(user);
+    set({
+      user,
+      isAuthenticated: !!user,
+      error: null
+    });
+  },
 
   setAuthSession: (session) => set({ authSession: session }),
 
@@ -61,10 +68,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   setError: (error) => set({ error }),
 
-  logout: () => set({
-    user: null,
-    isAuthenticated: false,
-    authSession: null,
-    error: null
-  })
+  logout: () => {
+    saveUserToStorage(null);
+    set({
+      user: null,
+      isAuthenticated: false,
+      authSession: null,
+      error: null
+    });
+  }
 }));
