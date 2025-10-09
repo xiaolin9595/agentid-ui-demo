@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button, Card, Steps, message, Progress, Alert } from 'antd';
 import { UserOutlined, MailOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,28 +13,8 @@ const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<any>({});
   const [biometricProgress, setBiometricProgress] = useState(0);
   const [scanning, setScanning] = useState(false);
-  const [redirectTimer, setRedirectTimer] = useState<number | null>(null);
   const navigate = useNavigate();
   const { setUser } = useAuthStore();
-
-  // 当进入 step 3 时，启动倒计时跳转
-  useEffect(() => {
-    if (current === 3 && redirectTimer === null) {
-      console.log('进入成功页面，启动3秒倒计时...');
-      const timer = window.setTimeout(() => {
-        console.log('3秒到，执行跳转...');
-        window.location.href = '/login';
-      }, 3000);
-      setRedirectTimer(timer as any);
-    }
-
-    // 清理定时器
-    return () => {
-      if (redirectTimer) {
-        clearTimeout(redirectTimer);
-      }
-    };
-  }, [current]);
 
 
   const steps = [
@@ -88,6 +68,9 @@ const RegisterPage: React.FC = () => {
       console.log('开始密钥生成和注册流程...');
       console.log('表单数据:', formData);
 
+      // 显示加载状态
+      setLoading(true);
+
       // 调用注册服务
       const newUser = await registerUser({
         username: formData.username,
@@ -98,15 +81,17 @@ const RegisterPage: React.FC = () => {
       console.log('注册成功，用户:', newUser);
 
       // 显示成功消息
-      message.success('注册成功！3秒后自动跳转到登录页');
+      message.success('注册成功！正在跳转到登录页...');
 
-      // 注册成功，显示成功页面（useEffect会自动处理跳转）
-      setCurrent(3);
+      // 短暂延迟后立即跳转（让用户看到成功消息）
+      setTimeout(() => {
+        console.log('跳转到登录页...');
+        window.location.href = '/login';
+      }, 500);
     } catch (error: any) {
       console.error('注册失败:', error);
       message.error(error.message || '注册失败');
-      // 返回到第一步
-      setCurrent(0);
+      setLoading(false);
     }
   };
 
@@ -246,6 +231,7 @@ const RegisterPage: React.FC = () => {
               type="primary"
               size="large"
               onClick={handleKeyGeneration}
+              loading={loading}
               className="w-full"
             >
               生成密钥并完成注册
