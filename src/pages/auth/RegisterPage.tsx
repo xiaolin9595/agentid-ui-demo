@@ -73,13 +73,13 @@ const RegisterPage: React.FC = () => {
         password: formData.password
       });
 
-      setUser(newUser);
-      message.success('注册成功！正在跳转到主页...');
+      // 注册成功，但不自动登录
+      message.success('注册成功！请使用您的账号登录');
 
-      // 延迟1.5秒后自动跳转到Dashboard
+      // 延迟2秒后跳转到登录页
       setTimeout(() => {
-        navigate('/dashboard');
-      }, 1500);
+        navigate('/login');
+      }, 2000);
     } catch (error: any) {
       message.error(error.message || '注册失败');
       // 返回到第一步
@@ -239,10 +239,10 @@ const RegisterPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold mb-2">注册成功！</h3>
               <p className="text-gray-600 mb-2">
-                您的 AgentID 账户已成功创建，现在可以开始使用所有功能。
+                您的 AgentID 账户已成功创建。
               </p>
               <p className="text-sm text-purple-600 font-medium">
-                即将自动跳转到主页...
+                即将跳转到登录页面...
               </p>
             </div>
 
@@ -260,7 +260,7 @@ const RegisterPage: React.FC = () => {
             <Button
               type="primary"
               size="large"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/login')}
               className="w-full font-semibold"
               style={{
                 height: '52px',
@@ -270,7 +270,7 @@ const RegisterPage: React.FC = () => {
                 boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
               }}
             >
-              立即前往主页
+              立即登录
             </Button>
           </div>
         );
