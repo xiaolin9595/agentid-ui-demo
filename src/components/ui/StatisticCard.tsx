@@ -27,41 +27,48 @@ const StatisticCard: React.FC<StatisticCardProps> = ({
   valueStyle,
 }) => {
   return (
-    <Card className={`statistic-card ${className}`} bordered={false}>
+    <Card
+      className={`statistic-card ${className} hover:shadow-lg transition-all duration-300`}
+      bordered={false}
+      style={{
+        borderRadius: '16px',
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+      }}
+    >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <Statistic
-            title={title}
-            value={value}
-            prefix={prefix}
-            suffix={suffix}
-            valueStyle={{
-              fontSize: '24px',
-              fontWeight: 600,
-              color: '#1f2937',
-              ...valueStyle
-            }}
-          />
+          <div className="text-sm font-medium text-gray-500 mb-2">{title}</div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">
+            {prefix}{value}{suffix}
+          </div>
           {trend && (
-            <div className="mt-2 flex items-center">
-              {trend.isPositive ? (
-                <ArrowUpOutlined className="text-green-600" />
-              ) : (
-                <ArrowDownOutlined className="text-red-600" />
-              )}
-              <span
-                className={`ml-1 text-sm ${
-                  trend.isPositive ? 'text-green-600' : 'text-red-600'
-                }`}
-              >
+            <div className="flex items-center">
+              <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                trend.isPositive
+                  ? 'bg-green-50 text-green-700'
+                  : 'bg-red-50 text-red-700'
+              }`}>
+                {trend.isPositive ? (
+                  <ArrowUpOutlined className="mr-1" />
+                ) : (
+                  <ArrowDownOutlined className="mr-1" />
+                )}
                 {Math.abs(trend.value)}%
-              </span>
-              <span className="ml-1 text-sm text-gray-500">vs 上期</span>
+              </div>
+              <span className="ml-2 text-xs text-gray-500">vs 上期</span>
             </div>
           )}
         </div>
         {icon && (
-          <div className="ml-4 flex items-center justify-center w-12 h-12 bg-blue-50 rounded-lg">
+          <div
+            className="ml-4 flex items-center justify-center w-14 h-14 rounded-xl text-2xl"
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+            }}
+          >
             {icon}
           </div>
         )}
