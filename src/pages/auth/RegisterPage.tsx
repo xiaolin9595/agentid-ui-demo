@@ -64,7 +64,8 @@ const RegisterPage: React.FC = () => {
 
   const handleKeyGeneration = async () => {
     try {
-      setCurrent(3);
+      console.log('开始密钥生成和注册流程...');
+      console.log('表单数据:', formData);
 
       // 调用注册服务
       const newUser = await registerUser({
@@ -73,14 +74,21 @@ const RegisterPage: React.FC = () => {
         password: formData.password
       });
 
-      // 注册成功，但不自动登录
+      console.log('注册成功，用户:', newUser);
+
+      // 注册成功，显示成功页面
+      setCurrent(3);
+
+      // 显示成功消息
       message.success('注册成功！请使用您的账号登录');
 
-      // 延迟2秒后跳转到登录页
+      // 延迟3秒后跳转到登录页
       setTimeout(() => {
+        console.log('准备跳转到登录页...');
         navigate('/login');
-      }, 2000);
+      }, 3000);
     } catch (error: any) {
+      console.error('注册失败:', error);
       message.error(error.message || '注册失败');
       // 返回到第一步
       setCurrent(0);
