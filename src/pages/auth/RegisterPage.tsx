@@ -74,7 +74,12 @@ const RegisterPage: React.FC = () => {
       });
 
       setUser(newUser);
-      message.success('注册成功！');
+      message.success('注册成功！正在跳转到主页...');
+
+      // 延迟1.5秒后自动跳转到Dashboard
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
     } catch (error: any) {
       message.error(error.message || '注册失败');
       // 返回到第一步
@@ -233,19 +238,22 @@ const RegisterPage: React.FC = () => {
                 <SafetyOutlined className="text-6xl text-green-600" />
               </div>
               <h3 className="text-xl font-semibold mb-2">注册成功！</h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 mb-2">
                 您的 AgentID 账户已成功创建，现在可以开始使用所有功能。
+              </p>
+              <p className="text-sm text-purple-600 font-medium">
+                即将自动跳转到主页...
               </p>
             </div>
 
             <div className="space-y-4 mb-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-100">
                 <p className="text-sm text-gray-600 mb-1">用户名</p>
-                <p className="font-medium">{formData.username}</p>
+                <p className="font-medium text-gray-900">{formData.username}</p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-100">
                 <p className="text-sm text-gray-600 mb-1">邮箱</p>
-                <p className="font-medium">{formData.email}</p>
+                <p className="font-medium text-gray-900">{formData.email}</p>
               </div>
             </div>
 
@@ -253,9 +261,16 @@ const RegisterPage: React.FC = () => {
               type="primary"
               size="large"
               onClick={() => navigate('/dashboard')}
-              className="w-full"
+              className="w-full font-semibold"
+              style={{
+                height: '52px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                border: 'none',
+                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
+              }}
             >
-              进入仪表板
+              立即前往主页
             </Button>
           </div>
         );
