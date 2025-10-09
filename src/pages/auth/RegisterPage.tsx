@@ -266,16 +266,33 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl w-full">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">创建 AgentID 账户</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            快速注册并开始使用 AgentID 管理平台
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+         style={{
+           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+         }}>
+      {/* 背景装饰 */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-white opacity-10 blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-60 h-60 rounded-full bg-white opacity-5 blur-2xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-white opacity-10 blur-3xl"></div>
+      </div>
+
+      <div className="max-w-3xl w-full relative z-10">
+        {/* 标题 */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white bg-opacity-20 backdrop-blur-lg mb-6 shadow-xl">
+            <SafetyOutlined className="text-4xl text-white" />
+          </div>
+          <h2 className="text-5xl font-bold text-white mb-3 drop-shadow-lg">创建 AgentID 账户</h2>
+          <p className="text-lg text-white text-opacity-90 font-medium">
+            快速注册并开始使用智能Agent管理平台
           </p>
         </div>
 
-        <Card className="shadow-lg">
+        {/* 注册卡片 */}
+        <Card className="shadow-2xl backdrop-blur-xl bg-white bg-opacity-95 border-0 rounded-2xl overflow-hidden"
+              style={{ backdropFilter: 'blur(20px)' }}
+              bodyStyle={{ padding: '40px' }}>
           <Steps current={current} className="mb-8">
             {steps.map((step, index) => (
               <Step
@@ -292,20 +309,29 @@ const RegisterPage: React.FC = () => {
           </div>
 
           {current > 0 && current < 3 && (
-            <div className="text-center mt-6">
-              <Button onClick={() => setCurrent(current - 1)}>
+            <div className="text-center mt-8">
+              <Button
+                onClick={() => setCurrent(current - 1)}
+                size="large"
+                style={{
+                  borderRadius: '10px',
+                  height: '44px',
+                  paddingLeft: '32px',
+                  paddingRight: '32px'
+                }}
+              >
                 上一步
               </Button>
             </div>
           )}
 
           {current === 0 && (
-            <div className="text-center mt-6">
+            <div className="text-center mt-8 pt-6 border-t border-gray-200">
               <span className="text-sm text-gray-600">
                 已有账户？{' '}
                 <Link
                   to="/login"
-                  className="text-blue-600 hover:text-blue-500 font-medium"
+                  className="font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent hover:from-purple-700 hover:to-blue-700"
                 >
                   立即登录
                 </Link>
