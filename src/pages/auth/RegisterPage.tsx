@@ -80,12 +80,13 @@ const RegisterPage: React.FC = () => {
       setCurrent(3);
 
       // 显示成功消息
-      message.success('注册成功！请使用您的账号登录');
+      message.success('注册成功！3秒后自动跳转到登录页');
 
       // 延迟3秒后跳转到登录页
       setTimeout(() => {
         console.log('准备跳转到登录页...');
-        navigate('/login');
+        // 使用 window.location.href 确保跳转成功
+        window.location.href = '/login';
       }, 3000);
     } catch (error: any) {
       console.error('注册失败:', error);
@@ -250,7 +251,7 @@ const RegisterPage: React.FC = () => {
                 您的 AgentID 账户已成功创建。
               </p>
               <p className="text-sm text-purple-600 font-medium">
-                即将跳转到登录页面...
+                3秒后自动跳转到登录页面...
               </p>
             </div>
 
@@ -268,7 +269,7 @@ const RegisterPage: React.FC = () => {
             <Button
               type="primary"
               size="large"
-              onClick={() => navigate('/login')}
+              onClick={() => window.location.href = '/login'}
               className="w-full font-semibold"
               style={{
                 height: '52px',
