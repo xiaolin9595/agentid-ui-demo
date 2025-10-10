@@ -63,49 +63,30 @@ const RegisterPage: React.FC = () => {
     }, 300);
   };
 
-  const handleKeyGeneration = async () => {
-    try {
-      console.log('=== 开始密钥生成和注册流程 ===');
-      console.log('表单数据:', formData);
+  const handleKeyGeneration = () => {
+    console.log('=== 按钮被点击 ===');
 
-      // 显示加载状态
-      setLoading(true);
+    setLoading(true);
 
-      // 调用注册服务
-      const newUser = await registerUser({
-        username: formData.username,
-        email: formData.email,
-        password: formData.password
-      });
+    // 调用注册服务
+    registerUser({
+      username: formData.username,
+      email: formData.email,
+      password: formData.password
+    })
+      .then((newUser) => {
+        console.log('=== 注册成功 ===', newUser);
+        message.success('注册成功！正在跳转...', 1);
 
-      console.log('=== 注册成功 ===');
-      console.log('用户信息:', newUser);
-
-      // 显示成功消息
-      message.success('注册成功！正在跳转到登录页...', 2);
-
-      console.log('=== 准备跳转，延迟500ms ===');
-
-      // 短暂延迟后立即跳转（让用户看到成功消息）
-      const timer = setTimeout(() => {
-        console.log('=== 执行跳转到登录页 ===');
-        console.log('当前URL:', window.location.href);
-        console.log('目标URL:', window.location.origin + '/login');
-
-        // 强制跳转
+        // 直接跳转，不等待
+        console.log('=== 立即跳转到 /login ===');
         window.location.href = '/login';
-
-        console.log('=== 跳转命令已执行 ===');
-      }, 500);
-
-      console.log('=== setTimeout已设置，ID:', timer, '===');
-
-    } catch (error: any) {
-      console.error('=== 注册失败 ===');
-      console.error('错误信息:', error);
-      message.error(error.message || '注册失败');
-      setLoading(false);
-    }
+      })
+      .catch((error) => {
+        console.error('=== 注册失败 ===', error);
+        message.error(error.message || '注册失败');
+        setLoading(false);
+      });
   };
 
   const renderStepContent = () => {
