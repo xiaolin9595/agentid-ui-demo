@@ -65,7 +65,7 @@ const RegisterPage: React.FC = () => {
 
   const handleKeyGeneration = async () => {
     try {
-      console.log('开始密钥生成和注册流程...');
+      console.log('=== 开始密钥生成和注册流程 ===');
       console.log('表单数据:', formData);
 
       // 显示加载状态
@@ -78,18 +78,31 @@ const RegisterPage: React.FC = () => {
         password: formData.password
       });
 
-      console.log('注册成功，用户:', newUser);
+      console.log('=== 注册成功 ===');
+      console.log('用户信息:', newUser);
 
       // 显示成功消息
-      message.success('注册成功！正在跳转到登录页...');
+      message.success('注册成功！正在跳转到登录页...', 2);
+
+      console.log('=== 准备跳转，延迟500ms ===');
 
       // 短暂延迟后立即跳转（让用户看到成功消息）
-      setTimeout(() => {
-        console.log('跳转到登录页...');
+      const timer = setTimeout(() => {
+        console.log('=== 执行跳转到登录页 ===');
+        console.log('当前URL:', window.location.href);
+        console.log('目标URL:', window.location.origin + '/login');
+
+        // 强制跳转
         window.location.href = '/login';
+
+        console.log('=== 跳转命令已执行 ===');
       }, 500);
+
+      console.log('=== setTimeout已设置，ID:', timer, '===');
+
     } catch (error: any) {
-      console.error('注册失败:', error);
+      console.error('=== 注册失败 ===');
+      console.error('错误信息:', error);
       message.error(error.message || '注册失败');
       setLoading(false);
     }
