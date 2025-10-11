@@ -64,7 +64,7 @@ const RegisterPage: React.FC = () => {
   };
 
   const handleKeyGeneration = () => {
-    console.log('=== 按钮被点击 ===');
+    console.log('=== 开始注册流程 ===');
 
     setLoading(true);
 
